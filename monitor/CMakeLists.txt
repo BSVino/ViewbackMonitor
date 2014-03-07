@@ -1,0 +1,54 @@
+include_directories (
+	${PROJECT_SOURCE_DIR}/../ext-deps/EASTL/include
+	${CMAKE_SOURCE_DIR}/../ext-deps/glfw/include
+	.
+	../
+	../common
+	../common/math
+	../tinker
+)
+
+if (WIN32)
+	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/gl3w/include)
+	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/glfw-1.3/include)
+	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release)
+	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/ftgl-gl3/src)
+	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/include)
+endif (WIN32)
+
+set (MONITOR_SOURCES
+	main.cpp
+	monitor_window.cpp
+)
+
+if (WIN32)
+	set (MONITOR_SOURCES ${MONITOR_SOURCES}
+		monitor.rc
+	)
+endif (WIN32)
+
+add_executable(ViewbackMonitor WIN32 ${MONITOR_SOURCES})
+target_link_libraries (ViewbackMonitor tinker)
+
+if (WIN32)
+
+
+	target_link_libraries(ViewbackMonitor debug ${CMAKE_SOURCE_DIR}/../ext-deps/glfw/src/Debug/GLFW.lib)
+	target_link_libraries(ViewbackMonitor debug D:/build/ftgl-vs2013/src/Debug/ftgl-gl3.lib)
+	target_link_libraries(ViewbackMonitor debug ${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/objs/win32/vc2010/freetype2311MT_D.lib)
+	target_link_libraries(ViewbackMonitor debug ${PROJECT_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release-vs2013/Debug/pthread.lib)
+	target_link_libraries(ViewbackMonitor debug ${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0-vs2013/vsprojects/Debug/libprotobuf.lib)
+
+	target_link_libraries(ViewbackMonitor optimized ${CMAKE_SOURCE_DIR}/../ext-deps/glfw/src/RelWithDebInfo/GLFW.lib)
+	target_link_libraries(ViewbackMonitor D:/build/ftgl-vs2013/src/Release/ftgl-gl3.lib)
+	target_link_libraries(ViewbackMonitor optimized ${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/objs/win32/vc2010/freetype2311MT.lib)
+	target_link_libraries(ViewbackMonitor optimized ${PROJECT_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release-vs2013/Release/pthread.lib)
+	target_link_libraries(ViewbackMonitor optimized ${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0-vs2013/vsprojects/Release/libprotobuf.lib)
+	target_link_libraries(ViewbackMonitor optimized dbghelp.lib)
+
+	target_link_libraries(ViewbackMonitor opengl32 glu32 iphlpapi ws2_32)
+endif (WIN32)
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	target_link_libraries(ViewbackMonitor ${FREETYPE_LIBRARIES} ${LIBXML2_LIBRARIES})
+endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
