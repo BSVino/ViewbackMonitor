@@ -16,9 +16,23 @@ if (WIN32)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/include)
 endif (WIN32)
 
+include_directories (
+	${PROJECT_SOURCE_DIR}/../viewback
+	${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0/vsprojects/include
+)
+
+add_definitions(-DPTW32_STATIC_LIB)
+
 set (MONITOR_SOURCES
 	main.cpp
 	monitor_window.cpp
+)
+
+set (VIEWBACK_CLIENT_SOURCES
+	../../viewback/client/viewback_client.cpp
+	../../viewback/client/viewback_data.cpp
+	../../viewback/client/viewback_servers.cpp
+	../../viewback/protobuf/data.pb.cc
 )
 
 if (WIN32)
@@ -27,12 +41,13 @@ if (WIN32)
 	)
 endif (WIN32)
 
-add_executable(ViewbackMonitor WIN32 ${MONITOR_SOURCES})
+source_group(ViewbackClient FILES ${VIEWBACK_CLIENT_SOURCES})
+source_group(Monitor FILES ${MONITOR_SOURCES})
+
+add_executable(ViewbackMonitor WIN32 ${MONITOR_SOURCES} ${VIEWBACK_CLIENT_SOURCES})
 target_link_libraries (ViewbackMonitor tinker)
 
 if (WIN32)
-
-
 	target_link_libraries(ViewbackMonitor debug ${CMAKE_SOURCE_DIR}/../ext-deps/glfw/src/Debug/GLFW.lib)
 	target_link_libraries(ViewbackMonitor debug D:/build/ftgl-vs2013/src/Debug/ftgl-gl3.lib)
 	target_link_libraries(ViewbackMonitor debug ${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/objs/win32/vc2010/freetype2311MT_D.lib)

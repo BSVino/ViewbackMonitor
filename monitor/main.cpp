@@ -1,5 +1,7 @@
 #ifdef _WIN32
 #include <Windows.h>
+
+#include <pthread.h>
 #endif
 
 #include <tinker_platform.h>
@@ -7,6 +9,16 @@
 
 int CreateApplication(int argc, char** argv)
 {
+#ifdef _WIN32
+	WSADATA wsadata;
+	if (WSAStartup(MAKEWORD(2, 2), &wsadata) != 0)
+		return 1;
+
+#ifdef PTW32_STATIC_LIB
+	pthread_win32_process_attach_np();
+#endif
+#endif
+
 	CMonitorWindow oWindow(argc, argv);
 
 	int iScreenWidth;
@@ -17,6 +29,10 @@ int CreateApplication(int argc, char** argv)
 	oWindow.OpenWindow(iScreenWidth*2/3, iScreenHeight*2/3, false, true);
 
 	oWindow.Run();
+
+#ifdef _WIN32
+	WSACleanup();
+#endif
 
 	return 0;
 }
