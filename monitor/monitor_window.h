@@ -4,6 +4,10 @@
 
 #include <client/viewback_client.h>
 
+#include <glgui/basecontrol.h>
+
+class CPanelContainer;
+
 class CMonitorWindow : public CApplication
 {
 	DECLARE_CLASS(CMonitorWindow, CApplication);
@@ -19,10 +23,18 @@ public:
 
 	void Run();
 
+	virtual void SetupGUI();
+
+	virtual void WindowResize(int x, int y);
+
 	CViewbackClient* GetViewback() { return &vb; }
+
+	glgui::CControl<class CPanel_Console> GetConsolePanel();
 
 private:
 	CViewbackClient vb;
+
+	glgui::CControl<CPanelContainer> m_pPanelContainer;
 };
 
 inline CMonitorWindow* MonitorWindow()

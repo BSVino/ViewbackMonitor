@@ -26,6 +26,11 @@ add_definitions(-DPTW32_STATIC_LIB)
 set (MONITOR_SOURCES
 	main.cpp
 	monitor_window.cpp
+
+	panel_container.cpp
+	panel_2d.cpp
+	panel_console.cpp
+	panel_time.cpp
 )
 
 set (VIEWBACK_CLIENT_SOURCES
