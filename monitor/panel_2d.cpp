@@ -60,38 +60,7 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 
 		auto& aVectorData = oData[i].m_aVectorData;
 
-		double flLatestTime = aVectorData.back().time;
-		double flFirstTime = aVectorData.front().time;
-		double flTimeFrom = flLatestTime - oMeta[i].m_flDisplayDuration;
-
-		size_t iStart = 0;
-
-		if (flFirstTime > flTimeFrom)
-			iStart = 0;
-		else
-		{
-			size_t iLast = aVectorData.size() - 1;
-
-			while (iLast - iStart > 2)
-			{
-				// Try to predict where the time we want will be. O(log log n) time baby!
-				size_t iBisectPoint = (size_t)RemapValClamped(flTimeFrom, aVectorData[iStart].time, aVectorData[iLast].time, (double)iStart, (double)iLast);
-
-				if (iBisectPoint == iStart)
-					iBisectPoint = iStart + 1;
-				else if (iBisectPoint == iLast)
-					iBisectPoint = iLast - 1;
-
-				if (aVectorData[iBisectPoint].time < flTimeFrom)
-					iStart = iBisectPoint;
-				else
-					iLast = iBisectPoint;
-			}
-
-			// We're not terribly far now, only one or two off.
-			while (aVectorData[iStart].time < flTimeFrom)
-				iStart++;
-		}
+		size_t iStart = FindStartTime(aVectorData, oMeta[i].m_flDisplayDuration);
 
 		for (size_t j = iStart; j < aVectorData.size() - 1; j++)
 		{
