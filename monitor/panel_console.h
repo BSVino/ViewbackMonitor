@@ -1,10 +1,10 @@
 #pragma once
 
-#include <glgui/panel.h>
+#include "panel_base.h"
 
-class CPanel_Console : public glgui::CPanel
+class CPanel_Console : public CPanel_Base
 {
-	DECLARE_CLASS(CPanel_Console, glgui::CPanel);
+	DECLARE_CLASS(CPanel_Console, CPanel_Base);
 
 public:
 	CPanel_Console();

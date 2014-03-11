@@ -1,8 +1,8 @@
 #pragma once
 
-#include <glgui/panel.h>
+#include "panel_base.h"
 
-class CPanel_Time : public glgui::CPanel
+class CPanel_Time : public CPanel_Base
 {
-	DECLARE_CLASS(CPanel_Time, glgui::CPanel);
+	DECLARE_CLASS(CPanel_Time, CPanel_Base);
 };

@@ -8,6 +8,7 @@ class CPanelContainer : public glgui::CPanel
 
 public:
 	virtual void Setup();
+	virtual void RegistrationUpdate();
 	virtual void Layout();
 
 	glgui::CControl<class CPanel_Console> GetConsolePanel();

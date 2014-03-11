@@ -437,6 +437,14 @@ void CPanel::UpdateScene( void )
 		m_apControls[i]->UpdateScene();
 }
 
+void CPanel::PaintBackground(float x, float y, float w, float h)
+{
+	if (m_eBorder == BT_NONE && m_clrBackground.a() == 0)
+		return;
+
+	PaintRect(x, y, w, h, m_clrBackground, (m_eBorder == BT_SOME) ? 5 : 0, IsHighlighted());
+}
+
 void CPanel::Paint()
 {
 	float x = 0, y = 0;

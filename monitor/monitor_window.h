@@ -24,6 +24,7 @@ public:
 	void Run();
 
 	virtual void SetupGUI();
+	virtual void RegistrationUpdate();
 
 	virtual void WindowResize(int x, int y);
 

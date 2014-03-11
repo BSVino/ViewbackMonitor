@@ -3,6 +3,7 @@
 #include <glgui/rootpanel.h>
 #include <tinker/renderer/renderer.h>
 #include <tinker/profiler.h>
+#include <tinker/cvar.h>
 
 #include "panel_container.h"
 #include "panel_console.h"
@@ -19,6 +20,11 @@ CRenderer* CMonitorWindow::CreateRenderer()
 	return new CRenderer(CApplication::Get()->GetWindowWidth(), CApplication::Get()->GetWindowHeight());
 }
 
+void RegistrationUpdate()
+{
+	MonitorWindow()->RegistrationUpdate();
+}
+
 void ConsoleOutput(const char* pszText)
 {
 	MonitorWindow()->GetConsolePanel()->PrintConsole(pszText);
@@ -26,7 +32,9 @@ void ConsoleOutput(const char* pszText)
 
 void CMonitorWindow::Run()
 {
-	Viewback()->Initialize(&ConsoleOutput);
+	Viewback()->Initialize(&::RegistrationUpdate, &ConsoleOutput);
+
+	CVar::SetCVar("r_bloom", 0);
 
 	SetupGUI();
 
@@ -55,6 +63,11 @@ void CMonitorWindow::SetupGUI()
 	m_pPanelContainer = RootPanel()->AddControl(new CPanelContainer());
 
 	m_pPanelContainer->Setup();
+}
+
+void CMonitorWindow::RegistrationUpdate()
+{
+	m_pPanelContainer->RegistrationUpdate();
 }
 
 void CMonitorWindow::WindowResize(int x, int y)

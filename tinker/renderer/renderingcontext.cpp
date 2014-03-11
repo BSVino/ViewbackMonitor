@@ -987,7 +987,7 @@ void CRenderingContext::EndRender()
 	if (m_bColor && m_pShader->m_iColorAttribute != ~0)
 	{
 		glEnableVertexAttribArray(m_pShader->m_iColorAttribute);
-		glVertexAttribPointer(m_pShader->m_iColorAttribute, 3, GL_UNSIGNED_BYTE, true, sizeof(::Color), s_aclrColors.data());
+		glVertexAttribPointer(m_pShader->m_iColorAttribute, 4, GL_UNSIGNED_BYTE, true, sizeof(::Color), s_aclrColors.data());
 	}
 
 	TAssert(m_pShader->m_iPositionAttribute != ~0);

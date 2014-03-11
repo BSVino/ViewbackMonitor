@@ -28,6 +28,7 @@ set (MONITOR_SOURCES
 	monitor_window.cpp
 
 	panel_container.cpp
+	panel_base.cpp
 	panel_2d.cpp
 	panel_console.cpp
 	panel_time.cpp

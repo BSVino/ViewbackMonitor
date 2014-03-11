@@ -16,7 +16,7 @@ void CPanelContainer::Setup()
 	m_pPanel2D = AddControl(new CPanel_2D());
 	m_pPanel2D->SetBorder(CBaseControl::BT_SOME);
 	m_pPanel2D->SetBackgroundColor(Color(0, 0, 0, 255));
-	m_pPanel2D->SetHighlighted(true);
+	m_pPanel2D->SetHighlighted(false);
 
 	m_pPanelTime = AddControl(new CPanel_Time());
 	m_pPanelTime->SetBorder(CBaseControl::BT_SOME);
@@ -24,6 +24,18 @@ void CPanelContainer::Setup()
 	m_pPanelTime->SetHighlighted(true);
 
 	Layout();
+}
+
+void CPanelContainer::RegistrationUpdate()
+{
+	for (auto& pChild : m_apControls)
+	{
+		CPanel_Base* pPanelBase = dynamic_cast<CPanel_Base*>(pChild.get());
+		if (!pPanelBase)
+			continue;
+
+		pPanelBase->RegistrationUpdate();
+	}
 }
 
 void CPanelContainer::Layout()

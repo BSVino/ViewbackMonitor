@@ -44,6 +44,7 @@ namespace glgui
 		virtual					~CPanel();
 
 	public:
+		virtual void            PaintBackground(float x, float y, float w, float h);
 		virtual void			Paint();
 		virtual void			Paint(float x, float y);
 		virtual void			Paint(float x, float y, float w, float h);
