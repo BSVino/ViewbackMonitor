@@ -83,6 +83,12 @@ namespace glgui
 		virtual void	CenterX();
 		virtual void	CenterY();
 
+		virtual void    SetDimensionsAnimate(const FRect& rDims, double flAnimTime);
+		virtual bool    IsAnimatingDimensions() const;
+		virtual float   GetAnimationLerp() const;
+		virtual FRect   GetAnimateFrom() const { return m_rAnimateFrom; }
+		virtual void    GetPaintPos(float &x, float &y) const;
+
 		virtual float	GetDefaultMargin() { return 0; }
 		virtual float	Layout_GetMargin(float flMargin);
 		virtual void	Layout_FullWidth(float flMargin=g_flLayoutDefault);
@@ -149,6 +155,10 @@ namespace glgui
 		float			m_flY;
 		float			m_flW;
 		float			m_flH;
+
+		FRect           m_rAnimateFrom;
+		double          m_flAnimationTime;
+		double          m_flAnimationStart;
 
 		int				m_iAlpha;
 

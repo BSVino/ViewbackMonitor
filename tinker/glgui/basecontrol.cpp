@@ -75,6 +75,7 @@ CBaseControl::CBaseControl(float x, float y, float w, float h)
 	m_bFocus = false;
 
 	m_flMouseInTime = 0;
+	m_flAnimationTime = -1;
 }
 
 CBaseControl::CBaseControl(const FRect& Rect)
@@ -201,6 +202,73 @@ void CBaseControl::CenterY()
 		return;
 
 	SetTop(GetParent()->GetHeight()/2-GetHeight()/2);
+}
+
+void CBaseControl::SetDimensionsAnimate(const FRect& rDims, double flAnimationTime)
+{
+	m_rAnimateFrom = GetAbsDimensions();
+
+	m_flX = rDims.x;
+	m_flY = rDims.y;
+	m_flW = rDims.w;
+	m_flH = rDims.h;
+
+	m_flAnimationTime = flAnimationTime;
+	m_flAnimationStart = RootPanel()->GetTime();
+}
+
+bool CBaseControl::IsAnimatingDimensions() const
+{
+	if (m_flAnimationTime < 0)
+		return false;
+
+	if (RootPanel()->GetTime() > m_flAnimationStart + m_flAnimationTime)
+		return false;
+
+	return RootPanel()->GetTime() > m_flAnimationStart;
+}
+
+float CBaseControl::GetAnimationLerp() const
+{
+	if (!IsAnimatingDimensions())
+		return 0;
+
+	double flTime = RootPanel()->GetTime();
+	double flAnimationStart = m_flAnimationStart;
+	double flAnimationEnd = m_flAnimationStart + m_flAnimationTime;
+
+	return Bias((float)RemapVal(flTime, flAnimationStart, flAnimationEnd, 0.0, 1.0), 0.8f);
+}
+
+void CBaseControl::GetPaintPos(float &x, float &y) const
+{
+	float px = 0;
+	float py = 0;
+
+	CPanel *pPanel = GetParent().Downcast<CPanel>();
+	if (pPanel)
+	{
+		pPanel->GetPaintPos(px, py);
+
+		if (pPanel->ShouldControlOffset(this))
+		{
+			px += pPanel->GetControlOffset().x;
+			py += pPanel->GetControlOffset().y;
+		}
+	}
+
+	if (IsAnimatingDimensions())
+	{
+		float flLerp = GetAnimationLerp();
+
+		x = LerpValue(GetAnimateFrom().x, m_flX + px, flLerp);
+		y = LerpValue(GetAnimateFrom().y, m_flY + py, flLerp);
+	}
+	else
+	{
+		x = m_flX + px;
+		y = m_flY + py;
+	}
 }
 
 float CBaseControl::Layout_GetMargin(float flMargin)
@@ -355,12 +423,31 @@ void CBaseControl::Paint()
 {
 	float x = 0, y = 0;
 	GetAbsPos(x, y);
+
+	if (IsAnimatingDimensions())
+	{
+		float flLerp = GetAnimationLerp();
+
+		x = LerpValue(m_rAnimateFrom.x, x, flLerp);
+		y = LerpValue(m_rAnimateFrom.y, y, flLerp);
+	}
+
 	Paint(x, y);
 }
 
 void CBaseControl::Paint(float x, float y)
 {
-	Paint(x, y, m_flW, m_flH);
+	if (IsAnimatingDimensions())
+	{
+		float flLerp = GetAnimationLerp();
+
+		float w = LerpValue(m_rAnimateFrom.w, m_flW, flLerp);
+		float h = LerpValue(m_rAnimateFrom.h, m_flH, flLerp);
+
+		Paint(x, y, w, h);
+	}
+	else
+		Paint(x, y, m_flW, m_flH);
 }
 
 void CBaseControl::Paint(float x, float y, float w, float h)

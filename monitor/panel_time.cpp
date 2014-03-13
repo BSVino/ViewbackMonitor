@@ -161,7 +161,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			CLabel* pLabel = m_apLabels[iLabel];
 
 			float ax, ay;
-			pLabel->GetAbsPos(ax, ay);
+			pLabel->GetPaintPos(ax, ay);
 
 			int iValue = aIntData[iStart].data;
 			double flValueTimeStart = aIntData[iStart].time;
