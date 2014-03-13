@@ -45,6 +45,8 @@ void CMonitorWindow::Run()
 		{
 			TPROF("Frame");
 
+			PollEvents();
+
 			{
 				TPROF("CViewbackClient::Update()")
 				vb.Update();

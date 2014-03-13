@@ -43,6 +43,7 @@ public:
 	virtual tstring				WindowTitle() { return "Tinker"; }
 	virtual tstring				AppDirectory() { return "Tinker"; }
 
+	void                        PollEvents();
 	void						SwapBuffers();
 	double						GetTime();
 
@@ -54,28 +55,15 @@ public:
 	static void					RenderCallback() { Get()->Render(); };
 	virtual void				Render();
 
-	static int					WindowCloseCallback(void*) { return Get()->WindowClose(); };
 	virtual int					WindowClose();
-
-	static void					WindowResizeCallback(void*, int x, int y) { Get()->WindowResize(x, y); };
 	virtual void				WindowResize(int x, int y);
-
-	static void					MouseMotionCallback(void*, int x, int y) { Get()->MouseMotion(x, y); };
 	virtual void				MouseMotion(int x, int y);
-
-	static void					MouseInputCallback(void*, int iButton, int iState);
 	void						MouseInputCallback(int iButton, tinker_mouse_state_t iState);
 	virtual bool				MouseInput(int iButton, tinker_mouse_state_t iState);
-
-	static void					MouseWheelCallback(void*, int x, int y);
 	virtual void				MouseWheel(int x, int y) {};
-
-	static void					KeyEventCallback(void*, int c, int e) { Get()->KeyEvent(c, e); };
 	void						KeyEvent(int c, int e);
 	virtual bool				KeyPress(int c);
 	virtual void				KeyRelease(int c);
-
-	static void					CharEventCallback(void*, int c) { Get()->CharEvent(c); };
 	void						CharEvent(int c);
 
 	virtual bool				DoKeyPress(int c) { return false; };
@@ -123,7 +111,7 @@ public:
 	static CApplication*		Get() { return s_pApplication; };
 
 protected:
-	size_t						m_pWindow;
+	struct SDL_Window*          m_pWindow;
 	size_t						m_iWindowWidth;
 	size_t						m_iWindowHeight;
 	bool						m_bFullscreen;

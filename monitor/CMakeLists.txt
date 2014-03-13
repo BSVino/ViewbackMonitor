@@ -1,6 +1,5 @@
 include_directories (
 	${PROJECT_SOURCE_DIR}/../ext-deps/EASTL/include
-	${CMAKE_SOURCE_DIR}/../ext-deps/glfw/include
 	.
 	../
 	../common
@@ -10,7 +9,6 @@ include_directories (
 
 if (WIN32)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/gl3w/include)
-	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/glfw-1.3/include)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/ftgl-gl3/src)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/include)
@@ -54,13 +52,14 @@ add_executable(ViewbackMonitor WIN32 ${MONITOR_SOURCES} ${VIEWBACK_CLIENT_SOURCE
 target_link_libraries (ViewbackMonitor tinker)
 
 if (WIN32)
-	target_link_libraries(ViewbackMonitor debug ${CMAKE_SOURCE_DIR}/../ext-deps/glfw/src/Debug/GLFW.lib)
+	target_link_libraries(ViewbackMonitor ${CMAKE_SOURCE_DIR}/../ext-deps/SDL2-2.0.2/lib/x86/SDL2.lib)
+	target_link_libraries(ViewbackMonitor ${CMAKE_SOURCE_DIR}/../ext-deps/SDL2-2.0.2/lib/x86/SDL2main.lib)
+
 	target_link_libraries(ViewbackMonitor debug ${CMAKE_SOURCE_DIR}/../ext-deps/ftgl-gl3/src/Debug/ftgl-gl3.lib)
 	target_link_libraries(ViewbackMonitor debug ${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/objs/win32/vc2013/freetype2311_D.lib)
 	target_link_libraries(ViewbackMonitor debug ${PROJECT_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release-vs2013/Debug/pthread.lib)
 	target_link_libraries(ViewbackMonitor debug ${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0-vs2013/vsprojects/Debug/libprotobuf.lib)
 
-	target_link_libraries(ViewbackMonitor optimized ${CMAKE_SOURCE_DIR}/../ext-deps/glfw/src/RelWithDebInfo/GLFW.lib)
 	target_link_libraries(ViewbackMonitor optimized ${CMAKE_SOURCE_DIR}/../ext-deps/ftgl-gl3/src/RelWithDebInfo/ftgl-gl3.lib)
 	target_link_libraries(ViewbackMonitor optimized ${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/objs/win32/vc2013/freetype2311.lib)
 	target_link_libraries(ViewbackMonitor optimized ${PROJECT_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release-vs2013/Release/pthread.lib)
