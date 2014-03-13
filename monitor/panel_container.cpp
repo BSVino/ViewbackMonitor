@@ -45,15 +45,47 @@ void CPanelContainer::Layout()
 
 	SetSize(flWindowWidth, flWindowHeight);
 
-	m_pPanelConsole->SetSize(flWindowWidth / 2, flWindowHeight / 2);
+	if (m_pMaximizedPanel)
+	{
+		m_pPanelConsole->SetIsMaximized(false);
+		m_pPanelConsole->SetVisible(false);
 
-	m_pPanel2D->SetPos(flWindowWidth / 2, 0);
-	m_pPanel2D->SetSize(flWindowWidth / 2, flWindowHeight / 2);
+		m_pPanel2D->SetIsMaximized(false);
+		m_pPanel2D->SetVisible(false);
 
-	m_pPanelTime->SetPos(0, flWindowHeight / 2);
-	m_pPanelTime->SetSize(flWindowWidth, flWindowHeight / 2);
+		m_pPanelTime->SetIsMaximized(false);
+		m_pPanelTime->SetVisible(false);
+
+		m_pMaximizedPanel->SetIsMaximized(true);
+		m_pMaximizedPanel->SetVisible(true);
+		m_pMaximizedPanel->SetPos(0, 0);
+		m_pMaximizedPanel->SetSize(flWindowWidth, flWindowHeight);
+	}
+	else
+	{
+		m_pPanelConsole->SetIsMaximized(false);
+		m_pPanelConsole->SetVisible(true);
+		m_pPanelConsole->SetSize(flWindowWidth / 2, flWindowHeight / 2);
+
+		m_pPanel2D->SetIsMaximized(false);
+		m_pPanel2D->SetVisible(true);
+		m_pPanel2D->SetPos(flWindowWidth / 2, 0);
+		m_pPanel2D->SetSize(flWindowWidth / 2, flWindowHeight / 2);
+
+		m_pPanelTime->SetIsMaximized(false);
+		m_pPanelTime->SetVisible(true);
+		m_pPanelTime->SetPos(0, flWindowHeight / 2);
+		m_pPanelTime->SetSize(flWindowWidth, flWindowHeight / 2);
+	}
 
 	BaseClass::Layout();
+}
+
+void CPanelContainer::SetMaximizedPanel(const glgui::CControl<CPanel_Base>& pPanel)
+{
+	m_pMaximizedPanel = pPanel;
+
+	Layout();
 }
 
 glgui::CControl<class CPanel_Console> CPanelContainer::GetConsolePanel()

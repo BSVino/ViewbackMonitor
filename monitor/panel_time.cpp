@@ -50,7 +50,10 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 	TPROF("CPanel_Time::Paint()");
 
 	if (!MonitorWindow()->GetViewback()->HasConnection())
+	{
+		BaseClass::Paint(x, y, w, h);
 		return;
+	}
 
 	double flSecondsToShow = 5;
 	double flNewestData = MonitorWindow()->GetViewback()->FindNewestData();

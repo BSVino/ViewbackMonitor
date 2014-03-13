@@ -78,6 +78,12 @@ void CMonitorWindow::WindowResize(int x, int y)
 	BaseClass::WindowResize(x, y);
 }
 
+void CMonitorWindow::SetMaximizedPanel(const glgui::CControl<class CPanel_Base>& pPanel)
+{
+	if (m_pPanelContainer)
+		m_pPanelContainer->SetMaximizedPanel(pPanel);
+}
+
 CControl<CPanel_Console> CMonitorWindow::GetConsolePanel()
 {
 	return m_pPanelContainer->GetConsolePanel();

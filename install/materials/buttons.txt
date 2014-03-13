@@ -1,0 +1,9 @@
+Material: materials/buttons.mat
+
+Area: Maximize
+{
+	x: 0
+	y: 0
+	w: 35
+	h: 35
+}

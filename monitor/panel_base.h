@@ -4,12 +4,21 @@
 
 #include <glgui/panel.h>
 
-class CPanel_Base : public glgui::CPanel
+class CPanel_Base : public glgui::CPanel, glgui::IEventListener
 {
 	DECLARE_CLASS(CPanel_Base, glgui::CPanel);
 
 public:
+	CPanel_Base();
+
+public:
+	void Layout();
+
 	virtual void RegistrationUpdate() {} // Registration was updated. Remake controls or whatever.
+
+	EVENT_CALLBACK(CPanel_Base, Maximize);
+	EVENT_CALLBACK(CPanel_Base, Minimize); // Not really minimize so much as un-maximize.
+	void SetIsMaximized(bool bMaximized);
 
 	template <typename T>
 	size_t FindStartTime(const std::deque<T>& aData, double flDuration)
@@ -52,5 +61,8 @@ public:
 
 		return iStart;
 	}
+
+private:
+	glgui::CControl<glgui::CPictureButton> m_pMaximize;
 };
 

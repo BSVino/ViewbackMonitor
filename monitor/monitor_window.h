@@ -28,6 +28,8 @@ public:
 
 	virtual void WindowResize(int x, int y);
 
+	void SetMaximizedPanel(const glgui::CControl<class CPanel_Base>& pPanel);
+
 	CViewbackClient* GetViewback() { return &vb; }
 
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
