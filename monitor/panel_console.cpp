@@ -15,6 +15,9 @@ CPanel_Console::CPanel_Console()
 	m_hOutput->SetAlign(CLabel::TA_BOTTOMLEFT);
 
 	m_hInput = AddControl(new CTextField());
+
+	m_hStatus = AddControl(new CLabel(0, 0, 100, 100, ""));
+	m_hStatus->SetAlign(CLabel::TA_TOPLEFT);
 }
 
 void CPanel_Console::Layout()
@@ -25,7 +28,23 @@ void CPanel_Console::Layout()
 	m_hOutput->SetSize(GetWidth(), GetHeight() - 24);
 	m_hOutput->SetPos(0, 0);
 
+	m_hStatus->SetPos(GetWidth() * 2 / 3, 10);
+	m_hStatus->SetSize(GetWidth() / 3, GetHeight() * 2 / 3);
+
 	BaseClass::Layout();
+}
+
+void CPanel_Console::Think()
+{
+	BaseClass::Think();
+
+	if (MonitorWindow()->GetViewback()->GetStatus().length())
+	{
+		m_hStatus->SetVisible(true);
+		m_hStatus->SetText(MonitorWindow()->GetViewback()->GetStatus().c_str());
+	}
+	else
+		m_hStatus->SetVisible(false);
 }
 
 void CPanel_Console::PrintConsole(const tstring& sText)

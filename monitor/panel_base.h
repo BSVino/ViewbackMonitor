@@ -54,7 +54,7 @@ public:
 			}
 
 			// We're not terribly far now, only one or two off.
-			while (aData[iStart].time < flTimeFrom)
+			while (iStart+1 < aData.size() && aData[iStart].time < flTimeFrom)
 				iStart++;
 		}
 

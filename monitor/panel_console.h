@@ -12,6 +12,8 @@ public:
 public:
 	void Layout();
 
+	void Think();
+
 	void PrintConsole(const tstring& sText);
 
 	virtual bool KeyPressed(int code, bool bCtrlDown = false);
@@ -19,6 +21,8 @@ public:
 private:
 	glgui::CControl<glgui::CLabel>     m_hOutput;
 	glgui::CControl<glgui::CTextField> m_hInput;
+
+	glgui::CControl<glgui::CLabel>     m_hStatus;
 
 	bool					m_bBackground;
 
