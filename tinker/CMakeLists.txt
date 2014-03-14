@@ -75,6 +75,7 @@ source_group(Textures FILES ${TINKER_TEXTURES_SOURCES})
 source_group(Tools\\Manipulator FILES ${TINKER_MANIPULATOR_SOURCES})
 
 include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/SDL2-2.0.2/include)
+include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/SDL2_image-2.0.0/include)
 include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/ftgl-gl3/src)
 
 if (WIN32)
@@ -106,6 +107,7 @@ if (WIN32)
 
 	target_link_libraries(tinker ${CMAKE_SOURCE_DIR}/../ext-deps/SDL2-2.0.2/lib/x86/SDL2.lib)
 	target_link_libraries(tinker ${CMAKE_SOURCE_DIR}/../ext-deps/SDL2-2.0.2/lib/x86/SDL2main.lib)
+	target_link_libraries(tinker ${CMAKE_SOURCE_DIR}/../ext-deps/SDL2_image-2.0.0/lib/x86/SDL2_image.lib)
 
 	target_link_libraries(tinker opengl32 glu32)
 endif (WIN32)

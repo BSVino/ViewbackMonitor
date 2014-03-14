@@ -242,6 +242,9 @@ protected:
 	bool			m_bUseMultisampleTextures;
 	int				m_iScreenSamples;
 
+private:
+	static tvector<struct SDL_Surface*> s_apSurfaces;
+
 	static size_t	s_iTexturesLoaded;
 	static bool		s_bNPO2TextureLoads;
 };

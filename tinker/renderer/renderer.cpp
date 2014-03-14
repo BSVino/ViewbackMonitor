@@ -19,10 +19,10 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include <GL3/gl3w.h>
 #include <GL/glu.h>
+#include <SDL_image.h>
 
 #include <maths.h>
 #include <tinker_platform.h>
-#include <stb_image.h>
 #include <stb_image_write.h>
 
 #include <common/worklistener.h>
@@ -901,35 +901,73 @@ size_t CRenderer::LoadTextureIntoGL(tstring sFilename, int iClamp)
 	if (!IsFile(sFilename))
 		return 0;
 
-	int x, y, n;
-    unsigned char *pData = stbi_load(sFilename.c_str(), &x, &y, &n, 4);
+	SDL_Surface* pSurface = IMG_Load(sFilename.c_str());
 
-	if (!pData)
+	if (!pSurface)
 	{
-		TError("Couldn't load '" + sFilename + "', reason: " + stbi_failure_reason() + "\n");
+		TError("Couldn't load '" + sFilename + "', reason: " + IMG_GetError() + "\n");
 		return 0;
 	}
 
 	if (!s_bNPO2TextureLoads)
 	{
-		if (x & (x-1))
+		if (pSurface->w & (pSurface->w - 1))
 		{
 			TError("Image width is not power of 2.");
-			stbi_image_free(pData);
+			SDL_FreeSurface(pSurface);
 			return 0;
 		}
 
-		if (y & (y-1))
+		if (pSurface->h & (pSurface->h - 1))
 		{
 			TError("Image height is not power of 2.");
-			stbi_image_free(pData);
+			SDL_FreeSurface(pSurface);
 			return 0;
 		}
 	}
 
-	size_t iGLId = LoadTextureIntoGL((Color*)pData, x, y, iClamp);
+	TAssert(!SDL_MUSTLOCK(pSurface));
 
-	stbi_image_free(pData);
+	SDL_PixelFormat fmt;
+	memset(&fmt, 0, sizeof(fmt));
+	fmt.format = SDL_PIXELFORMAT_ABGR8888;
+	fmt.BitsPerPixel = 32;
+	fmt.BytesPerPixel = 4;
+	fmt.Rshift = fmt.Ashift = fmt.Rloss = fmt.Gloss = fmt.Bloss = fmt.Aloss = 0;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	fmt.Rmask = 0xff000000;
+	fmt.Rshift = 24;
+	fmt.Gmask = 0x00ff0000;
+	fmt.Gshift = 16;
+	fmt.Bmask = 0x0000ff00;
+	fmt.Bshift = 8;
+	fmt.Amask = 0x000000ff;
+#else
+	fmt.Rmask = 0x000000ff;
+	fmt.Gmask = 0x0000ff00;
+	fmt.Gshift = 8;
+	fmt.Bmask = 0x00ff0000;
+	fmt.Bshift = 16;
+	fmt.Amask = 0xff000000;
+	fmt.Ashift = 24;
+#endif
+
+	bool bCorrectFormat = fmt.format == pSurface->format->format;
+
+	if (!bCorrectFormat)
+	{
+		SDL_Surface* pSurfaceRGB = SDL_ConvertSurface(pSurface, &fmt, 0);
+
+		// Don't need the original anymore.
+		SDL_FreeSurface(pSurface);
+
+		pSurface = pSurfaceRGB;
+	}
+
+	size_t iGLId = LoadTextureIntoGL((Color*)pSurface->pixels, pSurface->w, pSurface->h, iClamp);
+
+	SDL_FreeSurface(pSurface);
 
 	return iGLId;
 }
@@ -999,6 +1037,7 @@ void CRenderer::UnloadTextureFromGL(size_t iGLId)
 
 size_t CRenderer::s_iTexturesLoaded = 0;
 bool CRenderer::s_bNPO2TextureLoads = false;
+tvector<struct SDL_Surface*> CRenderer::s_apSurfaces;
 
 Color* CRenderer::LoadTextureData(tstring sFilename, int& x, int& y)
 {
@@ -1008,12 +1047,14 @@ Color* CRenderer::LoadTextureData(tstring sFilename, int& x, int& y)
 	if (!IsFile(sFilename))
 		return nullptr;
 
-	int n;
-    unsigned char *pData = stbi_load(sFilename.c_str(), &x, &y, &n, 4);
+	SDL_Surface* pSurface = IMG_Load(sFilename.c_str());
 
-	if (!pData)
+	x = pSurface->w;
+	y = pSurface->h;
+
+	if (!pSurface)
 	{
-		TError("Couldn't load '" + sFilename + "', reason: " + stbi_failure_reason() + "\n");
+		TError("Couldn't load '" + sFilename + "', reason: " + IMG_GetError() + "\n");
 		return nullptr;
 	}
 
@@ -1022,24 +1063,81 @@ Color* CRenderer::LoadTextureData(tstring sFilename, int& x, int& y)
 		if (x & (x-1))
 		{
 			TError("Image width is not power of 2.");
-			stbi_image_free(pData);
+			SDL_FreeSurface(pSurface);
 			return nullptr;
 		}
 
 		if (y & (y-1))
 		{
 			TError("Image height is not power of 2.");
-			stbi_image_free(pData);
+			SDL_FreeSurface(pSurface);
 			return nullptr;
 		}
 	}
 
-	return (Color*)pData;
+	SDL_PixelFormat fmt;
+	memset(&fmt, 0, sizeof(fmt));
+	fmt.format = SDL_PIXELFORMAT_ABGR8888;
+	fmt.BitsPerPixel = 32;
+	fmt.BytesPerPixel = 4;
+	fmt.Rshift = fmt.Ashift = fmt.Rloss = fmt.Gloss = fmt.Bloss = fmt.Aloss = 0;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	fmt.Rmask = 0xff000000;
+	fmt.Rshift = 24;
+	fmt.Gmask = 0x00ff0000;
+	fmt.Gshift = 16;
+	fmt.Bmask = 0x0000ff00;
+	fmt.Bshift = 8;
+	fmt.Amask = 0x000000ff;
+#else
+	fmt.Rmask = 0x000000ff;
+	fmt.Gmask = 0x0000ff00;
+	fmt.Gshift = 8;
+	fmt.Bmask = 0x00ff0000;
+	fmt.Bshift = 16;
+	fmt.Amask = 0xff000000;
+	fmt.Ashift = 24;
+#endif
+
+	bool bCorrectFormat = fmt.format == pSurface->format->format;
+
+	if (!bCorrectFormat)
+	{
+		SDL_Surface* pSurfaceRGB = SDL_ConvertSurface(pSurface, &fmt, 0);
+
+		// Don't need the original anymore.
+		SDL_FreeSurface(pSurface);
+
+		pSurface = pSurfaceRGB;
+	}
+
+	s_apSurfaces.push_back(pSurface);
+
+	return (Color*)pSurface->pixels;
 }
 
 void CRenderer::UnloadTextureData(Color* pData)
 {
-	stbi_image_free((char*)pData);
+	size_t iFree = ~0;
+
+	// Linear search through our surfaces to find the one we should free.
+	for (size_t i = 0; i < s_apSurfaces.size(); i++)
+	{
+		if (s_apSurfaces[i]->pixels == pData)
+		{
+			iFree = i;
+			break;
+		}
+	}
+
+	TAssert(iFree != ~0);
+
+	if (iFree == ~0)
+		return;
+
+	SDL_FreeSurface(s_apSurfaces[iFree]);
+	s_apSurfaces.erase(s_apSurfaces.begin() + iFree);
 }
 
 void CRenderer::ReadTextureFromGL(CTextureHandle hTexture, Vector* pvecData)
