@@ -294,7 +294,7 @@ bool CTextField::MousePressed(int iButton, int mx, int my)
 	return true;
 }
 
-void CTextField::CursorMoved(int x, int y)
+void CTextField::CursorMoved(int x, int y, int dx, int dy)
 {
 	if (!Application()->IsMouseLeftDown())
 		return;

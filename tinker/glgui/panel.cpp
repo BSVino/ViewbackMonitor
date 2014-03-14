@@ -191,7 +191,7 @@ bool CPanel::MouseDoubleClicked(int code, int mx, int my)
 	return false;
 }
 
-void CPanel::CursorMoved(int mx, int my)
+void CPanel::CursorMoved(int mx, int my, int dx, int dy)
 {
 	bool bFoundControlWithCursor = false;
 
@@ -232,7 +232,7 @@ void CPanel::CursorMoved(int mx, int my)
 				m_hHasCursor->CursorIn();
 			}
 
-			pControl->CursorMoved(mx, my);
+			pControl->CursorMoved(mx, my, dx, dy);
 
 			bFoundControlWithCursor = true;
 			break;

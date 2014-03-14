@@ -191,7 +191,7 @@ bool CColorPicker::MousePressed(int code, int mx, int my)
 	return BaseClass::MousePressed(code, mx, my);
 }
 
-void CColorPicker::CursorMoved(int mx, int my)
+void CColorPicker::CursorMoved(int mx, int my, int dx, int dy)
 {
 	if (Application()->IsMouseLeftDown())
 		Update(mx, my);

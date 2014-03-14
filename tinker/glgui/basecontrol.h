@@ -112,7 +112,7 @@ namespace glgui
 		virtual bool	MouseReleased(int iButton, int mx, int my) { return false; };
 		virtual bool	MouseDoubleClicked(int iButton, int mx, int my) { return false; };
 		virtual bool	IsCursorListener();
-		virtual void	CursorMoved(int x, int y) {};
+		virtual void	CursorMoved(int x, int y, int dx, int dy) {};
 		virtual void	CursorIn();
 		virtual void	CursorOut();
 

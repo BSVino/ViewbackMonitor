@@ -63,7 +63,7 @@ namespace glgui
 		virtual bool			MouseReleased(int code, int mx, int my);
 		virtual bool			MouseDoubleClicked(int code, int mx, int my);
 		virtual bool			IsCursorListener() {return true;};
-		virtual void			CursorMoved(int mx, int my);
+		virtual void			CursorMoved(int mx, int my, int dx, int dy);
 		virtual void			CursorOut();
 
 		virtual CControlHandle	GetHasCursor();

@@ -49,6 +49,8 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 	auto& oData = MonitorWindow()->GetViewback()->GetData();
 	auto& oMeta = MonitorWindow()->GetViewback()->GetMeta();
 
+	double flLatestData = MonitorWindow()->GetViewback()->GetLatestDataTime();
+
 	for (size_t i = 0; i < oRegistrations.size(); i++)
 	{
 		auto& oReg = oRegistrations[i];
@@ -60,7 +62,7 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 
 		auto& aVectorData = oData[i].m_aVectorData;
 
-		size_t iStart = FindStartTime(aVectorData, oMeta[i].m_flDisplayDuration);
+		size_t iStart = FindStartTime(aVectorData, flLatestData, oMeta[i].m_flDisplayDuration);
 
 		for (size_t j = iStart; j < aVectorData.size() - 1; j++)
 		{

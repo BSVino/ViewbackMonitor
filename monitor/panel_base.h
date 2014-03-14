@@ -21,14 +21,13 @@ public:
 	void SetIsMaximized(bool bMaximized);
 
 	template <typename T>
-	size_t FindStartTime(const std::deque<T>& aData, double flDuration)
+	size_t FindStartTime(const std::deque<T>& aData, double flNow, double flDuration)
 	{
 		if (aData.size() < 2)
 			return 0;
 
-		double flLatestTime = aData.back().time;
 		double flFirstTime = aData.front().time;
-		double flTimeFrom = flLatestTime - flDuration;
+		double flTimeFrom = flNow - flDuration;
 
 		size_t iStart = 0;
 

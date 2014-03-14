@@ -1,12 +1,22 @@
 #include "panel_time.h"
 
 #include <glgui/label.h>
+#include <glgui/rootpanel.h>
 #include <tinker/profiler.h>
 #include <renderer/renderingcontext.h>
 
 #include "monitor_window.h"
 
 using namespace glgui;
+
+CPanel_Time::CPanel_Time()
+{
+	m_bDragging = false;
+	m_bOverrideTime = false;
+	m_flShowTime = 5;
+	m_flFastForwardStartTime = 0;
+	m_flFastForwardFromTime = 0;
+}
 
 void CPanel_Time::RegistrationUpdate()
 {
@@ -42,8 +52,13 @@ void CPanel_Time::RegistrationUpdate()
 
 		m_aiDataLabels[i] = m_apLabels.size() - 1;
 	}
-}
 
+	m_bDragging = false;
+	m_bOverrideTime = false;
+	m_flShowTime = 5;
+	m_flFastForwardStartTime = 0;
+	m_flFastForwardFromTime = 0;
+}
 
 void CPanel_Time::Paint(float x, float y, float w, float h)
 {
@@ -55,8 +70,24 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		return;
 	}
 
-	double flSecondsToShow = 5;
-	double flTimeNow = MonitorWindow()->GetViewback()->PredictCurrentTime();
+	double flSecondsToShow = m_flShowTime;
+	double flPredictedTime = MonitorWindow()->GetViewback()->PredictCurrentTime();
+	double flTimeNow = flPredictedTime;
+
+	if (m_bOverrideTime)
+		flTimeNow = m_flOverrideTime;
+
+	if (m_flFastForwardStartTime)
+	{
+		flTimeNow = RemapBiased(RootPanel()->GetTime(), m_flFastForwardStartTime, m_flFastForwardStartTime + 1.0, m_flFastForwardFromTime, flPredictedTime, 0.8);
+
+		if (flTimeNow > flPredictedTime)
+		{
+			flTimeNow = flPredictedTime;
+			m_flFastForwardStartTime = 0;
+			m_flFastForwardFromTime = 0;
+		}
+	}
 
 	for (int i = (int)(flTimeNow - flSecondsToShow); i < flTimeNow; i++)
 	{
@@ -91,17 +122,21 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			if (oData[i].m_aIntData.size() < 2)
 				continue;
 
-			iStart = FindStartTime(oData[i].m_aIntData, flSecondsToShow);
+			iStart = FindStartTime(oData[i].m_aIntData, flTimeNow, flSecondsToShow);
 		}
 		else if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
 		{
 			if (oData[i].m_aFloatData.size() < 2)
 				continue;
 
-			iStart = FindStartTime(oData[i].m_aFloatData, flSecondsToShow);
+			iStart = FindStartTime(oData[i].m_aFloatData, flTimeNow, flSecondsToShow);
 		}
 		else
 			continue;
+
+		// Allow the data to go flush up to the left screen edge.
+		if (iStart > 0)
+			iStart--;
 
 		if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
 		{
@@ -112,6 +147,9 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 			for (size_t j = iStart; j < aFloatData.size(); j++)
 			{
+				if (aFloatData[j].time > flTimeNow)
+					break;
+
 				if (aFloatData[j].data < oMeta[i].m_vecMaxValue.x)
 					oMeta[i].m_vecMaxValue.x = aFloatData[j].data;
 
@@ -193,5 +231,51 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 	BaseClass::Paint(x, y, w, h);
 }
 
+bool CPanel_Time::MousePressed(int code, int mx, int my)
+{
+	m_bDragging = true;
+	m_flLastDragVelocity = 0;
+
+	if (!m_bOverrideTime)
+	{
+		m_bOverrideTime = true;
+		m_flOverrideTime = MonitorWindow()->GetViewback()->PredictCurrentTime();
+	}
+
+	return BaseClass::MousePressed(code, mx, my);
+}
+
+bool CPanel_Time::MouseReleased(int code, int mx, int my)
+{
+	if (m_bDragging && m_bOverrideTime && m_flLastDragVelocity < -2000)
+	{
+		m_bOverrideTime = false;
+		m_flFastForwardStartTime = RootPanel()->GetTime();
+		m_flFastForwardFromTime = m_flOverrideTime;
+	}
+
+	m_bDragging = false;
+
+	return BaseClass::MouseReleased(code, mx, my);
+}
+
+void CPanel_Time::CursorMoved(int mx, int my, int dx, int dy)
+{
+	BaseClass::CursorMoved(mx, my, dx, dy);
+
+	if (m_bDragging && RootPanel()->GetFrameTime())
+	{
+		double flNewVelocity = dx / RootPanel()->GetFrameTime();
+		m_flLastDragVelocity = (m_flLastDragVelocity + flNewVelocity)/2; // Use a bit of smoothing.
+	}
+
+	if (m_bDragging && m_bOverrideTime)
+	{
+		m_flOverrideTime -= RemapVal((double)dx, 0.0, (double)GetWidth(), 0.0, m_flShowTime);
+
+		if (m_flOverrideTime > MonitorWindow()->GetViewback()->PredictCurrentTime())
+			m_bOverrideTime = false;
+	}
+}
 
 
