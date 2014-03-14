@@ -60,17 +60,8 @@ void CPanel_Time::RegistrationUpdate()
 	m_flFastForwardFromTime = 0;
 }
 
-void CPanel_Time::Paint(float x, float y, float w, float h)
+double CPanel_Time::GetCurrentViewTime()
 {
-	TPROF("CPanel_Time::Paint()");
-
-	if (!MonitorWindow()->GetViewback()->HasConnection())
-	{
-		BaseClass::Paint(x, y, w, h);
-		return;
-	}
-
-	double flSecondsToShow = m_flShowTime;
 	double flPredictedTime = MonitorWindow()->GetViewback()->PredictCurrentTime();
 	double flTimeNow = flPredictedTime;
 
@@ -88,6 +79,29 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			m_flFastForwardFromTime = 0;
 		}
 	}
+
+	return flTimeNow;
+}
+
+void CPanel_Time::Think()
+{
+	BaseClass::Think();
+
+	MonitorWindow()->GetViewback()->SetDataClearTime(GetCurrentViewTime() - m_flShowTime - 10);
+}
+
+void CPanel_Time::Paint(float x, float y, float w, float h)
+{
+	TPROF("CPanel_Time::Paint()");
+
+	if (!MonitorWindow()->GetViewback()->HasConnection())
+	{
+		BaseClass::Paint(x, y, w, h);
+		return;
+	}
+
+	double flSecondsToShow = m_flShowTime;
+	double flTimeNow = GetCurrentViewTime();
 
 	for (int i = (int)(flTimeNow - flSecondsToShow); i < flTimeNow; i++)
 	{

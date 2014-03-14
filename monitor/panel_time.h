@@ -12,6 +12,9 @@ public:
 public:
 	void RegistrationUpdate();
 
+	double GetCurrentViewTime();
+
+	void Think();
 	void Paint(float x, float y, float w, float h);
 
 	virtual bool MousePressed(int code, int mx, int my);
