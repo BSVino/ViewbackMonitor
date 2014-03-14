@@ -56,11 +56,11 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 	}
 
 	double flSecondsToShow = 5;
-	double flNewestData = MonitorWindow()->GetViewback()->FindNewestData();
+	double flTimeNow = MonitorWindow()->GetViewback()->PredictCurrentTime();
 
-	for (int i = (int)(flNewestData - flSecondsToShow); i < flNewestData; i++)
+	for (int i = (int)(flTimeNow - flSecondsToShow); i < flTimeNow; i++)
 	{
-		float flX = (float)RemapVal((double)i, flNewestData - flSecondsToShow, flNewestData, (double)x, (double)x + w);
+		float flX = (float)RemapVal((double)i, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 
 		if (flX < x - 20)
 			continue;
@@ -138,11 +138,11 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			Vector v;
 			for (size_t j = iStart; j < aFloatData.size() - 1; j++)
 			{
-				v.x = (float)RemapVal(aFloatData[j].time, flNewestData - flSecondsToShow, flNewestData, (double)x, (double)x + w);
+				v.x = (float)RemapVal(aFloatData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 				v.y = RemapVal(aFloatData[j].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
 				c.Vertex(v);
 
-				v.x = (float)RemapVal(aFloatData[j+1].time, flNewestData - flSecondsToShow, flNewestData, (double)x, (double)x + w);
+				v.x = (float)RemapVal(aFloatData[j + 1].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 				v.y = RemapVal(aFloatData[j + 1].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
 				c.Vertex(v);
 			}
@@ -170,8 +170,8 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 			for (size_t j = iStart + 1; j < aIntData.size(); j++)
 			{
-				float flXStart = (float)RemapVal(flValueTimeStart, flNewestData - flSecondsToShow, flNewestData, (double)x, (double)x + w);
-				float flXEnd = (float)RemapVal(aIntData[j].time, flNewestData - flSecondsToShow, flNewestData, (double)x, (double)x + w) - 2;
+				float flXStart = (float)RemapVal(flValueTimeStart, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
+				float flXEnd = (float)RemapVal(aIntData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w) - 2;
 
 				if (flXStart < x)
 					flXStart = x;
