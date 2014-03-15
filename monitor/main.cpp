@@ -9,6 +9,7 @@
 #include <tinker_platform.h>
 
 #include "monitor_window.h"
+#include "SDL.h"
 
 int CreateApplication(int argc, char** argv)
 {
@@ -27,7 +28,7 @@ int CreateApplication(int argc, char** argv)
 	int iScreenWidth;
 	int iScreenHeight;
 
-	GetScreenSize(iScreenWidth, iScreenHeight);
+	CApplication::GetScreenSize(iScreenWidth, iScreenHeight);
 
 	oWindow.OpenWindow(iScreenWidth*2/3, iScreenHeight*2/3, false, true);
 

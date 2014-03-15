@@ -75,27 +75,6 @@ void GetMACAddresses(unsigned char*& paiAddresses, size_t& iAddresses)
 	close(s);
 }
 
-void GetScreenSize(int& iWidth, int& iHeight)
-{
-	Display* pdsp = NULL;
-	Window wid = 0;
-	XWindowAttributes xwAttr;
-
-	pdsp = XOpenDisplay( NULL );
-	if ( !pdsp )
-		return;
-
-	wid = DefaultRootWindow( pdsp );
-	if ( 0 > wid )
-		return;
- 
-	Status ret = XGetWindowAttributes( pdsp, wid, &xwAttr );
-	iWidth = xwAttr.width;
-	iHeight = xwAttr.height;
-
-	XCloseDisplay( pdsp );
-}
-
 size_t GetNumberOfProcessors()
 {
 	return sysconf(_SC_NPROCESSORS_ONLN);

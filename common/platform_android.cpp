@@ -75,11 +75,6 @@ void GetMACAddresses(unsigned char*& paiAddresses, size_t& iAddresses)
 	close(s);
 }
 
-void GetScreenSize(int& iWidth, int& iHeight)
-{
-	TUnimplemented();
-}
-
 size_t GetNumberOfProcessors()
 {
 	return sysconf(_SC_NPROCESSORS_ONLN);

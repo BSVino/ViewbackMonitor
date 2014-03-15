@@ -53,6 +53,14 @@ CApplication::CApplication(int argc, char** argv)
 
 	m_pWindow = nullptr;
 
+	int iMode = SDL_INIT_VIDEO | SDL_INIT_TIMER;
+
+#ifdef _DEBUG
+	iMode |= SDL_INIT_NOPARACHUTE;
+#endif
+
+	SDL_Init(iMode);
+
 	srand((unsigned int)time(NULL));
 	mtsrand((size_t)time(NULL));
 
@@ -144,14 +152,6 @@ void CALLBACK GLDebugCallback(GLenum iSource, GLenum iType, GLuint id, GLenum iS
 
 void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, bool bResizeable)
 {
-	int iMode = SDL_INIT_VIDEO | SDL_INIT_TIMER;
-
-#ifdef _DEBUG
-	iMode |= SDL_INIT_NOPARACHUTE;
-#endif
-
-	SDL_Init(iMode);
-
 	m_bFullscreen = bFullscreen;
 
 	if (HasCommandLineSwitch("--fullscreen"))
@@ -967,4 +967,21 @@ void CApplication::PrintError(const tstring& sText)
 	tstring sTrimmedText = trim(sText);
 
 	GetConsole()->PrintConsole(tstring("[color=FF0000]ERROR: ") + sTrimmedText + "[/color]" + (sText.endswith("\n")?"\n":""));
+}
+
+void CApplication::GetScreenSize(int& w, int& h)
+{
+	TAssert(SDL_GetNumVideoDisplays() > 0);
+
+	if (SDL_GetNumVideoDisplays() == 0)
+	{
+		w = h = 0;
+		return;
+	}
+
+	SDL_DisplayMode current;
+	SDL_GetCurrentDisplayMode(0, &current);
+
+	w = current.w;
+	h = current.h;
 }

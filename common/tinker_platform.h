@@ -22,7 +22,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <tvector.h>
 
 void GetMACAddresses(unsigned char*& paiAddresses, size_t& iAddresses);
-void GetScreenSize(int& iWidth, int& iHeight);
 size_t GetNumberOfProcessors();
 void SleepMS(size_t iMS);
 void OpenBrowser(const tstring& sURL);

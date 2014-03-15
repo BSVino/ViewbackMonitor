@@ -108,6 +108,8 @@ public:
 	virtual void				PrintError(const tstring& sText);
 	class CConsole*				GetConsole();
 
+	static void                 GetScreenSize(int& w, int& h);
+
 	static CApplication*		Get() { return s_pApplication; };
 
 protected:
