@@ -125,7 +125,7 @@ inline tstring implode(const tstring& sGlue, tvector<tstring>& asStrings)
 	return sResult;
 }
 
-inline int isspace(int i)
+inline int tinker_isspace(int i)
 {
 	if (i == ' ')
 		return true;
@@ -144,13 +144,13 @@ inline int isspace(int i)
 
 inline tstring ltrim(tstring s)
 {
-	s.erase(s.begin(), STL_NAMESPACE::find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(isspace))));
+	s.erase(s.begin(), STL_NAMESPACE::find_if(s.begin(), s.end(), not1(ptr_fun<int, int>(tinker_isspace))));
 	return s;
 }
 
 inline tstring rtrim(tstring s)
 {
-	s.erase(STL_NAMESPACE::find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(isspace))).base(), s.end());
+	s.erase(STL_NAMESPACE::find_if(s.rbegin(), s.rend(), not1(ptr_fun<int, int>(tinker_isspace))).base(), s.end());
 	return s;
 }
 

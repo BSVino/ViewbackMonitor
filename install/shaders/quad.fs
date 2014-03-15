@@ -9,5 +9,5 @@ void main()
 {
 	vec4 vecDiffuse = vecColor * texture(iDiffuse, vecFragmentTexCoord0);
 
-	vecOutputColor = vecDiffuse;
+	gl_FragColor = vecDiffuse;
 }

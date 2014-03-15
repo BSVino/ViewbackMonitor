@@ -15,5 +15,5 @@ void main(void)
 	vecColorSum += aflCoefficients[1] * ttexture(iSource, vecTC);
 	vecColorSum += aflCoefficients[2] * ttexture(iSource, vecTC + vecOffset);
 
-	vecOutputColor = vecColorSum;
+	gl_FragColor = vecColorSum;
 }

@@ -140,8 +140,8 @@ public:
 	void			SetCustomProjection(bool bCustomProjection) { m_bCustomProjection = bCustomProjection; }
 	void			SetCustomProjection(const Matrix4x4& mCustomProjection) { m_mCustomProjection = mCustomProjection; }
 
-	const double*   GetModelView() const;
-	const double*   GetProjection() const;
+	const Matrix4x4& GetModelView() const;
+	const Matrix4x4& GetProjection() const;
 	const int*      GetViewport() const;
 
 	Vector			GetCameraPosition() { return m_vecCameraPosition; };
@@ -222,8 +222,8 @@ protected:
 	float			m_flFrustumNear;
 	float			m_flFrustumFar;
 
-	double			m_aflModelView[16];
-	double			m_aflProjection[16];
+	Matrix4x4       m_aflModelView;
+	Matrix4x4       m_aflProjection;
 	int				m_aiViewport[4];
 
 	Frustum			m_oFrustum;

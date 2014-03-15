@@ -572,7 +572,7 @@ bool CTreeNode::IsVisible()
 		if (!pNode->IsExpanded())
 			return false;
 	}
-	while (pNode = pNode->m_hParent);
+	while (!!(pNode = pNode->m_hParent));
 
 	return true;
 }

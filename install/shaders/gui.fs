@@ -65,7 +65,7 @@ void main()
 		}
 	}
 
-	vecOutputColor = vecDiffuse;
+	gl_FragColor = vecDiffuse;
 
 	if (vecColor.a > 0 && bHighlight)
 	{
@@ -79,11 +79,11 @@ void main()
 			float flGlow = RemapVal(LengthSqr(vecFragmentPosition.xy - vec2(m, y)), 0.0, 300.0*300.0, 0.08, 0.0);
 			if (flGlow > 0)
 				flAdd += flGlow;
-			vecOutputColor.r += flAdd;
-			vecOutputColor.g += flAdd;
-			vecOutputColor.b += flAdd;
+			gl_FragColor.r += flAdd;
+			gl_FragColor.g += flAdd;
+			gl_FragColor.b += flAdd;
 		}
 	}
 
-	//vecOutputColor += vec4(0.3, 0.3, 0.3, 0.3);
+	//gl_FragColor += vec4(0.3, 0.3, 0.3, 0.3);
 }

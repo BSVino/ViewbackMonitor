@@ -653,7 +653,7 @@ void CLabel::ComputeLines(float w, float h)
 				int iBlue = std::strtol(sBlue.c_str(), &pszNext, 16);
 
 				// Fast forward past the number
-				while (sLine[iChar] >= '0' && sLine[iChar] <= '9' || std::toupper(sLine[iChar]) >= 'A' && std::toupper(sLine[iChar]) <= 'F')
+				while ((sLine[iChar] >= '0' && sLine[iChar] <= '9') || (std::toupper(sLine[iChar]) >= 'A' && std::toupper(sLine[iChar]) <= 'F'))
 					iChar++;
 
 				while (sLine[iChar] != ']')
@@ -897,7 +897,9 @@ void CLabel::SetSectionHoverListener(IEventListener* pListener, IEventListener::
 	{
 		tstring sFont;
 
-#ifdef _WIN32
+#if defined(__ANDROID__)
+		sFont = "/system/fonts/DroidSans.ttf";
+#elif defined(_WIN32)
 		sFont = sprintf(tstring("%s\\Fonts\\Arial.ttf"), getenv("windir"));
 #else
 		sFont = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";

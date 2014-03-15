@@ -20,8 +20,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <memory>
 #include <time.h>
 
-#include <GL3/gl3w.h>
-
 #include <common.h>
 #include <tinker_platform.h>
 #include <worklistener.h>
@@ -30,6 +28,8 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <tinker/cvar.h>
 #include <datamanager/data.h>
 #include <datamanager/dataserializer.h>
+
+#include "tinker_gl.h"
 
 CShaderLibrary* CShaderLibrary::s_pShaderLibrary = NULL;
 static CShaderLibrary g_ShaderLibrary = CShaderLibrary();
@@ -328,7 +328,6 @@ bool CShader::Compile()
 		return false;
 
 	tstring sFragmentShader = sShaderHeader;
-	sFragmentShader += "out vec4 vecOutputColor;\n";
 
 	while (fgetts(sLine, f))
 		sFragmentShader += sLine;
@@ -406,8 +405,6 @@ bool CShader::Compile()
 	for (size_t i = 0; i < MAX_TEXTURE_CHANNELS; i++)
 		m_aiTexCoordAttributes[i] = glGetAttribLocation(m_iProgram, sprintf("vecTexCoord%d", i).c_str());
 	m_iColorAttribute = glGetAttribLocation(m_iProgram, "vecVertexColor");
-
-	glBindFragDataLocation(m_iProgram, 0, "vecOutputColor");
 
 	TAssert(m_iPositionAttribute != ~0);
 

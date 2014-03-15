@@ -22,6 +22,6 @@ void main(void)
 	else if (flValue < flBrightness - 0.2)
 		vecFragmentColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-	vecOutputColor = vecFragmentColor*flScale;
-	vecOutputColor.a = 1.0;
+	gl_FragColor = vecFragmentColor*flScale;
+	gl_FragColor.a = 1.0;
 }

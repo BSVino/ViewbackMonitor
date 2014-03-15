@@ -4,8 +4,11 @@
 #include <pthread.h>
 #endif
 
+#include <SDL_main.h>
+
 #include <tinker_platform.h>
-#include <monitor_window.h>
+
+#include "monitor_window.h"
 
 int CreateApplication(int argc, char** argv)
 {
@@ -37,6 +40,7 @@ int CreateApplication(int argc, char** argv)
 	return 0;
 }
 
+extern "C"
 int main(int argc, char** argv)
 {
 #ifdef _WIN32

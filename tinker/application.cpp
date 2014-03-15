@@ -20,7 +20,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <time.h>
 #include <iostream>
 #include <fstream>
-#include <GL3/gl3w.h>
 #include <SDL.h>
 
 #include <strutils.h>
@@ -32,10 +31,18 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <tinker/cvar.h>
 #include <glgui/rootpanel.h>
 #include <tinker/renderer/renderer.h>
-#include <tools/manipulator/manipulator.h>
 #include <profiler.h>
 
+#ifndef TINKER_NO_TOOLS
+#include <tools/manipulator/manipulator.h>
+#endif
+
+#include "renderer/tinker_gl.h"
 #include "console.h"
+
+#if !defined(__ANDROID__)
+#define NO_GL_DEBUG
+#endif
 
 CApplication* CApplication::s_pApplication = NULL;
 
@@ -68,6 +75,8 @@ CApplication::CApplication(int argc, char** argv)
 			CCommand::Run(&m_apszCommandLine[i][1]);
 	}
 }
+
+#if defined(NO_GL_DEBUG)
 
 #ifdef _DEBUG
 #define GL_DEBUG_VALUE "1"
@@ -131,6 +140,7 @@ void CALLBACK GLDebugCallback(GLenum iSource, GLenum iType, GLuint id, GLenum iS
 		TMsg(convertstring<GLchar, tchar>(sMessage).c_str());
 	}
 }
+#endif
 
 void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, bool bResizeable)
 {
@@ -190,6 +200,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
+#if defined(NO_GL_DEBUG)
 	if (HasCommandLineSwitch("--debug-gl"))
 	{
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
@@ -197,14 +208,17 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 		if (!glDebugMessageCallbackARB)
 			TMsg("Your drivers do not support GL_ARB_debug_output, so no GL debug output will be shown.\n");
 	}
+#endif
 
 	SDL_GLContext glcontext = SDL_GL_CreateContext(m_pWindow);
 
 	SDL_GL_SetSwapInterval(1);
 
+#if defined(__gl3w_h_)
 	GLenum err = gl3wInit();
 	if (0 != err)
 		exit(0);
+#endif
 
 	InitJoystickInput();
 
@@ -212,6 +226,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 
 	DumpGLInfo();
 
+#if defined(NO_GL_DEBUG)
 	if (glDebugMessageCallbackARB)
 	{
 		glDebugMessageCallbackARB(GLDebugCallback, nullptr);
@@ -219,6 +234,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 		tstring sMessage("OpenGL Debug Output Activated");
 		glDebugMessageInsertARB(GL_DEBUG_SOURCE_APPLICATION_ARB, GL_DEBUG_TYPE_OTHER_ARB, 0, GL_DEBUG_SEVERITY_LOW_ARB, sMessage.length(), sMessage.c_str());
 	}
+#endif
 
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
@@ -243,7 +259,9 @@ CApplication::~CApplication()
 
 void CApplication::DumpGLInfo()
 {
+#if defined(__gl3w_h_)
 	gl3wInit();
+#endif
 
 	std::ifstream i(GetAppDataDirectory(AppDirectory(), "glinfo.txt").c_str());
 	if (i)
@@ -291,36 +309,39 @@ void CApplication::DumpGLInfo()
 		MAKE_PARAMETER(GL_MAX_TEXTURE_IMAGE_UNITS),
 		MAKE_PARAMETER(GL_MAX_VERTEX_UNIFORM_COMPONENTS),
 		MAKE_PARAMETER(GL_MAX_FRAGMENT_UNIFORM_COMPONENTS),
-		MAKE_PARAMETER(GL_MAX_VARYING_FLOATS),
 		MAKE_PARAMETER(GL_MAX_VERTEX_TEXTURE_IMAGE_UNITS),
 		MAKE_PARAMETER(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS),
-		MAKE_PARAMETER(GL_MAX_CLIP_DISTANCES),
 		MAKE_PARAMETER(GL_MAX_ARRAY_TEXTURE_LAYERS),
 		MAKE_PARAMETER(GL_MAX_VARYING_COMPONENTS),
+		MAKE_PARAMETER(GL_MAX_VERTEX_OUTPUT_COMPONENTS),
+		MAKE_PARAMETER(GL_MAX_RENDERBUFFER_SIZE),
+		MAKE_PARAMETER(GL_MAX_COLOR_ATTACHMENTS),
+		MAKE_PARAMETER(GL_MAX_SAMPLES),
+		MAKE_PARAMETER(GL_MAX_VERTEX_UNIFORM_BLOCKS),
+		MAKE_PARAMETER(GL_MAX_FRAGMENT_UNIFORM_BLOCKS),
+		MAKE_PARAMETER(GL_MAX_COMBINED_UNIFORM_BLOCKS),
+		MAKE_PARAMETER(GL_MAX_UNIFORM_BUFFER_BINDINGS),
+		MAKE_PARAMETER(GL_MAX_UNIFORM_BLOCK_SIZE),
+		MAKE_PARAMETER(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS),
+		MAKE_PARAMETER(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS),
+
+#ifndef __ANDROID__
+		MAKE_PARAMETER(GL_MAX_VARYING_FLOATS),
+		MAKE_PARAMETER(GL_MAX_CLIP_DISTANCES),
 		MAKE_PARAMETER(GL_MAX_TEXTURE_BUFFER_SIZE),
 		MAKE_PARAMETER(GL_MAX_RECTANGLE_TEXTURE_SIZE),
 		MAKE_PARAMETER(GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS),
 		MAKE_PARAMETER(GL_MAX_GEOMETRY_UNIFORM_COMPONENTS),
 		MAKE_PARAMETER(GL_MAX_GEOMETRY_OUTPUT_VERTICES),
 		MAKE_PARAMETER(GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS),
-		MAKE_PARAMETER(GL_MAX_VERTEX_OUTPUT_COMPONENTS),
 		MAKE_PARAMETER(GL_MAX_GEOMETRY_INPUT_COMPONENTS),
 		MAKE_PARAMETER(GL_MAX_GEOMETRY_OUTPUT_COMPONENTS),
-		MAKE_PARAMETER(GL_MAX_RENDERBUFFER_SIZE),
-		MAKE_PARAMETER(GL_MAX_COLOR_ATTACHMENTS),
-		MAKE_PARAMETER(GL_MAX_SAMPLES),
-		MAKE_PARAMETER(GL_MAX_VERTEX_UNIFORM_BLOCKS),
 		MAKE_PARAMETER(GL_MAX_GEOMETRY_UNIFORM_BLOCKS),
-		MAKE_PARAMETER(GL_MAX_FRAGMENT_UNIFORM_BLOCKS),
-		MAKE_PARAMETER(GL_MAX_COMBINED_UNIFORM_BLOCKS),
-		MAKE_PARAMETER(GL_MAX_UNIFORM_BUFFER_BINDINGS),
-		MAKE_PARAMETER(GL_MAX_UNIFORM_BLOCK_SIZE),
-		MAKE_PARAMETER(GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS),
 		MAKE_PARAMETER(GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS),
-		MAKE_PARAMETER(GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS),
 		MAKE_PARAMETER(GL_MAX_COLOR_TEXTURE_SAMPLES),
 		MAKE_PARAMETER(GL_MAX_DEPTH_TEXTURE_SAMPLES),
 		MAKE_PARAMETER(GL_MAX_INTEGER_SAMPLES),
+#endif
 	};
 
 	// Clear it
@@ -476,7 +497,9 @@ void CApplication::MouseMotion(int x, int y)
 {
 	glgui::CRootPanel::Get()->CursorMoved(x, y);
 
+#ifndef TINKER_NO_TOOLS
 	CManipulatorTool::MouseMoved(x, y);
+#endif
 }
 
 bool CApplication::MouseInput(int iButton, tinker_mouse_state_t iState)
@@ -516,8 +539,10 @@ bool CApplication::MouseInput(int iButton, tinker_mouse_state_t iState)
 		}
 	}
 
+#ifndef TINKER_NO_TOOLS
 	if (CManipulatorTool::MouseInput(iButton, iState, mx, my))
 		return true;
+#endif
 
 	return false;
 }
@@ -672,6 +697,9 @@ tinker_keys_t MapScancode(SDL_Scancode c)
 
 	case SDL_SCANCODE_KP_ENTER:
 		return TINKER_KEY_KP_ENTER;
+
+	default:
+		break;
 	}
 
 	if (c >= SDL_SCANCODE_A && c <= SDL_SCANCODE_Z)

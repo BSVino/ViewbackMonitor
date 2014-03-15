@@ -33,5 +33,5 @@ void main()
 		}*/
 	}
 
-	vecOutputColor = vecDiffuse;
+	gl_FragColor = vecDiffuse;
 }

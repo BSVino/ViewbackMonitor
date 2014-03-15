@@ -17,8 +17,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include "renderer.h"
 
-#include <GL3/gl3w.h>
-#include <GL/glu.h>
 #include <SDL_image.h>
 
 #include <maths.h>
@@ -32,6 +30,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <tinker/profiler.h>
 #include <textures/texturelibrary.h>
 
+#include "tinker_gl.h"
 #include "renderingcontext.h"
 
 static tvector<CFrameBuffer> g_aFrameBuffers;
@@ -104,7 +103,7 @@ CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 		exit(1);
 	}
 
-	m_bUseMultisampleTextures = !!glTexImage2DMultisample;
+	m_bUseMultisampleTextures = T_PLATFORM_SUPPORTS_MULTISAMPLE;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glGetIntegerv(GL_SAMPLES, &m_iScreenSamples);
@@ -215,7 +214,7 @@ CFrameBuffer CRenderer::CreateFrameBuffer(const tstring& sName, size_t iWidth, s
 			glTexParameteri(iTextureTarget, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 			glTexParameteri(iTextureTarget, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
 
-			if (eOptions&FB_TEXTURE_HALF_FLOAT)
+			if (T_PLATFORM_SUPPORTS_HALF_FLOAT && (eOptions&FB_TEXTURE_HALF_FLOAT))
 				glTexImage2D(iTextureTarget, 0, GL_RGBA16F, (GLsizei)iWidth, (GLsizei)iHeight, 0, GL_RGBA, GL_HALF_FLOAT, NULL);
 			else
 				glTexImage2D(iTextureTarget, 0, GL_RGBA, (GLsizei)iWidth, (GLsizei)iHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -386,11 +385,8 @@ void CRenderer::StartRendering(class CRenderingContext* pContext)
 
 	pContext->SetView(Matrix4x4::ConstructCameraView(m_vecCameraPosition, m_vecCameraDirection, m_vecCameraUp));
 
-	for (size_t i = 0; i < 16; i++)
-	{
-		m_aflModelView[i] = ((float*)pContext->GetView())[i];
-		m_aflProjection[i] = ((float*)pContext->GetProjection())[i];
-	}
+	m_aflModelView = pContext->GetView();
+	m_aflProjection = pContext->GetProjection();
 
 	if (m_bFrustumOverride)
 	{
@@ -573,10 +569,12 @@ void CRenderer::RenderRBFullscreen(CFrameBuffer* pSource)
 {
 	TAssert(false);		// ATI cards don't like this at all. Never do it.
 
+#if 0
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, (GLuint)pSource->m_iFB);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	glBlitFramebuffer(0, 0, pSource->m_iWidth, pSource->m_iHeight, 0, 0, (GLsizei)m_iWidth, (GLsizei)m_iHeight, GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+#endif
 }
 
 void CRenderer::RenderBufferToBuffer(CFrameBuffer* pSource, CFrameBuffer* pDestination)
@@ -641,14 +639,14 @@ void CRenderer::RenderMapToBuffer(size_t iMap, CFrameBuffer* pBuffer, bool bMapI
 	c.EndRenderVertexArray(6);
 }
 
-const double* CRenderer::GetModelView() const
+const Matrix4x4& CRenderer::GetModelView() const
 {
-	return &m_aflModelView[0];
+	return m_aflModelView;
 }
 
-const double* CRenderer::GetProjection() const
+const Matrix4x4& CRenderer::GetProjection() const
 {
-	return &m_aflProjection[0];
+	return m_aflProjection;
 }
 
 const int* CRenderer::GetViewport() const
@@ -731,28 +729,64 @@ void CRenderer::SetSize(int w, int h)
 
 Vector CRenderer::ScreenPosition(Vector vecWorld)
 {
-	GLdouble x, y, z;
-	gluProject(
-		vecWorld.x, vecWorld.y, vecWorld.z,
-		(GLdouble*)m_aflModelView, (GLdouble*)m_aflProjection, (GLint*)m_aiViewport,
-		&x, &y, &z);
-	return Vector((float)x, (float)m_iHeight - (float)y, (float)z);
+	TUnimplemented(); // Untested.
+
+	Vector4D v;
+
+	v.x = vecWorld.x;
+	v.y = vecWorld.y;
+	v.z = vecWorld.z;
+	v.w = 1.0;
+
+	v = m_aflProjection * m_aflModelView * v;
+
+	if (v.w == 0.0)
+		return Vector(0, 0, 0);
+
+	v.x /= v.w;
+	v.y /= v.w;
+	v.z /= v.w;
+
+	/* Map x, y and z to range 0-1 */
+	v.x = v.x * 0.5 + 0.5;
+	v.y = v.y * 0.5 + 0.5;
+	v.z = v.z * 0.5 + 0.5;
+
+	/* Map x,y to viewport */
+	v.x = v.x * m_aiViewport[2] + m_aiViewport[0];
+	v.y = v.y * m_aiViewport[3] + m_aiViewport[1];
+
+	return Vector(v.x, m_iHeight - v.y, v.z);
 }
 
 Vector CRenderer::WorldPosition(Vector vecScreen)
 {
-	GLdouble x, y, z;
-	gluUnProject(
-		vecScreen.x, (float)m_iHeight - vecScreen.y, vecScreen.z,
-		(GLdouble*)m_aflModelView, (GLdouble*)m_aflProjection, (GLint*)m_aiViewport,
-		&x, &y, &z);
-	return Vector((float)x, (float)y, (float)z);
+	Matrix4x4 mFinal = m_aflModelView * m_aflProjection;
+
+	Vector4D v(vecScreen.x, m_iHeight - vecScreen.y, vecScreen.z, 1.0);
+
+	v.x = (v.x - m_aiViewport[0]) / m_aiViewport[2];
+	v.y = (v.y - m_aiViewport[1]) / m_aiViewport[3];
+
+	/* Map to range -1 to 1 */
+	v.x = v.x * 2 - 1;
+	v.y = v.y * 2 - 1;
+	v.z = v.z * 2 - 1;
+
+	v = mFinal * v;
+
+	if (v.w == 0.0)
+		return Vector();
+
+	return Vector(v.x, v.y, v.z) / v.w;
 }
 
 bool CRenderer::HardwareSupported()
 {
+#ifdef __gl3w_h_
 	if (!gl3wIsSupported(3, 0))
 		return false;
+#endif
 
 	// Compile a test framebuffer. If it fails we don't support framebuffers.
 
@@ -979,7 +1013,7 @@ size_t CRenderer::LoadTextureIntoGL(Color* pclrData, int x, int y, int iClamp, b
 	glBindTexture(GL_TEXTURE_2D, iGLId);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, bNearestFiltering?GL_NEAREST:GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bNearestFiltering?GL_NEAREST:GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, bNearestFiltering?GL_NEAREST:GL_LINEAR_MIPMAP_LINEAR);
 
 	if (iClamp == 1)
 	{
@@ -1146,11 +1180,15 @@ void CRenderer::ReadTextureFromGL(CTextureHandle hTexture, Vector* pvecData)
 	if (!hTexture.IsValid())
 		return;
 
+#ifdef __ANDROID__
+	TUnimplemented();
+#else
 	glBindTexture(GL_TEXTURE_2D, hTexture->m_iGLID);
 
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGB, GL_FLOAT, pvecData);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+#endif
 }
 
 void CRenderer::ReadTextureFromGL(CTextureHandle hTexture, Color* pclrData)
@@ -1159,15 +1197,22 @@ void CRenderer::ReadTextureFromGL(CTextureHandle hTexture, Color* pclrData)
 	if (!hTexture.IsValid())
 		return;
 
+#ifdef __ANDROID__
+	TUnimplemented();
+#else
 	glBindTexture(GL_TEXTURE_2D, hTexture->m_iGLID);
 
 	glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, pclrData);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+#endif
 }
 
 void CRenderer::WriteTextureToFile(size_t iTexture, tstring sFilename)
 {
+#ifdef __ANDROID__
+	TUnimplemented();
+#else
 	glBindTexture(GL_TEXTURE_2D, iTexture);
 
 	int iWidth, iHeight;
@@ -1185,6 +1230,7 @@ void CRenderer::WriteTextureToFile(size_t iTexture, tstring sFilename)
 		stbi_write_tga(sFilename.c_str(), iWidth, iHeight, 4, aclrPixels.data());
 	else if (sFilename.endswith(".bmp"))
 		stbi_write_bmp(sFilename.c_str(), iWidth, iHeight, 4, aclrPixels.data());
+#endif
 }
 
 void CRenderer::WriteTextureToFile(Color* pclrData, int w, int h, tstring sFilename)
