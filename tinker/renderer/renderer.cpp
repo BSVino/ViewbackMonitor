@@ -748,9 +748,9 @@ Vector CRenderer::ScreenPosition(Vector vecWorld)
 	v.z /= v.w;
 
 	/* Map x, y and z to range 0-1 */
-	v.x = v.x * 0.5 + 0.5;
-	v.y = v.y * 0.5 + 0.5;
-	v.z = v.z * 0.5 + 0.5;
+	v.x = v.x * 0.5f + 0.5f;
+	v.y = v.y * 0.5f + 0.5f;
+	v.z = v.z * 0.5f + 0.5f;
 
 	/* Map x,y to viewport */
 	v.x = v.x * m_aiViewport[2] + m_aiViewport[0];

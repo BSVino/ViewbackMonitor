@@ -19,6 +19,8 @@ include_directories (
 	${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0/vsprojects/include
 )
 
+include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/SDL2-2.0.2/include)
+
 add_definitions(-DPTW32_STATIC_LIB)
 
 set (MONITOR_SOURCES
