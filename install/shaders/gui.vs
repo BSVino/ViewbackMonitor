@@ -5,7 +5,6 @@ uniform vec4 vecDimensions;
 uniform bool bTexCoords;
 uniform vec4 vecTexCoords;
 
-in int iVertex;
 in vec3 vecPosition;
 in vec2 vecTexCoord0;
 
@@ -15,35 +14,12 @@ out vec2 vecFragmentTexCoord0;
 
 vec4 vertex_program()
 {
-	vec3 vecGLPosition = vecPosition;
-
 	float x = vecDimensions.x;
 	float y = vecDimensions.y;
 	float w = vecDimensions.z;
 	float h = vecDimensions.w;
 
-	if (iVertex == 0)
-	{
-		vecFragmentNormal = vec3(-0.707, 0.707, 0);
-		vecGLPosition = vec3(x, y, 0);
-	}
-	else if (iVertex == 1)
-	{
-		vecFragmentNormal = vec3(-0.707, -0.707, 0);
-		vecGLPosition = vec3(x, y+h, 0);
-	}
-	else if (iVertex == 2)
-	{
-		vecFragmentNormal = vec3(0.707, -0.707, 0);
-		vecGLPosition = vec3(x+w, y+h, 0);
-	}
-	else if (iVertex == 3)
-	{
-		vecFragmentNormal = vec3(0.707, 0.707, 0);
-		vecGLPosition = vec3(x+w, y, 0);
-	}
-
-	vecFragmentPosition = vecGLPosition;
+	vecFragmentPosition = vec3(x + vecPosition.x * w, y + vecPosition.y * h, 0);
 
 	if (bTexCoords)
 	{
@@ -52,17 +28,10 @@ vec4 vertex_program()
 		float tw = vecTexCoords.z;
 		float th = vecTexCoords.w;
 
-		if (iVertex == 0)
-			vecFragmentTexCoord0 = vec2(tx, ty);
-		else if (iVertex == 1)
-			vecFragmentTexCoord0 = vec2(tx, ty+th);
-		else if (iVertex == 2)
-			vecFragmentTexCoord0 = vec2(tx+tw, ty+th);
-		else if (iVertex == 3)
-			vecFragmentTexCoord0 = vec2(tx+tw, ty);
+		vecFragmentTexCoord0 = vec2(tx + vecTexCoords.x * tw, ty + vecTexCoords.y * th);
 	}
 	else
 		vecFragmentTexCoord0 = vecTexCoord0;
 
-	return mProjection * mGlobal * vec4(vecGLPosition, 1.0);
+	return mProjection * mGlobal * vec4(vecFragmentPosition, 1.0);
 }

@@ -495,9 +495,8 @@ void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c,
 	r.SetUniform("vecDimensions", Vector4D(x, y, w, h));
 
 	r.BeginRenderVertexArray(s_iQuad);
-	r.SetPositionBuffer((size_t)0u, 24);
-	r.SetTexCoordBuffer(12, 24);
-	r.SetCustomIntBuffer("iVertex", 1, 20, 24);
+	r.SetPositionBuffer((size_t)0u, 20);
+	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
 }
 
@@ -522,9 +521,8 @@ void CBaseControl::PaintTexture(const CMaterialHandle& hMaterial, float x, float
 	r.SetUniform("vecDimensions", Vector4D(x, y, w, h));
 
 	r.BeginRenderVertexArray(s_iQuad);
-	r.SetPositionBuffer((size_t)0u, 24);
-	r.SetTexCoordBuffer(12, 24);
-	r.SetCustomIntBuffer("iVertex", 1, 20, 24);
+	r.SetPositionBuffer((size_t)0u, 20);
+	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
 
 	r.SetBackCulling(true);
@@ -553,9 +551,8 @@ void CBaseControl::PaintSheet(const CMaterialHandle& hMaterial, float x, float y
 	r.SetUniform("vecTexCoords", Vector4D((float)sx/(float)tw, (float)sy/(float)th, (float)sw/(float)tw, (float)sh/(float)th));
 
 	r.BeginRenderVertexArray(s_iQuad);
-	r.SetPositionBuffer((size_t)0u, 24);
-	r.SetTexCoordBuffer(12, 24);
-	r.SetCustomIntBuffer("iVertex", 1, 20, 24);
+	r.SetPositionBuffer((size_t)0u, 20);
+	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
 
 	r.SetBackCulling(true);
@@ -569,15 +566,14 @@ void CBaseControl::MakeQuad()
 	struct {
 		Vector vecPosition;
 		Vector2D vecTexCoord;
-		int iIndex;
 	} avecData[] =
 	{
-		{ Vector(0, 0, 0),		Vector2D(0, 0),		0 },
-		{ Vector(0, 1, 0),		Vector2D(0, 1),		1 },
-		{ Vector(1, 1, 0),		Vector2D(1, 1),		2 },
-		{ Vector(0, 0, 0),		Vector2D(0, 0),		0 },
-		{ Vector(1, 1, 0),		Vector2D(1, 1),		2 },
-		{ Vector(1, 0, 0),		Vector2D(1, 0),		3 },
+		{ Vector(0, 0, 0), Vector2D(0, 0) },
+		{ Vector(0, 1, 0), Vector2D(0, 1) },
+		{ Vector(1, 1, 0), Vector2D(1, 1) },
+		{ Vector(0, 0, 0), Vector2D(0, 0) },
+		{ Vector(1, 1, 0), Vector2D(1, 1) },
+		{ Vector(1, 0, 0), Vector2D(1, 0) },
 	};
 
 	s_iQuad = CRenderer::LoadVertexDataIntoGL(sizeof(avecData), (float*)&avecData[0]);
