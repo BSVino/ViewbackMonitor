@@ -94,6 +94,9 @@ typedef enum
 	TINKER_KEY_JOYSTICK_18,
 	TINKER_KEY_JOYSTICK_19,
 	TINKER_KEY_JOYSTICK_20,
+
+	TINKER_KEY_APP_BACK,
+	TINKER_KEY_APP_MENU,
 } tinker_keys_t;
 
 typedef enum

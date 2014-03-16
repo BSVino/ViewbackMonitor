@@ -582,6 +582,12 @@ tinker_keys_t MapScancode(SDL_Scancode c)
 {
 	switch (c)
 	{
+	case SDL_SCANCODE_AC_BACK:
+		return TINKER_KEY_APP_BACK;
+
+	case SDL_SCANCODE_MENU:
+		return TINKER_KEY_APP_MENU;
+
 	case SDL_SCANCODE_ESCAPE:
 		return TINKER_KEY_ESCAPE;
 
@@ -840,6 +846,19 @@ void CApplication::CharEvent(int c)
 
 bool CApplication::KeyPress(int c)
 {
+#ifdef __ANDROID__
+	if (c == TINKER_KEY_APP_BACK)
+	{
+		if (GetConsole()->IsOpen())
+			ToggleConsole();
+		else
+			Close();
+	}
+
+	if (c == TINKER_KEY_APP_MENU)
+		ToggleConsole();
+#endif
+
 	if (glgui::CRootPanel::Get()->KeyPressed(c, IsCtrlDown()))
 		return true;
 
