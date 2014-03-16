@@ -17,7 +17,8 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include "rootpanel.h"
 
-#include <tinker/shell.h>
+#include <tinker/application.h>
+#include <renderer/renderer.h>
 #include <renderer/renderingcontext.h>
 
 #include "menu.h"
@@ -117,7 +118,7 @@ void CRootPanel::Paint(float x, float y, float w, float h)
 
 	Matrix4x4 mProjection = Matrix4x4::ProjectOrthographic(x, x+w, y+h, y, -1000, 1000);
 
-	::CRenderingContext c;
+	::CRenderingContext c(Application()->GetRenderer());
 	m_pRenderingContext = &c;
 
 	c.SetProjection(mProjection);

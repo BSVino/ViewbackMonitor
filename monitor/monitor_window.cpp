@@ -17,7 +17,10 @@ CMonitorWindow::CMonitorWindow(int argc, char** argv)
 
 CRenderer* CMonitorWindow::CreateRenderer()
 {
-	return new CRenderer(CApplication::Get()->GetWindowWidth(), CApplication::Get()->GetWindowHeight());
+	size_t x, y;
+	Application()->GetViewportSize(x, y);
+
+	return new CRenderer(x, y);
 }
 
 void RegistrationUpdate()

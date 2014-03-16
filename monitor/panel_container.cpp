@@ -1,6 +1,7 @@
 #include "panel_container.h"
 
-#include "application.h"
+#include <application.h>
+#include <renderer/renderer.h>
 
 #include "panel_console.h"
 #include "panel_2D.h"
@@ -40,8 +41,11 @@ void CPanelContainer::RegistrationUpdate()
 
 void CPanelContainer::Layout()
 {
-	float flWindowWidth = (float)Application()->GetWindowWidth();
-	float flWindowHeight = (float)Application()->GetWindowHeight();
+	if (!Application()->GetRenderer())
+		return;
+
+	float flWindowWidth = (float)Application()->GetRenderer()->GetViewportWidth();
+	float flWindowHeight = (float)Application()->GetRenderer()->GetViewportHeight();
 
 	SetSize(flWindowWidth, flWindowHeight);
 

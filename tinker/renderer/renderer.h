@@ -94,7 +94,9 @@ public:
 	virtual void	Initialize();
 	void			LoadShaders();
 
-	virtual void	WindowResize(int w, int h);
+	virtual void	ViewportResize(size_t w, size_t h);
+	size_t          GetViewportWidth() { return m_iViewportWidth; }
+	size_t          GetViewportHeight() { return m_iViewportHeight; }
 
 	CFrameBuffer	CreateFrameBuffer(const tstring& sName, size_t iWidth, size_t iHeight, fb_options_e eOptions);
 	void			DestroyFrameBuffer(CFrameBuffer* pBuffer);
@@ -201,8 +203,8 @@ public:
 	static void		AllowNPO2TextureLoads() { s_bNPO2TextureLoads = true; }
 
 protected:
-	size_t			m_iWidth;
-	size_t			m_iHeight;
+	size_t			m_iViewportWidth;
+	size_t			m_iViewportHeight;
 
 	Vector			m_vecCameraPosition;
 	Vector			m_vecCameraDirection;

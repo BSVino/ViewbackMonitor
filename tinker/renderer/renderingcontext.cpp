@@ -89,7 +89,10 @@ CRenderingContext::CRenderingContext(CRenderer* pRenderer, bool bInherit)
 		UseFrameBuffer(NULL);
 		UseProgram("");
 
-		SetViewport(Rect(0, 0, Application()->GetWindowWidth(), Application()->GetWindowHeight()));
+		if (m_pRenderer)
+			SetViewport(Rect(0, 0, m_pRenderer->GetViewportWidth(), m_pRenderer->GetViewportHeight()));
+		else
+			SetViewport(Rect(0, 0, Application()->GetWindowWidth(), Application()->GetWindowHeight()));
 		SetBlend(BLEND_NONE);
 		SetAlpha(1);
 		SetDepthMask(true);
@@ -138,7 +141,7 @@ CRenderingContext::~CRenderingContext()
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		if (m_pRenderer)
-			glViewport(0, 0, (GLsizei)m_pRenderer->m_iWidth, (GLsizei)m_pRenderer->m_iHeight);
+			glViewport(0, 0, (GLsizei)m_pRenderer->m_iViewportWidth, (GLsizei)m_pRenderer->m_iViewportHeight);
 		else
 			glViewport(0, 0, (GLsizei)Application()->GetWindowWidth(), (GLsizei)Application()->GetWindowHeight());
 
@@ -440,7 +443,7 @@ void CRenderingContext::UseFrameBuffer(const CFrameBuffer* pBuffer)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		if (m_pRenderer)
-			glViewport(0, 0, (GLsizei)m_pRenderer->m_iWidth, (GLsizei)m_pRenderer->m_iHeight);
+			glViewport(0, 0, (GLsizei)m_pRenderer->m_iViewportWidth, (GLsizei)m_pRenderer->m_iViewportHeight);
 		else
 			glViewport(0, 0, (GLsizei)Application()->GetWindowWidth(), (GLsizei)Application()->GetWindowHeight());
 	}

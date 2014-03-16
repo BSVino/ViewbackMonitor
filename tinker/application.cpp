@@ -170,7 +170,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 
 	GetScreenSize(iScreenWidth, iScreenHeight);
 
-	int iModes = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL;
+	int iModes = SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI;
 
 	if (m_bFullscreen)
 		iModes |= SDL_WINDOW_FULLSCREEN;
@@ -245,7 +245,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 	m_pRenderer = CreateRenderer();
 	m_pRenderer->Initialize();
 
-	glgui::RootPanel()->SetSize((float)m_iWindowWidth, (float)m_iWindowHeight);
+	glgui::RootPanel()->SetSize((float)m_pRenderer->GetViewportWidth(), (float)m_pRenderer->GetViewportHeight());
 }
 
 CApplication::~CApplication()
@@ -493,7 +493,7 @@ void CApplication::Render()
 	if (CShaderLibrary::IsCompiled())
 	{
 		glgui::RootPanel()->Think(GetTime());
-		glgui::RootPanel()->Paint(0, 0, (float)m_iWindowWidth, (float)m_iWindowHeight);
+		glgui::RootPanel()->Paint(0, 0, (float)GetRenderer()->GetViewportWidth(), (float)GetRenderer()->GetViewportHeight());
 	}
 }
 
@@ -508,9 +508,15 @@ void CApplication::WindowResize(int w, int h)
 	m_iWindowHeight = h;
 
 	if (m_pRenderer)
-		m_pRenderer->WindowResize(w, h);
+	{
+		size_t x, y;
+		GetViewportSize(x, y);
+		m_pRenderer->ViewportResize(x, y);
+		glgui::RootPanel()->SetSize((float)x, (float)y);
+	}
+	else
+		glgui::RootPanel()->SetSize((float)w, (float)h);
 
-	glgui::RootPanel()->SetSize((float)w, (float)h);
 	glgui::RootPanel()->Layout();
 
 	Render();
@@ -980,6 +986,14 @@ void CApplication::SetMouseCursorEnabled(bool bEnabled)
 bool CApplication::IsMouseCursorEnabled()
 {
 	return m_bMouseEnabled;
+}
+
+void CApplication::GetViewportSize(size_t& w, size_t& h)
+{
+	int x, y;
+	SDL_GL_GetDrawableSize(m_pWindow, &x, &y);
+	w = x;
+	h = y;
 }
 
 void CApplication::PrintConsole(const tstring& sText)

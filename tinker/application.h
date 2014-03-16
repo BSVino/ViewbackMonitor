@@ -94,6 +94,8 @@ public:
 	int							GetWindowWidth() { return (int)m_iWindowWidth; };
 	int							GetWindowHeight() { return (int)m_iWindowHeight; };
 
+	void                        GetViewportSize(size_t& w, size_t& h);
+
 	bool						IsFullscreen() { return m_bFullscreen; };
 
 	virtual void				OnClientDisconnect(int iClient) {};

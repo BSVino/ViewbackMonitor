@@ -94,7 +94,7 @@ void CFrameBuffer::RemoveFromBufferList(CFrameBuffer* pBuffer)
 
 CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 {
-	TMsg("Initializing renderer\n");
+	TMsg(sprintf("Initializing %dx%d renderer\n", iWidth, iHeight));
 
 	if (!HardwareSupported())
 	{
@@ -126,7 +126,7 @@ void CRenderer::Initialize()
 	LoadShaders();
 	CShaderLibrary::CompileShaders(m_iScreenSamples);
 
-	WindowResize(m_iWidth, m_iHeight);
+	ViewportResize(m_iViewportWidth, m_iViewportHeight);
 
 	if (!CShaderLibrary::IsCompiled())
 	{
@@ -157,7 +157,7 @@ void CRenderer::LoadShaders()
 	}
 }
 
-void CRenderer::WindowResize(int w, int h)
+void CRenderer::ViewportResize(size_t w, size_t h)
 {
 	m_oSceneBuffer.Destroy();
 	m_oSceneBuffer = CreateFrameBuffer("scene", w, h, (fb_options_e)(FB_TEXTURE|FB_DEPTH|FB_MULTISAMPLE));
@@ -280,6 +280,8 @@ CFrameBuffer CRenderer::CreateFrameBuffer(const tstring& sName, size_t iWidth, s
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, (GLuint)oBuffer.m_iDepthTexture, 0);
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+		TMsg(sprintf("Framebuffer '" + sName + "' (%dx%d) incomplete, options: %d status: %d\n", iWidth, iHeight, eOptions, status));
 	TAssert(status == GL_FRAMEBUFFER_COMPLETE);
 
 	GLint iFBSamples;
@@ -344,8 +346,7 @@ void CRenderer::RenderFrame()
 
 void CRenderer::PreRender()
 {
-	m_iWidth = Application()->GetWindowWidth();
-	m_iHeight = Application()->GetWindowHeight();
+	Application()->GetViewportSize(m_iViewportWidth, m_iViewportHeight);
 }
 
 void CRenderer::PostRender()
@@ -374,7 +375,7 @@ void CRenderer::StartRendering(class CRenderingContext* pContext)
 {
 	TPROF("CRenderer::StartRendering");
 
-	float flAspectRatio = (float)m_iWidth/(float)m_iHeight;
+	float flAspectRatio = (float)m_iViewportWidth/(float)m_iViewportHeight;
 
 	if (UseCustomProjection())
 		pContext->SetProjection(m_mCustomProjection);
@@ -401,7 +402,7 @@ void CRenderer::StartRendering(class CRenderingContext* pContext)
 	{
 		Matrix4x4 mProjection = Matrix4x4::ProjectPerspective(
 				m_flFrustumFOV,
-				(float)m_iWidth/(float)m_iHeight,
+				(float)m_iViewportWidth/(float)m_iViewportHeight,
 				m_flFrustumNear,
 				m_flFrustumFar
 			);
@@ -415,7 +416,7 @@ void CRenderer::StartRendering(class CRenderingContext* pContext)
 
 	// Momentarily return the viewport to the window size. This is because if the scene buffer is not the same as the window size,
 	// the viewport here will be the scene buffer size, but we need it to be the window size so we can do world/screen transformations.
-	glViewport(0, 0, (GLsizei)m_iWidth, (GLsizei)m_iHeight);
+	glViewport(0, 0, (GLsizei)m_iViewportWidth, (GLsizei)m_iViewportHeight);
 	glGetIntegerv( GL_VIEWPORT, m_aiViewport );
 	glViewport(0, 0, (GLsizei)m_oSceneBuffer.m_iWidth, (GLsizei)m_oSceneBuffer.m_iHeight);
 
@@ -718,8 +719,8 @@ CMaterialHandle CRenderer::GetInvalidMaterial() const
 
 void CRenderer::SetSize(int w, int h)
 {
-	m_iWidth = w;
-	m_iHeight = h;
+	m_iViewportWidth = w;
+	m_iViewportHeight = h;
 
 	m_vecFullscreenTexCoords[0] = Vector2D(0, 1);
 	m_vecFullscreenTexCoords[1] = Vector2D(1, 0);
@@ -765,14 +766,14 @@ Vector CRenderer::ScreenPosition(Vector vecWorld)
 	v.x = v.x * m_aiViewport[2] + m_aiViewport[0];
 	v.y = v.y * m_aiViewport[3] + m_aiViewport[1];
 
-	return Vector(v.x, m_iHeight - v.y, v.z);
+	return Vector(v.x, m_iViewportHeight - v.y, v.z);
 }
 
 Vector CRenderer::WorldPosition(Vector vecScreen)
 {
 	Matrix4x4 mFinal = m_aflModelView * m_aflProjection;
 
-	Vector4D v(vecScreen.x, m_iHeight - vecScreen.y, vecScreen.z, 1.0);
+	Vector4D v(vecScreen.x, m_iViewportHeight - vecScreen.y, vecScreen.z, 1.0);
 
 	v.x = (v.x - m_aiViewport[0]) / m_aiViewport[2];
 	v.y = (v.y - m_aiViewport[1]) / m_aiViewport[3];
