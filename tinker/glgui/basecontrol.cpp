@@ -547,6 +547,7 @@ void CBaseControl::PaintSheet(const CMaterialHandle& hMaterial, float x, float y
 	r.SetUniform("vecColor", c);
 	r.SetUniform("bDiffuse", true);
 	r.SetUniform("bTexCoords", true);
+	r.SetUniform("bScissor", false);
 
 	r.SetUniform("vecDimensions", Vector4D(x, y, w, h));
 	r.SetUniform("vecTexCoords", Vector4D((float)sx/(float)tw, (float)sy/(float)th, (float)sw/(float)tw, (float)sh/(float)th));
