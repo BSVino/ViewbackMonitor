@@ -13,6 +13,14 @@ LOCAL_C_INCLUDES += $(LOCAL_PATH)/../SDL2_image
 
 LOCAL_CFLAGS += -DTINKER_OPENGLES_3 -DTINKER_NO_TOOLS
 
+ifeq ($(NDK_DEBUG),1)
+    $(warning Building DEBUG MODE)
+    LOCAL_CFLAGS += -g -D_DEBUG
+else
+    $(warning Building RELEASE MODE)
+endif
+
+
 # Add your application source files here...
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 	common/mempool.cpp \

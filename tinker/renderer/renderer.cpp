@@ -248,7 +248,7 @@ CFrameBuffer CRenderer::CreateFrameBuffer(const tstring& sName, size_t iWidth, s
 		if (bUseMultisample)
 			glRenderbufferStorageMultisample( GL_RENDERBUFFER, iSamples, GL_DEPTH_COMPONENT, (GLsizei)iWidth, (GLsizei)iHeight );
 		else
-			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (GLsizei)iWidth, (GLsizei)iHeight );
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, (GLsizei)iWidth, (GLsizei)iHeight );
 		glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 	}
 	else if (eOptions&FB_DEPTH_TEXTURE)

@@ -24,6 +24,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <stdlib.h>
 
 #include "common.h"
+#include "maths.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265f
