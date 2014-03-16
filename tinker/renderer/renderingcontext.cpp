@@ -1187,7 +1187,7 @@ void CRenderingContext::SetCustomIntBuffer(const char* pszName, size_t iSize, si
 	TAssert(iOffset%4 == 0);	// Should be multiples of four because it's offsets in bytes and we're always working with floats or doubles
 	glEnableVertexAttribArray(iAttribute);
 
-#if defined(GL_ES_VERSION_2_0)
+#if defined(TINKER_OPENGLES_2)
 	TUnimplemented();
 	//glVertexAttribIPointer(iAttribute, iSize, GL_INT, iStride, BUFFER_OFFSET(iOffset));
 #else

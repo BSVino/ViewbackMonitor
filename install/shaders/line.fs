@@ -1,12 +1,10 @@
-uniform vec4 vecColor = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 vecColor;
 
 uniform float flAlpha;
 
 in vec4 vecFragmentColor;
 
-void main()
+vec4 fragment_program()
 {
-	vec4 vecDiffuse = vecColor * vecFragmentColor;
-
-	gl_FragColor = vecDiffuse;
+	return vecColor * vecFragmentColor;
 }

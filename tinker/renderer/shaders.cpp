@@ -78,7 +78,14 @@ void CShaderLibrary::InitializeNonStatic()
 	else
 		TMsg(tstring("Warning: Couldn't find shader functions file: ") + sFunctions + "\n");
 
-	tstring sHeader = "shaders/header.si";
+#if defined(TINKER_OPENGLES_3)
+	tstring sHeader = "shaders/header_gles3.si";
+#elif defined(TINKER_OPENGLES_2)
+	tstring sHeader = "shaders/header_gles2.si";
+#else
+	tstring sHeader = "shaders/header_gl3.si";
+#endif
+
 	f = tfopen_asset(sHeader, "r");
 
 	if (f)
@@ -91,6 +98,27 @@ void CShaderLibrary::InitializeNonStatic()
 	}
 	else
 		TMsg(tstring("Warning: Couldn't find shader header file: ") + sHeader + "\n");
+
+#if defined(TINKER_OPENGLES_3)
+	tstring sMain = "shaders/main_gles3.si";
+#elif defined(TINKER_OPENGLES_2)
+	tstring sMain = "shaders/main_gles2.si";
+#else
+	tstring sMain = "shaders/main_gl3.si";
+#endif
+
+	f = tfopen_asset(sMain, "r");
+
+	if (f)
+	{
+		tstring sLine;
+		while (fgetts(sLine, f))
+			m_sMain += sLine;
+
+		fclose(f);
+	}
+	else
+		TMsg(tstring("Warning: Couldn't find shader main file: ") + sMain + "\n");
 }
 
 void CShaderLibrary::AddShader(const tstring& sFile)
@@ -260,14 +288,18 @@ void CShaderLibrary::WriteLog(const tstring& sFile, const char* pszLog, const ch
 		m_bLogNeedsClearing = false;
 	}
 
-	char szText[100];
-	strncpy(szText, pszShaderText, 99);
-	szText[99] = '\0';
-
 	FILE* fp = tfopen(sLogFile, "a");
 	fprintf(fp, ("Shader compile output for file: " + sFile + " timestamp: %d\n").c_str(), (int)time(NULL));
 	fprintf(fp, "%s\n\n", pszLog);
-	fprintf(fp, "%s...\n\n", szText);
+	fprintf(fp, "Shader text follows:\n\n");
+
+	tvector<tstring> asTokens;
+	explode(pszShaderText, asTokens, "\n");
+	for (size_t i = 0; i < asTokens.size(); i++)
+		fprintf(fp, "%d: %s\n", i, asTokens[i].c_str());
+
+	fprintf(fp, "\n\n");
+
 	fclose(fp);
 }
 
@@ -320,6 +352,14 @@ bool CShader::Compile()
 
 	sShaderHeader += CShaderLibrary::GetShaderFunctions();
 
+	tstring sVertexHeader;
+	sVertexHeader += sShaderHeader;
+	sVertexHeader += "#define VERTEX_PROGRAM\n";
+
+	tstring sFragmentHeader;
+	sFragmentHeader += sShaderHeader;
+	sFragmentHeader += "#define FRAGMENT_PROGRAM\n";
+
 	tstring sVertexFile = tstring("shaders/") + m_sVertexFile + ".vs";
 	FILE* f = tfopen_asset(sVertexFile, "r");
 
@@ -330,7 +370,7 @@ bool CShader::Compile()
 		return false;
 	}
 
-	tstring sVertexShader = sShaderHeader;
+	tstring sVertexShader;
 	sVertexShader += "uniform mat4x4 mProjection;\n";
 	sVertexShader += "uniform mat4x4 mView;\n";
 	sVertexShader += "uniform mat4x4 mGlobal;\n";
@@ -351,16 +391,18 @@ bool CShader::Compile()
 		return false;
 	}
 
-	tstring sFragmentShader = sShaderHeader;
+	tstring sFragmentShader;
 
 	while (fgetts(sLine, f))
 		sFragmentShader += sLine;
 
 	fclose(f);
 
+	tstring sFullVertexShader = sVertexHeader + sVertexShader + CShaderLibrary::Get()->m_sMain;
+	const char* pszFullVertexShader = sFullVertexShader.c_str();
+
 	size_t iVShader = glCreateShader(GL_VERTEX_SHADER);
-	const char* pszStr = sVertexShader.c_str();
-	glShaderSource((GLuint)iVShader, 1, &pszStr, NULL);
+	glShaderSource((GLuint)iVShader, 1, &pszFullVertexShader, NULL);
 	glCompileShader((GLuint)iVShader);
 
 	int iVertexCompiled;
@@ -371,12 +413,14 @@ bool CShader::Compile()
 		int iLogLength = 0;
 		char szLog[1024];
 		glGetShaderInfoLog((GLuint)iVShader, 1024, &iLogLength, szLog);
-		CShaderLibrary::Get()->WriteLog(m_sVertexFile + ".vs", szLog, pszStr);
+		CShaderLibrary::Get()->WriteLog(m_sVertexFile + ".vs", szLog, pszFullVertexShader);
 	}
 
+	tstring sFullFragmentShader = sFragmentHeader + sFragmentShader + CShaderLibrary::Get()->m_sMain;
+	const char* pszFullFragmentShader = sFullFragmentShader.c_str();
+
 	size_t iFShader = glCreateShader(GL_FRAGMENT_SHADER);
-	pszStr = sFragmentShader.c_str();
-	glShaderSource((GLuint)iFShader, 1, &pszStr, NULL);
+	glShaderSource((GLuint)iFShader, 1, &pszFullFragmentShader, NULL);
 	glCompileShader((GLuint)iFShader);
 
 	int iFragmentCompiled;
@@ -387,7 +431,7 @@ bool CShader::Compile()
 		int iLogLength = 0;
 		char szLog[1024];
 		glGetShaderInfoLog((GLuint)iFShader, 1024, &iLogLength, szLog);
-		CShaderLibrary::Get()->WriteLog(m_sFragmentFile + ".fs", szLog, pszStr);
+		CShaderLibrary::Get()->WriteLog(m_sFragmentFile + ".fs", szLog, pszFullFragmentShader);
 	}
 
 	size_t iProgram = glCreateProgram();

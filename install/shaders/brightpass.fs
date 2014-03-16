@@ -1,12 +1,12 @@
-uniform tsampler2D iSource;
+uniform sampler2D iSource;
 uniform float flBrightness;
 uniform float flScale;
 
 in vec2 vecFragmentTexCoord0;
 
-void main(void)
+vec4 fragment_program()
 {
-	vec4 vecFragmentColor = ttexture(iSource, vecFragmentTexCoord0);
+	vec4 vecFragmentColor = texture(iSource, vecFragmentTexCoord0);
 
 	float flValue = vecFragmentColor.x;
 	if (vecFragmentColor.y > flValue)
@@ -22,6 +22,8 @@ void main(void)
 	else if (flValue < flBrightness - 0.2)
 		vecFragmentColor = vec4(0.0, 0.0, 0.0, 0.0);
 
-	gl_FragColor = vecFragmentColor*flScale;
-	gl_FragColor.a = 1.0;
+	vec4 vecFragColor = vecFragmentColor*flScale;
+	vecFragColor.a = 1.0;
+
+	return vecFragColor;
 }

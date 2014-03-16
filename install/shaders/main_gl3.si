@@ -1,0 +1,11 @@
+
+
+void main()
+{
+#if defined(VERTEX_PROGRAM)
+	gl_Position = vertex_program();
+#elif defined(FRAGMENT_PROGRAM)
+	gl_FragColor = fragment_program();
+#endif
+}
+

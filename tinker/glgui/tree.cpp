@@ -627,7 +627,7 @@ void CTreeNode::CExpandButton::Paint(float x, float y, float w, float h)
 	r.UseMaterial(m_hMaterial);
 
 	r.SetBlend(BLEND_ALPHA);
-	r.SetUniform("iBorder", 0);
+	r.SetUniform("flBorder", 0.0f);
 	r.SetUniform("bHighlight", false);
 	r.SetUniform("vecColor", Color(255, 255, 255));
 	r.SetUniform("bDiffuse", true);

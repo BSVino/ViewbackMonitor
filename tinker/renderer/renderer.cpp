@@ -103,6 +103,9 @@ CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 		exit(1);
 	}
 
+	int iResult = IMG_Init(IMG_INIT_PNG);
+	TAssert(iResult & IMG_INIT_PNG);
+
 	m_bUseMultisampleTextures = T_PLATFORM_SUPPORTS_MULTISAMPLE;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -1130,16 +1133,33 @@ Color* CRenderer::LoadTextureData(tstring sFilename, int& x, int& y)
 	if (!IsFile(sFilename))
 		return nullptr;
 
-	SDL_Surface* pSurface = IMG_Load(sFilename.c_str());
+	FILE* fp = tfopen_asset(sFilename, "rb");
+	if (!fp)
+		return nullptr;
 
-	x = pSurface->w;
-	y = pSurface->h;
+	fseek(fp, 0, SEEK_END);
+	int iSize = ftell(fp);
+	rewind(fp);
+
+	tstring sFile;
+	sFile.resize(iSize);
+	int iRead = fread((void*)sFile.data(), iSize, 1, fp);
+	TAssertNoMsg(iRead == 1);
+
+	SDL_RWops* pRWOps = SDL_RWFromMem((void*)sFile.data(), iSize);
+	if (!pRWOps)
+		return nullptr;
+
+	SDL_Surface* pSurface = IMG_LoadTyped_RW(pRWOps, 1, NULL);
 
 	if (!pSurface)
 	{
 		TError("Couldn't load '" + sFilename + "', reason: " + IMG_GetError() + "\n");
 		return nullptr;
 	}
+
+	x = pSurface->w;
+	y = pSurface->h;
 
 	if (!s_bNPO2TextureLoads)
 	{

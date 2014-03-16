@@ -1,0 +1,13 @@
+#if defined(FRAGMENT_PROGRAM)
+layout(location = 0) out highp vec4 vecOut;
+#endif
+
+void main()
+{
+#if defined(VERTEX_PROGRAM)
+	gl_Position = vertex_program();
+#elif defined(FRAGMENT_PROGRAM)
+	vecOut = fragment_program();
+#endif
+}
+

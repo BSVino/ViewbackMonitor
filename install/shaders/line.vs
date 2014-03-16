@@ -3,9 +3,9 @@ in vec4 vecVertexColor;
 
 out vec4 vecFragmentColor;
 
-void main()
+vec4 vertex_program()
 {
-	gl_Position = mProjection * mGlobal * vec4(vecPosition, 1);
-
 	vecFragmentColor = vecVertexColor;
+
+	return mProjection * mGlobal * vec4(vecPosition, 1);
 }

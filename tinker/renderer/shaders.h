@@ -140,6 +140,7 @@ protected:
 
 	tstring					m_sHeader;
 	tstring					m_sFunctions;
+	tstring					m_sMain;
 
 private:
 	static CShaderLibrary*	s_pShaderLibrary;

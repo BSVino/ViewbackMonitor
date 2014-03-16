@@ -1,19 +1,19 @@
-uniform tsampler2D iSource;
+uniform sampler2D iSource;
 uniform float aflCoefficients[3];
 uniform float flOffsetX;
 uniform float flOffsetY;
 
 in vec2 vecFragmentTexCoord0;
 
-void main(void)
+vec4 fragment_program()
 {
 	vec2 vecTC = vecFragmentTexCoord0;
 	vec2 vecOffset = vec2(flOffsetX, flOffsetY);
 
 	vec4 vecColorSum;
-	vecColorSum  = aflCoefficients[0] * ttexture(iSource, vecTC - vecOffset);
-	vecColorSum += aflCoefficients[1] * ttexture(iSource, vecTC);
-	vecColorSum += aflCoefficients[2] * ttexture(iSource, vecTC + vecOffset);
+	vecColorSum  = aflCoefficients[0] * texture(iSource, vecTC - vecOffset);
+	vecColorSum += aflCoefficients[1] * texture(iSource, vecTC);
+	vecColorSum += aflCoefficients[2] * texture(iSource, vecTC + vecOffset);
 
-	gl_FragColor = vecColorSum;
+	return vecColorSum;
 }

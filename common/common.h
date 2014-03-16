@@ -85,7 +85,10 @@ extern void DebugPrint(const char* pszText);
 
 #if defined(__ANDROID__)
 // If you hit this, the code is either incomplete or untested.
-#define TUnimplemented() {TAssertNoMsg(false); DebugPrint("TUnimplemented file " __FILE__ "\n");}
+#define TUnimplemented() {TAssertNoMsg(false); \
+	char s[1000]; \
+	sprintf(s, "TUnimplemented file " __FILE__ " line %d\n", __LINE__); \
+	DebugPrint(s); }
 #else
 // If you hit this, the code is either incomplete or untested.
 #define TUnimplemented() TAssertNoMsg(false)

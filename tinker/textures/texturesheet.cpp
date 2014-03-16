@@ -148,9 +148,23 @@ size_t CTextureSheet::GetSheetHeight(const tstring& sArea) const
 			return 0;
 
 		TAssertNoMsg(m_hDefaultSheet->m_ahTextures.size());
+		if (!m_hDefaultSheet->m_ahTextures.size())
+			return 0;
+
+		TAssertNoMsg(m_hDefaultSheet->m_ahTextures.size());
+		if (!m_hDefaultSheet->m_ahTextures[0])
+			return 0;
+
 		return m_hDefaultSheet->m_ahTextures[0]->m_iHeight;
 	}
 
 	TAssertNoMsg(it->second.m_hSheet->m_ahTextures.size());
+	if (!it->second.m_hSheet->m_ahTextures.size())
+		return 0;
+
+	TAssertNoMsg(it->second.m_hSheet->m_ahTextures.size());
+	if (!it->second.m_hSheet->m_ahTextures[0])
+		return 0;
+
 	return it->second.m_hSheet->m_ahTextures[0]->m_iHeight;
 }

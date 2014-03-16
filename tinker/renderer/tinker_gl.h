@@ -20,6 +20,9 @@ inline void gluBuild2DMipmaps(int texture, int, int, int, int, int, void*)
 }
 
 #else
+#ifndef TINKER_OPENGLES_2
+#error Android must define either TINKER_OPENGLES_3 or TINKER_OPENGLES_2
+#endif
 
 #include <GLES2/gl2.h>
 

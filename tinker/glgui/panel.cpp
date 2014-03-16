@@ -442,7 +442,7 @@ void CPanel::PaintBackground(float x, float y, float w, float h)
 	if (m_eBorder == BT_NONE && m_clrBackground.a() == 0)
 		return;
 
-	PaintRect(x, y, w, h, m_clrBackground, (m_eBorder == BT_SOME) ? 5 : 0, IsHighlighted());
+	PaintRect(x, y, w, h, m_clrBackground, (m_eBorder == BT_SOME) ? 3.0f : 0.0f, IsHighlighted());
 }
 
 void CPanel::Paint()

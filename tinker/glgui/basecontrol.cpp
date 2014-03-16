@@ -476,17 +476,17 @@ void CBaseControl::PaintBackground(float x, float y, float w, float h)
 	if (m_eBorder == BT_NONE && m_clrBackground.a() == 0)
 		return;
 
-	PaintRect(x, y, w, h, m_clrBackground, (m_eBorder == BT_SOME)?5:0, true);
+	PaintRect(x, y, w, h, m_clrBackground, (m_eBorder == BT_SOME)?2.0f:0.0f, true);
 }
 
-void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c, int iBorder, bool bHighlight)
+void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c, float flBorder, bool bHighlight)
 {
 	MakeQuad();
 
 	::CRenderingContext r(nullptr, true);
 
 	r.SetBlend(BLEND_ALPHA);
-	r.SetUniform("iBorder", iBorder);
+	r.SetUniform("flBorder", flBorder);
 	r.SetUniform("bHighlight", bHighlight);
 	r.SetUniform("vecColor", c);
 	r.SetUniform("bDiffuse", false);
@@ -513,7 +513,7 @@ void CBaseControl::PaintTexture(const CMaterialHandle& hMaterial, float x, float
 	r.UseMaterial(hMaterial);
 
 	r.SetBlend(BLEND_ALPHA);
-	r.SetUniform("iBorder", 0);
+	r.SetUniform("flBorder", 0.0f);
 	r.SetUniform("bHighlight", false);
 	r.SetUniform("vecColor", c);
 	r.SetUniform("bDiffuse", true);
@@ -542,7 +542,7 @@ void CBaseControl::PaintSheet(const CMaterialHandle& hMaterial, float x, float y
 	r.UseMaterial(hMaterial);
 
 	r.SetBlend(BLEND_ALPHA);
-	r.SetUniform("iBorder", 0);
+	r.SetUniform("flBorder", 0.0f);
 	r.SetUniform("bHighlight", false);
 	r.SetUniform("vecColor", c);
 	r.SetUniform("bDiffuse", true);

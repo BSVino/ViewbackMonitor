@@ -13,7 +13,7 @@ out vec3 vecFragmentPosition;
 out vec3 vecFragmentNormal;
 out vec2 vecFragmentTexCoord0;
 
-void main()
+vec4 vertex_program()
 {
 	vec3 vecGLPosition = vecPosition;
 
@@ -44,7 +44,6 @@ void main()
 	}
 
 	vecFragmentPosition = vecGLPosition;
-	gl_Position = mProjection * mGlobal * vec4(vecGLPosition, 1.0);
 
 	if (bTexCoords)
 	{
@@ -64,4 +63,6 @@ void main()
 	}
 	else
 		vecFragmentTexCoord0 = vecTexCoord0;
+
+	return mProjection * mGlobal * vec4(vecGLPosition, 1.0);
 }

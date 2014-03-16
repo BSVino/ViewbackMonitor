@@ -4,10 +4,11 @@ in vec2 vecTexCoord0;
 out vec3 vecFragmentPosition;
 out vec2 vecFragmentTexCoord0;
 
-void main()
+vec4 vertex_program()
 {
 	vecFragmentPosition = vecPosition;
-	gl_Position = mProjection * mView * mGlobal * vec4(vecPosition, 1);
 
 	vecFragmentTexCoord0 = vecTexCoord0;
+
+	return mProjection * mView * mGlobal * vec4(vecPosition, 1);
 }

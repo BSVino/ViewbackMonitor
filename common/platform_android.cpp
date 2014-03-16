@@ -227,6 +227,15 @@ FILE* Tinker_Android_tfopen(const tstring& sFile, const tstring& sMode)
 
 bool IsFile(const tstring& sPath)
 {
+	InitializeAssetManager();
+
+	AAsset* pAsset = AAssetManager_open(g_pAssetManager, sPath.c_str(), AASSET_MODE_STREAMING);
+	if (pAsset)
+	{
+		AAsset_close(pAsset);
+		return true;
+	}
+
 	struct stat stFileInfo;
 	bool blnReturn;
 	int intStat;

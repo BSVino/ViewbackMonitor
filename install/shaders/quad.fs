@@ -1,13 +1,11 @@
 uniform sampler2D iDiffuse;
-uniform vec4 vecColor = vec4(1.0, 1.0, 1.0, 1.0);
+uniform vec4 vecColor;
 
 uniform float flAlpha;
 
 in vec2 vecFragmentTexCoord0;
 
-void main()
+vec4 fragment_program()
 {
-	vec4 vecDiffuse = vecColor * texture(iDiffuse, vecFragmentTexCoord0);
-
-	gl_FragColor = vecDiffuse;
+	return vecColor * texture(iDiffuse, vecFragmentTexCoord0);
 }

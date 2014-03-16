@@ -383,8 +383,6 @@ tstring CApplication::GetAppDataDirectory(const tstring& sFile)
 
 	SDL_free((void*)pszPath);
 
-	TMsg(tstring("GetAppDataDirectory() path: ") + sPath + "\n");
-
 	return sPath;
 }
 

@@ -1,17 +1,17 @@
-uniform tsampler2D iDiffuse;
-uniform vec4 vecColor = vec4(1.0, 1.0, 1.0, 1.0);
+uniform sampler2D iDiffuse;
+uniform vec4 vecColor;
 
 uniform float flAlpha;
 
-uniform bool bScissor = false;
+uniform bool bScissor;
 uniform vec4 vecScissor;
 
 in vec3 vecFragmentPosition;
 in vec2 vecFragmentTexCoord0;
 
-void main()
+vec4 fragment_program()
 {
-	vec4 vecDiffuse = vecColor * (vec4(1.0, 1.0, 1.0, ttexture(iDiffuse, vecFragmentTexCoord0).a));
+	vec4 vecDiffuse = vecColor * (vec4(1.0, 1.0, 1.0, texture(iDiffuse, vecFragmentTexCoord0).a));
 
 	if (bScissor)
 	{
@@ -33,5 +33,5 @@ void main()
 		}*/
 	}
 
-	gl_FragColor = vecDiffuse;
+	return vecDiffuse;
 }
