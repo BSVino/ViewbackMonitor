@@ -30,7 +30,6 @@ void Alert(const tstring& sMessage);
 void CreateMinidump(void* pInfo, tchar* pszDirectory);
 tstring GetClipboard();
 void SetClipboard(const tstring& sBuf);
-tstring GetAppDataDirectory(const tstring& sDirectory, const tstring& sFile = "");
 tvector<tstring> ListDirectory(const tstring& sDirectory, bool bDirectories = true);
 bool IsFile(const tstring& sPath);
 bool IsDirectory(const tstring& sPath);
@@ -47,6 +46,12 @@ int TranslateKeyFromQwerty(int iKey);
 #define DIR_SEP "\\"
 #else
 #define DIR_SEP "/"
+#endif
+
+#ifdef __ANDROID__
+#define T_ASSETS_PREFIX "$ASSETS/"
+#else
+#define T_ASSETS_PREFIX ""
 #endif
 
 #endif

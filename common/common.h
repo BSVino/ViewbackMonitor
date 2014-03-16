@@ -83,8 +83,13 @@ extern void DebugPrint(const char* pszText);
 
 #endif
 
+#if defined(__ANDROID__)
+// If you hit this, the code is either incomplete or untested.
+#define TUnimplemented() {TAssertNoMsg(false); DebugPrint("TUnimplemented file " __FILE__ "\n");}
+#else
 // If you hit this, the code is either incomplete or untested.
 #define TUnimplemented() TAssertNoMsg(false)
+#endif
 
 #ifdef _DEBUG
 

@@ -37,31 +37,6 @@ static CShaderLibrary g_ShaderLibrary = CShaderLibrary();
 CShaderLibrary::CShaderLibrary()
 {
 	s_pShaderLibrary = this;
-
-	m_bCompiled = false;
-	m_iSamples = -1;
-
-	FILE* f = tfopen("shaders/functions.si", "r");
-
-	if (f)
-	{
-		tstring sLine;
-		while (fgetts(sLine, f))
-			m_sFunctions += sLine;
-
-		fclose(f);
-	}
-
-	f = tfopen("shaders/header.si", "r");
-
-	if (f)
-	{
-		tstring sLine;
-		while (fgetts(sLine, f))
-			m_sHeader += sLine;
-
-		fclose(f);
-	}
 }
 
 CShaderLibrary::~CShaderLibrary()
@@ -79,22 +54,61 @@ CShaderLibrary::~CShaderLibrary()
 	s_pShaderLibrary = NULL;
 }
 
+void CShaderLibrary::Initialize()
+{
+	s_pShaderLibrary->InitializeNonStatic();
+}
+
+void CShaderLibrary::InitializeNonStatic()
+{
+	m_bCompiled = false;
+	m_iSamples = -1;
+
+	tstring sFunctions = "shaders/functions.si";
+	FILE* f = tfopen_asset(sFunctions, "r");
+
+	if (f)
+	{
+		tstring sLine;
+		while (fgetts(sLine, f))
+			m_sFunctions += sLine;
+
+		fclose(f);
+	}
+	else
+		TMsg(tstring("Warning: Couldn't find shader functions file: ") + sFunctions + "\n");
+
+	tstring sHeader = "shaders/header.si";
+	f = tfopen_asset(sHeader, "r");
+
+	if (f)
+	{
+		tstring sLine;
+		while (fgetts(sLine, f))
+			m_sHeader += sLine;
+
+		fclose(f);
+	}
+	else
+		TMsg(tstring("Warning: Couldn't find shader header file: ") + sHeader + "\n");
+}
+
 void CShaderLibrary::AddShader(const tstring& sFile)
 {
 	TAssert(!Get()->m_bCompiled);
 	if (Get()->m_bCompiled)
 		return;
 
-	std::basic_ifstream<tchar> f(sFile.c_str());
+	FILE* fp = tfopen_asset(sFile, "r");
 
-	if (!f.is_open())
+	if (!fp)
 	{
 		TError("Couldn't open shader file: " + sFile + "\n");
 		return;
 	}
 
 	std::shared_ptr<CData> pData(new CData());
-	CDataSerializer::Read(f, pData.get());
+	CDataSerializer::Read(fp, pData.get());
 
 	CData* pName = pData->FindChild("Name");
 	CData* pVertex = pData->FindChild("Vertex");
@@ -234,7 +248,9 @@ void CShaderLibrary::WriteLog(const tstring& sFile, const char* pszLog, const ch
 	if (!pszLog || strlen(pszLog) == 0)
 		return;
 
-	tstring sLogFile = GetAppDataDirectory(Application()->AppDirectory(), "shaders.txt");
+	tstring sLogFile = Application()->GetAppDataDirectory("shaders.txt");
+
+	TMsg(sprintf(tstring("Log file location: %s"), sLogFile.c_str()));
 
 	if (m_bLogNeedsClearing)
 	{
@@ -304,11 +320,15 @@ bool CShader::Compile()
 
 	sShaderHeader += CShaderLibrary::GetShaderFunctions();
 
-	FILE* f = tfopen("shaders/" + m_sVertexFile + ".vs", "r");
+	tstring sVertexFile = tstring("shaders/") + m_sVertexFile + ".vs";
+	FILE* f = tfopen_asset(sVertexFile, "r");
 
 	TAssert(f);
 	if (!f)
+	{
+		TMsg(tstring("Could not open vertex program source: ") + sVertexFile + "\n");
 		return false;
+	}
 
 	tstring sVertexShader = sShaderHeader;
 	sVertexShader += "uniform mat4x4 mProjection;\n";
@@ -321,11 +341,15 @@ bool CShader::Compile()
 
 	fclose(f);
 
-	f = tfopen("shaders/" + m_sFragmentFile + ".fs", "r");
+	tstring sFragmentFile = tstring("shaders/") + m_sFragmentFile + ".fs";
+	f = tfopen_asset(sFragmentFile, "r");
 
 	TAssert(f);
 	if (!f)
+	{
+		TMsg(tstring("Could not open fragment program source: ") + sFragmentFile + "\n");
 		return false;
+	}
 
 	tstring sFragmentShader = sShaderHeader;
 

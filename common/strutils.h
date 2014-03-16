@@ -401,6 +401,25 @@ inline FILE* tfopen(const tstring& sFile, const tstring& sMode)
 	return fopen(sFile.c_str(), convertstring<tchar, char>(sBinaryMode).c_str());
 }
 
+#ifdef __ANDROID__
+extern FILE* Tinker_Android_tfopen(const tstring& sFile, const tstring& sMode);
+#else
+inline FILE* Tinker_Android_tfopen(const tstring& sFile, const tstring& sMode)
+{
+	return nullptr;
+}
+#endif
+
+// Try to open the file from the package assets folder first. (eg if we're on Android.)
+inline FILE* tfopen_asset(const tstring& sFile, const tstring& sMode)
+{
+	FILE* fp = Tinker_Android_tfopen(sFile, sMode);
+	if (fp)
+		return fp;
+
+	return tfopen(sFile, sMode);
+}
+
 inline bool fgetts(tstring& str, FILE* fp)
 {
 	static char szLine[1024];

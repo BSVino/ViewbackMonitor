@@ -22,7 +22,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <common.h>
 #include <vector.h>
 #include <color.h>
-#include <configfile.h>
 
 #include "shell.h"
 #include "keys.h"
@@ -42,6 +41,8 @@ public:
 
 	virtual tstring				WindowTitle() { return "Tinker"; }
 	virtual tstring				AppDirectory() { return "Tinker"; }
+
+	tstring                     GetAppDataDirectory(const tstring& sFile = "");
 
 	void                        PollEvents();
 	void						SwapBuffers();
@@ -120,10 +121,6 @@ protected:
 	bool						m_bIsOpen;
 
 	bool						m_bMultisampling;
-
-	ConfigFile					m_oRegFile;
-	tstring						m_sCode;
-	tstring						m_sKey;
 
 	bool						m_bMouseEnabled;
 	bool						m_bMouseDownInGUI;

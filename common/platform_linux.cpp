@@ -112,23 +112,12 @@ void SetClipboard(const tstring& sBuf)
 {
 }
 
-tstring GetAppDataDirectory(const tstring& sDirectory, const tstring& sFile)
+tvector<tstring> ListDirectory(const tstring& sFullDirectory, bool bDirectories)
 {
-	char* pszVar = getenv("HOME");
+	tstring sDirectory = sFullDirectory;
+	if (sDirectory.startswith("$ASSETS/"))
+		sDirectory = sDirectory.substr(8);
 
-	tstring sSuffix;
-	sSuffix.append(".").append(sDirectory).append("/").append(sFile);
-
-	tstring sReturn(pszVar);
-
-	mkdir((tstring(sReturn).append("/").append(".").append(sDirectory)).c_str(), 0777);
-
-	sReturn.append("/").append(sSuffix);
-	return sReturn;
-}
-
-tvector<tstring> ListDirectory(const tstring& sDirectory, bool bDirectories)
-{
 	tvector<tstring> asResult;
 
 	struct dirent *dp;

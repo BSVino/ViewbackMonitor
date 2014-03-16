@@ -191,35 +191,12 @@ void SetClipboard(const tstring& sBuf)
 	CloseClipboard();
 }
 
-tstring GetAppDataDirectory(const tstring& sDirectory, const tstring& sFile)
+tvector<tstring> ListDirectory(const tstring& sFullDirectory, bool bDirectories)
 {
-	size_t iSize;
-	_wgetenv_s(&iSize, NULL, 0, L"APPDATA");
+	tstring sDirectory = sFullDirectory;
+	if (sDirectory.startswith("$ASSETS/"))
+		sDirectory = sDirectory.substr(8);
 
-	tstring sSuffix;
-	sSuffix.append(sDirectory).append("\\").append(sFile);
-
-	if (!iSize)
-		return sSuffix;
-
-	wchar_t* pszVar = (wchar_t*)malloc(iSize * sizeof(wchar_t));
-	if (!pszVar)
-		return sSuffix;
-
-	_wgetenv_s(&iSize, pszVar, iSize, L"APPDATA");
-
-	tstring sReturn = convert_from_wstring(pszVar);
-
-	free(pszVar);
-
-	CreateDirectory(convert_to_wstring(tstring(sReturn).append("\\").append(sDirectory)).c_str(), NULL);
-
-	sReturn.append("\\").append(sSuffix);
-	return sReturn;
-}
-
-tvector<tstring> ListDirectory(const tstring& sDirectory, bool bDirectories)
-{
 	tvector<tstring> asResult;
 
 	wchar_t szPath[MAX_PATH];

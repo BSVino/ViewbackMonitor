@@ -103,6 +103,9 @@ public:
 							~CShaderLibrary();
 
 public:
+	static void             Initialize();
+	void                    InitializeNonStatic();
+
 	static size_t			GetNumShaders() { return Get()->m_aShaders.size(); };
 
 	static CShader*			GetShader(const tstring& sName);

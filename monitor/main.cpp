@@ -30,7 +30,12 @@ int CreateApplication(int argc, char** argv)
 
 	CApplication::GetScreenSize(iScreenWidth, iScreenHeight);
 
-	oWindow.OpenWindow(iScreenWidth*2/3, iScreenHeight*2/3, false, true);
+#if !defined(__ANDROID__)
+	iScreenWidth = iScreenWidth*2/3;
+	iScreenHeight = iScreenHeight*2/3;
+#endif
+
+	oWindow.OpenWindow(iScreenWidth, iScreenHeight, false, true);
 
 	oWindow.Run();
 

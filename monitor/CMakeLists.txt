@@ -9,14 +9,14 @@ include_directories (
 
 if (WIN32)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/gl3w/include)
-	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release)
+	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/pthreads-w32-2-8-0-release-vs2013)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/ftgl-gl3/src)
 	include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/include)
 endif (WIN32)
 
 include_directories (
 	${PROJECT_SOURCE_DIR}/../viewback
-	${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0/vsprojects/include
+	${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0-vs2013/vsprojects/include
 )
 
 include_directories(${CMAKE_SOURCE_DIR}/../ext-deps/SDL2-2.0.2/include)

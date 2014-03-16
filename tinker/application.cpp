@@ -263,12 +263,15 @@ void CApplication::DumpGLInfo()
 	gl3wInit();
 #endif
 
-	std::ifstream i(GetAppDataDirectory(AppDirectory(), "glinfo.txt").c_str());
+	if (!GetAppDataDirectory("glinfo.txt").length())
+		return;
+
+	std::ifstream i(GetAppDataDirectory("glinfo.txt").c_str());
 	if (i)
 		return;
 	i.close();
 
-	std::ofstream o(GetAppDataDirectory(AppDirectory(), "glinfo.txt").c_str());
+	std::ofstream o(GetAppDataDirectory("glinfo.txt").c_str());
 	if (!o || !o.is_open())
 		return;
 
@@ -359,6 +362,30 @@ void CApplication::DumpGLInfo()
 
 		o << aParameters[i].pszName << ": " << iValue[0] << std::endl;
 	}
+}
+
+tstring CApplication::GetAppDataDirectory(const tstring& sFile)
+{
+	const char* pszPath = SDL_GetPrefPath("Tinker", AppDirectory().c_str());
+
+	if (!pszPath)
+	{
+#ifdef __ANDROID__
+		const char* p = SDL_AndroidGetExternalStoragePath();
+		tstring sPath = tstring(p) + "/" + sFile;
+		return sPath;
+#endif
+
+		return "";
+	}
+
+	tstring sPath = tstring(pszPath) + sFile;
+
+	SDL_free((void*)pszPath);
+
+	TMsg(tstring("GetAppDataDirectory() path: ") + sPath + "\n");
+
+	return sPath;
 }
 
 tinker_keys_t MapMouseKey(Uint8 c);

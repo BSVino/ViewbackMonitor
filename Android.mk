@@ -15,7 +15,6 @@ LOCAL_CFLAGS += -DTINKER_OPENGLES_3 -DTINKER_NO_TOOLS
 
 # Add your application source files here...
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
-	common/configfile.cpp \
 	common/mempool.cpp \
 	common/mtrand.cpp \
 	common/stb_image.cpp \
@@ -74,6 +73,6 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 
 LOCAL_SHARED_LIBRARIES := SDL2 SDL2_image protobuf250 ftgl3
 
-LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -lGLESv3 -llog
+LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -lGLESv3 -llog -landroid
 
 include $(BUILD_SHARED_LIBRARY)

@@ -129,15 +129,20 @@ void CRenderer::Initialize()
 	{
 		TError("Shader compilation error!");
 		Alert("There was a problem compiling shaders. Please send the files shaders.txt and glinfo.txt to jorge@lunarworkshop.com");
-		OpenExplorer(GetAppDataDirectory(Application()->AppDirectory()));
+		OpenExplorer(Application()->GetAppDataDirectory());
 		exit(1);
 	}
+	else
+		TMsg(sprintf("%d shaders loaded.\n", CShaderLibrary::GetNumShaders()));
 }
 
 void CRenderer::LoadShaders()
 {
-	tvector<tstring> asShaders = ListDirectory("shaders", false);
+	CShaderLibrary::Initialize();
 
+	tvector<tstring> asShaders = ListDirectory(T_ASSETS_PREFIX "shaders", false);
+
+	int iShadersLoaded = 0;
 	for (size_t i = 0; i < asShaders.size(); i++)
 	{
 		tstring sShader = asShaders[i];
@@ -145,6 +150,7 @@ void CRenderer::LoadShaders()
 			continue;
 
 		CShaderLibrary::AddShader("shaders/" + sShader);
+		iShadersLoaded++;
 	}
 }
 
@@ -801,7 +807,7 @@ bool CRenderer::HardwareSupported()
 
 	glGenRenderbuffers(1, &oBuffer.m_iDepth);
 	glBindRenderbuffer( GL_RENDERBUFFER, (GLuint)oBuffer.m_iDepth );
-	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512 );
+	glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, 512, 512 );
 	glBindRenderbuffer( GL_RENDERBUFFER, 0 );
 
 	glGenFramebuffers(1, &oBuffer.m_iFB);
@@ -811,7 +817,7 @@ bool CRenderer::HardwareSupported()
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		TError("Test framebuffer compile failed.\n");
+		TError(sprintf("Test framebuffer compile failed. Status: %d\n", status));
 		glDeleteTextures(1, &oBuffer.m_iMap);
 		glDeleteRenderbuffers(1, &oBuffer.m_iDepth);
 		glDeleteFramebuffers(1, &oBuffer.m_iFB);
@@ -822,6 +828,24 @@ bool CRenderer::HardwareSupported()
 
 	oBuffer.Destroy();
 
+#ifdef TINKER_OPENGLES_3
+	// Compile a test shader. If it fails we don't support shaders.
+	const char* pszVertexShader =
+		"#version 300 es\n"
+		"void main()"
+		"{"
+		"	gl_Position = vec4(0.0, 0.0, 0.0, 0.0);"
+		"}";
+
+	const char* pszFragmentShader =
+		"#version 300 es\n"
+		"precision highp float;"
+		"layout(location = 0) out highp vec4 vecOut;"
+		"void main(void)"
+		"{"
+		"	vecOut = vec4(1.0, 1.0, 1.0, 1.0);"
+		"}";
+#else
 	// Compile a test shader. If it fails we don't support shaders.
 	const char* pszVertexShader =
 		"#version 130\n"
@@ -837,6 +861,7 @@ bool CRenderer::HardwareSupported()
 		"{"
 		"	vecFragColor = vec4(1.0, 1.0, 1.0, 1.0);"
 		"}";
+#endif
 
 	GLuint iVShader = glCreateShader(GL_VERTEX_SHADER);
 	GLuint iFShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -848,11 +873,35 @@ bool CRenderer::HardwareSupported()
 	int iVertexCompiled;
 	glGetShaderiv(iVShader, GL_COMPILE_STATUS, &iVertexCompiled);
 
+	bool bNeedsClearing = true;
+
+	if (iVertexCompiled != GL_TRUE)
+	{
+		TMsg("Test vertex shader compile failed.\n");
+
+		int iLogLength = 0;
+		char szLog[1024];
+		glGetShaderInfoLog((GLuint)iVShader, 1024, &iLogLength, szLog);
+
+		TMsg(szLog);
+	}
+
 	glShaderSource(iFShader, 1, &pszFragmentShader, NULL);
 	glCompileShader(iFShader);
 
 	int iFragmentCompiled;
 	glGetShaderiv(iFShader, GL_COMPILE_STATUS, &iFragmentCompiled);
+
+	if (iFragmentCompiled != GL_TRUE)
+	{
+		TMsg("Test fragment shader compile failed.\n");
+
+		int iLogLength = 0;
+		char szLog[1024];
+		glGetShaderInfoLog((GLuint)iFShader, 1024, &iLogLength, szLog);
+
+		TMsg(szLog);
+	}
 
 	glAttachShader(iProgram, iVShader);
 	glAttachShader(iProgram, iFShader);

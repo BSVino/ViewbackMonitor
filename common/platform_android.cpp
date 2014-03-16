@@ -28,6 +28,10 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <netinet/in.h>
 #include <linux/if.h>
 #include <android/log.h>
+#include <android/asset_manager_jni.h>
+#include <jni.h>
+#include <SDL.h>
+#include <asm-generic/errno-base.h>
 
 #include <strutils.h>
 
@@ -115,29 +119,63 @@ void SetClipboard(const tstring& sBuf)
 	TUnimplemented();
 }
 
-tstring GetAppDataDirectory(const tstring& sDirectory, const tstring& sFile)
+static jobject global_asset_manager = 0;
+static AAssetManager* g_pAssetManager = 0;
+
+void InitializeAssetManager()
 {
-	char* pszVar = getenv("HOME");
+	if (!global_asset_manager)
+	{
+		JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
 
-	tstring sSuffix;
-	sSuffix.append(".").append(sDirectory).append("/").append(sFile);
+		jobject activity = (jobject)SDL_AndroidGetActivity();
 
-	tstring sReturn(pszVar);
+		jclass activity_class = env->GetObjectClass(activity);
 
-	mkdir((tstring(sReturn).append("/").append(".").append(sDirectory)).c_str(), 0777);
+		jmethodID activity_class_getAssets = env->GetMethodID(activity_class, "getAssets", "()Landroid/content/res/AssetManager;");
+		jobject asset_manager = env->CallObjectMethod(activity, activity_class_getAssets); // activity.getAssets();
+		global_asset_manager = env->NewGlobalRef(asset_manager);
 
-	sReturn.append("/").append(sSuffix);
-	return sReturn;
+		g_pAssetManager = AAssetManager_fromJava(env, global_asset_manager);
+	}
 }
 
-tvector<tstring> ListDirectory(const tstring& sDirectory, bool bDirectories)
+tvector<tstring> ListAndroidAssetsDirectory(const tstring& sDirectory, bool bDirectories)
 {
+	InitializeAssetManager();
+
+	AAssetDir* pAssetDir = AAssetManager_openDir(g_pAssetManager, sDirectory.c_str());
+
+	if (!pAssetDir)
+		return tvector<tstring>();
+
+	tvector<tstring> asResult;
+	const char* pszDir;
+	while ((pszDir = AAssetDir_getNextFileName(pAssetDir)) != NULL)
+		asResult.push_back(pszDir);
+
+	AAssetDir_close(pAssetDir);
+
+	return asResult;
+}
+
+tvector<tstring> ListDirectory(const tstring& sFullDirectory, bool bDirectories)
+{
+	tstring sDirectory = sFullDirectory;
+
+	if (sDirectory.startswith("$ASSETS/"))
+		return ListAndroidAssetsDirectory(sDirectory.substr(8), bDirectories);
+
 	tvector<tstring> asResult;
 
 	struct dirent *dp;
 
 	DIR *dir = opendir((sDirectory).c_str());
-	while ((dp=readdir(dir)) != NULL)
+
+	if (!dir)
+		return asResult;
+
+	while ((dp = readdir(dir)) != NULL)
 	{
 		if (!bDirectories && (dp->d_type == DT_DIR))
 			continue;
@@ -154,6 +192,37 @@ tvector<tstring> ListDirectory(const tstring& sDirectory, bool bDirectories)
 	closedir(dir);
 
 	return asResult;
+}
+
+static int android_read(void* asset, char* buf, int size) {
+	return AAsset_read((AAsset*)asset, buf, size);
+}
+
+static int android_write(void* asset, const char* buf, int size) {
+	return EACCES; // can't provide write access to the apk
+}
+
+static fpos_t android_seek(void* asset, fpos_t offset, int whence) {
+	return AAsset_seek((AAsset*)asset, offset, whence);
+}
+
+static int android_close(void* asset) {
+	AAsset_close((AAsset*)asset);
+	return 0;
+}
+
+FILE* Tinker_Android_tfopen(const tstring& sFile, const tstring& sMode)
+{
+	if (sMode[0] == 'w')
+		return nullptr;
+
+	InitializeAssetManager();
+
+	AAsset* pAsset = AAssetManager_open(g_pAssetManager, sFile.c_str(), AASSET_MODE_STREAMING);
+	if (!pAsset)
+		return nullptr;
+
+	return funopen(pAsset, android_read, android_write, android_seek, android_close);
 }
 
 bool IsFile(const tstring& sPath)
@@ -246,7 +315,7 @@ time_t GetFileModificationTime(const char* pszFile)
 
 void DebugPrint(const char* pszText)
 {
-	__android_log_print(ANDROID_LOG_INFO, "DebugPrint", "%s", pszText);
+	__android_log_print(ANDROID_LOG_INFO, "TinkerDebug", "%s", pszText);
 }
 
 void Exec(const tstring& sLine)
