@@ -169,6 +169,9 @@ bool CRootPanel::MousePressed(int code, int mx, int my, bool bInsideControl)
 {
 	TAssert(!m_pDragging);
 
+	mx = (int)(mx * Application()->GetRenderer()->GetGUIScale());
+	my = (int)(my * Application()->GetRenderer()->GetGUIScale());
+
 	if (CPanel::MousePressed(code, mx, my))
 		return true;
 
@@ -200,6 +203,9 @@ bool CRootPanel::MousePressed(int code, int mx, int my, bool bInsideControl)
 
 bool CRootPanel::MouseReleased(int code, int mx, int my)
 {
+	mx = (int)(mx * Application()->GetRenderer()->GetGUIScale());
+	my = (int)(my * Application()->GetRenderer()->GetGUIScale());
+
 	if (m_pDragging)
 	{
 		if (DropDraggable())
@@ -220,6 +226,9 @@ bool CRootPanel::MouseReleased(int code, int mx, int my)
 
 bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)
 {
+	mx = (int)(mx * Application()->GetRenderer()->GetGUIScale());
+	my = (int)(my * Application()->GetRenderer()->GetGUIScale());
+
 	TAssert(!m_pDragging);
 
 	if (CPanel::MouseDoubleClicked(code, mx, my))
@@ -230,8 +239,8 @@ bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)
 
 void CRootPanel::CursorMoved(int x, int y)
 {
-	int dx = x - m_iMX;
-	int dy = y - m_iMY;
+	int dx = (int)((x - m_iMX) * Application()->GetRenderer()->GetGUIScale());
+	int dy = (int)((y - m_iMY) * Application()->GetRenderer()->GetGUIScale());
 
 	m_iMX = x;
 	m_iMY = y;
@@ -333,6 +342,6 @@ bool CRootPanel::SetFocus(CControlHandle hFocus)
 
 void CRootPanel::GetFullscreenMousePos(int& mx, int& my)
 {
-	mx = Get()->m_iMX;
-	my = Get()->m_iMY;
+	mx = (int)(Get()->m_iMX * Application()->GetRenderer()->GetGUIScale());
+	my = (int)(Get()->m_iMY * Application()->GetRenderer()->GetGUIScale());
 }

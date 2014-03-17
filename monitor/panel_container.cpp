@@ -44,8 +44,8 @@ void CPanelContainer::Layout()
 	if (!Application()->GetRenderer())
 		return;
 
-	float flWindowWidth = (float)Application()->GetRenderer()->GetViewportWidth();
-	float flWindowHeight = (float)Application()->GetRenderer()->GetViewportHeight();
+	float flWindowWidth = (float)Application()->GetRenderer()->GetDrawableWidth();
+	float flWindowHeight = (float)Application()->GetRenderer()->GetDrawableHeight();
 
 	SetSize(flWindowWidth, flWindowHeight);
 

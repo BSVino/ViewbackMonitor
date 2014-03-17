@@ -413,3 +413,20 @@ int TranslateKeyFromQwerty(int iKey)
 	UINT i = MapVirtualKeyEx(GetVKForChar(iKey), MAPVK_VK_TO_VSC, g_iEnglish);
 	return (int)GetCharForVK(MapVirtualKeyEx(i, MAPVK_VSC_TO_VK, iCurrent));
 }
+
+void GetScreenDPI(float& xdpi, float& ydpi)
+{
+	HDC hdc = GetDC(NULL);
+	if (hdc)
+	{
+		xdpi = GetDeviceCaps(hdc, LOGPIXELSX);
+		ydpi = GetDeviceCaps(hdc, LOGPIXELSY);
+		ReleaseDC(NULL, hdc);
+	}
+	else
+	{
+		xdpi = 96;
+		ydpi = 96;
+	}
+}
+

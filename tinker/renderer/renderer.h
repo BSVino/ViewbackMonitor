@@ -97,6 +97,9 @@ public:
 	virtual void	ViewportResize(size_t w, size_t h);
 	size_t          GetViewportWidth() { return m_iViewportWidth; }
 	size_t          GetViewportHeight() { return m_iViewportHeight; }
+	size_t          GetDrawableWidth() { return (size_t)((float)m_iViewportWidth * m_flGUIScale); }
+	size_t          GetDrawableHeight() { return (size_t)((float)m_iViewportHeight * m_flGUIScale); }
+	float           GetGUIScale() const { return m_flGUIScale; }
 
 	CFrameBuffer	CreateFrameBuffer(const tstring& sName, size_t iWidth, size_t iHeight, fb_options_e eOptions);
 	void			DestroyFrameBuffer(CFrameBuffer* pBuffer);
@@ -205,6 +208,7 @@ public:
 protected:
 	size_t			m_iViewportWidth;
 	size_t			m_iViewportHeight;
+	float           m_flGUIScale;
 
 	Vector			m_vecCameraPosition;
 	Vector			m_vecCameraDirection;

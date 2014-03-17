@@ -343,4 +343,27 @@ int TranslateKeyFromQwerty(int iKey)
 	return iKey;
 }
 
+void GetScreenDPI(float& xdpi, float& ydpi)
+{
+	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+
+	jclass activity_class = env->GetObjectClass(activity);
+	jmethodID activity_class_getResources = env->GetMethodID(activity_class, "getResources", "()Landroid/content/res/Resources;");
+	jobject resources = env->CallObjectMethod(activity, activity_class_getResources); // activity.getResources();
+
+	jclass resources_class = env->GetObjectClass(resources);
+	jmethodID resources_class_getDisplayMetrics = env->GetMethodID(resources_class, "getDisplayMetrics", "()Landroid/util/DisplayMetrics;");
+	jobject display_metrics = env->CallObjectMethod(resources, resources_class_getDisplayMetrics); // resources.getDisplayMetrics();
+
+	jclass display_metrics_class = env->GetObjectClass(display_metrics);
+	jfieldID xdpi_field = env->GetFieldID(display_metrics_class, "xdpi", "F");
+	jfieldID ydpi_field = env->GetFieldID(display_metrics_class, "ydpi", "F");
+
+	xdpi = env->GetFloatField(display_metrics, xdpi_field);
+	ydpi = env->GetFloatField(display_metrics, ydpi_field);
+}
+
+
 

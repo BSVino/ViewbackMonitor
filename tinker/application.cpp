@@ -245,7 +245,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 	m_pRenderer = CreateRenderer();
 	m_pRenderer->Initialize();
 
-	glgui::RootPanel()->SetSize((float)m_pRenderer->GetViewportWidth(), (float)m_pRenderer->GetViewportHeight());
+	glgui::RootPanel()->SetSize((float)m_pRenderer->GetDrawableWidth(), (float)m_pRenderer->GetDrawableHeight());
 }
 
 CApplication::~CApplication()
@@ -493,7 +493,7 @@ void CApplication::Render()
 	if (CShaderLibrary::IsCompiled())
 	{
 		glgui::RootPanel()->Think(GetTime());
-		glgui::RootPanel()->Paint(0, 0, (float)GetRenderer()->GetViewportWidth(), (float)GetRenderer()->GetViewportHeight());
+		glgui::RootPanel()->Paint(0, 0, (float)GetRenderer()->GetDrawableWidth(), (float)GetRenderer()->GetDrawableHeight());
 	}
 }
 
