@@ -241,13 +241,10 @@ bool CTextField::TakesFocus()
 
 bool CTextField::SetFocus(bool bFocus)
 {
-	CBaseControl::SetFocus(bFocus);
+	bool bResult = CBaseControl::SetFocus(bFocus);
 
-	if (!TakesFocus())
+	if (!bResult)
 		return false;
-
-	if (HasFocus())
-		return true;
 
 	m_iAutoComplete = -1;
 
@@ -257,10 +254,14 @@ bool CTextField::SetFocus(bool bFocus)
 
 		m_iSelection = m_iCursor = m_sText.length();
 
+		Application()->ActivateKeyboard();
+
 		return true;
 	}
 
-	return false;
+	Application()->DeactivateKeyboard();
+
+	return HasFocus();
 }
 
 bool CTextField::MousePressed(int iButton, int mx, int my)

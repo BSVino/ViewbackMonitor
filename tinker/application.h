@@ -91,6 +91,9 @@ public:
 	void						SetMouseCursorEnabled(bool bEnabled);
 	bool						IsMouseCursorEnabled();
 
+	void                        ActivateKeyboard();
+	void                        DeactivateKeyboard();
+
 	int							GetWindowWidth() { return (int)m_iWindowWidth; };
 	int							GetWindowHeight() { return (int)m_iWindowHeight; };
 	float                       GetGUIScale() const { return m_flGUIScale; }

@@ -1017,6 +1017,18 @@ bool CApplication::IsMouseCursorEnabled()
 	return m_bMouseEnabled;
 }
 
+void CApplication::ActivateKeyboard()
+{
+	if (SDL_HasScreenKeyboardSupport())
+		SDL_StartTextInput();
+}
+
+void CApplication::DeactivateKeyboard()
+{
+	if (SDL_HasScreenKeyboardSupport())
+		SDL_StopTextInput();
+}
+
 void CApplication::GetViewportSize(size_t& w, size_t& h)
 {
 	int x, y;
