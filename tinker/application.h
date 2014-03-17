@@ -93,6 +93,7 @@ public:
 
 	int							GetWindowWidth() { return (int)m_iWindowWidth; };
 	int							GetWindowHeight() { return (int)m_iWindowHeight; };
+	float                       GetGUIScale() const { return m_flGUIScale; }
 
 	void                        GetViewportSize(size_t& w, size_t& h);
 
@@ -121,6 +122,7 @@ protected:
 	size_t						m_iWindowHeight;
 	bool						m_bFullscreen;
 	bool						m_bIsOpen;
+	float                       m_flGUIScale;
 
 	bool						m_bMultisampling;
 

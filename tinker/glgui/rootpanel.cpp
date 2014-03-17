@@ -61,7 +61,12 @@ CRootPanel::~CRootPanel( )
 CRootPanel*	CRootPanel::Get()
 {
 	if (!s_pRootPanel)
+	{
 		s_pRootPanel = (new CRootPanel())->shared_from_this();
+
+		// Go ahead and set the proper size now so that the console shows up in the right place.
+		s_pRootPanel->SetSize(Application()->GetWindowWidth() * Application()->GetGUIScale(), Application()->GetWindowHeight() * Application()->GetGUIScale());
+	}
 
 	if (!s_bRootPanelValid)
 		return nullptr;
@@ -169,8 +174,8 @@ bool CRootPanel::MousePressed(int code, int mx, int my, bool bInsideControl)
 {
 	TAssert(!m_pDragging);
 
-	mx = (int)(mx * Application()->GetRenderer()->GetGUIScale());
-	my = (int)(my * Application()->GetRenderer()->GetGUIScale());
+	mx = (int)(mx * Application()->GetGUIScale());
+	my = (int)(my * Application()->GetGUIScale());
 
 	if (CPanel::MousePressed(code, mx, my))
 		return true;
@@ -203,8 +208,8 @@ bool CRootPanel::MousePressed(int code, int mx, int my, bool bInsideControl)
 
 bool CRootPanel::MouseReleased(int code, int mx, int my)
 {
-	mx = (int)(mx * Application()->GetRenderer()->GetGUIScale());
-	my = (int)(my * Application()->GetRenderer()->GetGUIScale());
+	mx = (int)(mx * Application()->GetGUIScale());
+	my = (int)(my * Application()->GetGUIScale());
 
 	if (m_pDragging)
 	{
@@ -226,8 +231,8 @@ bool CRootPanel::MouseReleased(int code, int mx, int my)
 
 bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)
 {
-	mx = (int)(mx * Application()->GetRenderer()->GetGUIScale());
-	my = (int)(my * Application()->GetRenderer()->GetGUIScale());
+	mx = (int)(mx * Application()->GetGUIScale());
+	my = (int)(my * Application()->GetGUIScale());
 
 	TAssert(!m_pDragging);
 
@@ -239,8 +244,8 @@ bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)
 
 void CRootPanel::CursorMoved(int x, int y)
 {
-	int dx = (int)((x - m_iMX) * Application()->GetRenderer()->GetGUIScale());
-	int dy = (int)((y - m_iMY) * Application()->GetRenderer()->GetGUIScale());
+	int dx = (int)((x - m_iMX) * Application()->GetGUIScale());
+	int dy = (int)((y - m_iMY) * Application()->GetGUIScale());
 
 	m_iMX = x;
 	m_iMY = y;
@@ -342,6 +347,6 @@ bool CRootPanel::SetFocus(CControlHandle hFocus)
 
 void CRootPanel::GetFullscreenMousePos(int& mx, int& my)
 {
-	mx = (int)(Get()->m_iMX * Application()->GetRenderer()->GetGUIScale());
-	my = (int)(Get()->m_iMY * Application()->GetRenderer()->GetGUIScale());
+	mx = (int)(Get()->m_iMX * Application()->GetGUIScale());
+	my = (int)(Get()->m_iMY * Application()->GetGUIScale());
 }

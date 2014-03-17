@@ -61,6 +61,15 @@ CApplication::CApplication(int argc, char** argv)
 
 	SDL_Init(iMode);
 
+	m_flGUIScale = 1;
+
+	// SDL has no support for Android high DPI, so we'll just scale it.
+#ifdef __ANDROID__
+	float xdpi, ydpi;
+	GetScreenDPI(xdpi, ydpi);
+	m_flGUIScale = 96.0f / ((xdpi + ydpi) / 2);
+#endif
+
 	srand((unsigned int)time(NULL));
 	mtsrand((size_t)time(NULL));
 
@@ -246,6 +255,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 	m_pRenderer->Initialize();
 
 	glgui::RootPanel()->SetSize((float)m_pRenderer->GetDrawableWidth(), (float)m_pRenderer->GetDrawableHeight());
+	glgui::RootPanel()->Layout();
 }
 
 CApplication::~CApplication()

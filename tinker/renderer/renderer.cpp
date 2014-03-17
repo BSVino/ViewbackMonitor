@@ -94,15 +94,6 @@ void CFrameBuffer::RemoveFromBufferList(CFrameBuffer* pBuffer)
 
 CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 {
-	m_flGUIScale = 1;
-
-	// SDL has no support for Android high DPI, so we'll just scale it.
-#ifdef __ANDROID__
-	float xdpi, ydpi;
-	GetScreenDPI(xdpi, ydpi);
-	m_flGUIScale = 96.0f / ((xdpi + ydpi)/2);
-#endif
-
 	TMsg(sprintf("Initializing %dx%d renderer\n", iWidth, iHeight));
 
 	if (!HardwareSupported())
@@ -188,6 +179,16 @@ void CRenderer::ViewportResize(size_t w, size_t h)
 		iWidth /= 2;
 		iHeight /= 2;
 	}
+}
+
+size_t CRenderer::GetDrawableWidth()
+{
+	return (size_t)((float)m_iViewportWidth * Application()->GetGUIScale());
+}
+
+size_t CRenderer::GetDrawableHeight()
+{
+	return (size_t)((float)m_iViewportHeight * Application()->GetGUIScale());
 }
 
 CFrameBuffer CRenderer::CreateFrameBuffer(const tstring& sName, size_t iWidth, size_t iHeight, fb_options_e eOptions)
