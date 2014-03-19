@@ -28,7 +28,7 @@ vec4 vertex_program()
 		float tw = vecTexCoords.z;
 		float th = vecTexCoords.w;
 
-		vecFragmentTexCoord0 = vec2(tx + vecTexCoords.x * tw, ty + vecTexCoords.y * th);
+		vecFragmentTexCoord0 = vec2(tx + vecTexCoord0.x * tw, ty + vecTexCoord0.y * th);
 	}
 	else
 		vecFragmentTexCoord0 = vecTexCoord0;
