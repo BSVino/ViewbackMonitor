@@ -26,6 +26,7 @@ add_definitions(-DPTW32_STATIC_LIB)
 set (MONITOR_SOURCES
 	main.cpp
 	monitor_window.cpp
+	monitor_menu.cpp
 
 	panel_container.cpp
 	panel_base.cpp

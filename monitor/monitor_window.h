@@ -7,6 +7,7 @@
 #include <glgui/basecontrol.h>
 
 class CPanelContainer;
+class CMonitorMenu;
 
 class CMonitorWindow : public CApplication
 {
@@ -30,6 +31,8 @@ public:
 
 	void SetMaximizedPanel(const glgui::CControl<class CPanel_Base>& pPanel);
 
+	bool KeyPress(int c);
+
 	CViewbackClient* GetViewback() { return &vb; }
 
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
@@ -38,6 +41,7 @@ private:
 	CViewbackClient vb;
 
 	glgui::CControl<CPanelContainer> m_pPanelContainer;
+	glgui::CControl<CMonitorMenu>    m_pMenu;
 };
 
 inline CMonitorWindow* MonitorWindow()

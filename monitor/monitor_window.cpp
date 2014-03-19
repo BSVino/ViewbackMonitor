@@ -8,6 +8,7 @@
 
 #include "panel_container.h"
 #include "panel_console.h"
+#include "monitor_menu.h"
 
 using namespace glgui;
 
@@ -77,6 +78,14 @@ void CMonitorWindow::SetupGUI()
 	m_pPanelContainer = RootPanel()->AddControl(new CPanelContainer());
 
 	m_pPanelContainer->Setup();
+
+	m_pMenu = RootPanel()->AddControl(new CMonitorMenu(), true);
+	m_pMenu->SetSize(60, 20);
+	m_pMenu->Layout_AlignBottom(nullptr, 0);
+	m_pMenu->Layout_CenterHorizontal();
+
+	if (PlatformHasMenuKey())
+		m_pMenu->SetVisible(false);
 }
 
 void CMonitorWindow::RegistrationUpdate()
@@ -96,6 +105,24 @@ void CMonitorWindow::SetMaximizedPanel(const glgui::CControl<class CPanel_Base>&
 {
 	if (m_pPanelContainer)
 		m_pPanelContainer->SetMaximizedPanel(pPanel);
+}
+
+bool CMonitorWindow::KeyPress(int c)
+{
+	if (c == TINKER_KEY_APP_MENU || c == TINKER_KEY_F8)
+	{
+		if (m_pMenu->IsOpen())
+			m_pMenu->CloseMenu();
+		else
+		{
+			m_pMenu->OpenMenu();
+			m_pMenu->SetVisible(true);
+		}
+
+		return true;
+	}
+
+	return BaseClass::KeyPress(c);
 }
 
 CControl<CPanel_Console> CMonitorWindow::GetConsolePanel()

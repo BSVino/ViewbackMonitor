@@ -69,6 +69,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 	tinker/profiler.cpp \
 	monitor/main.cpp \
 	monitor/monitor_window.cpp \
+	monitor/monitor_menu.cpp \
 	monitor/panel_container.cpp \
 	monitor/panel_base.cpp \
 	monitor/panel_2d.cpp \

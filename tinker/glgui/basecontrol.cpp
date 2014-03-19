@@ -359,6 +359,14 @@ void CBaseControl::Layout_ColumnFixed(int iTotalColumns, int iColumn, float flWi
 	SetWidth(flWidth);
 }
 
+void CBaseControl::Layout_CenterHorizontal()
+{
+	if (!GetParent())
+		return;
+
+	SetLeft(GetParent()->GetWidth() / 2 - GetWidth() / 2);
+}
+
 void CBaseControl::SetVisible(bool bVis)
 {
 	bool bWasVisible = m_bVisible;

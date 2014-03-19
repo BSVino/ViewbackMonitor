@@ -1049,6 +1049,15 @@ void CApplication::PrintError(const tstring& sText)
 	GetConsole()->PrintConsole(tstring("[color=FF0000]ERROR: ") + sTrimmedText + "[/color]" + (sText.endswith("\n")?"\n":""));
 }
 
+bool CApplication::PlatformHasMenuKey()
+{
+#ifdef __ANDROID__
+	return true;
+#else
+	return false;
+#endif
+}
+
 void CApplication::GetScreenSize(int& w, int& h)
 {
 	TAssert(SDL_GetNumVideoDisplays() > 0);

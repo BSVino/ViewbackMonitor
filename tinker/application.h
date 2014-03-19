@@ -107,6 +107,8 @@ public:
 	virtual class CRenderer*	CreateRenderer()=0;
 	class CRenderer*			GetRenderer() { return m_pRenderer; }
 
+	static bool                 PlatformHasMenuKey();
+
 	static void					OpenConsole();
 	static void					CloseConsole();
 	static void					ToggleConsole();
