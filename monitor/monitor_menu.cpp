@@ -1,12 +1,13 @@
 #include "monitor_menu.h"
 
-#include <application.h>
+#include "monitor_window.h"
 
 using namespace glgui;
 
 CMonitorMenu::CMonitorMenu()
 	: CMenu("Options")
 {
+	AddSubmenu("Disconnect", this, Disconnect);
 	AddSubmenu("Quit", this, Quit);
 }
 
@@ -20,9 +21,16 @@ void CMonitorMenu::Think()
 		SetVisible(false);
 }
 
+void CMonitorMenu::DisconnectCallback(const tstring& sArgs)
+{
+	MonitorWindow()->GetViewback()->Disconnect();
+	CloseMenu();
+}
+
 void CMonitorMenu::QuitCallback(const tstring& sArgs)
 {
 	Application()->Close();
+	CloseMenu();
 }
 
 
