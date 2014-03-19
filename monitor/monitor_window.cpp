@@ -4,6 +4,7 @@
 #include <tinker/renderer/renderer.h>
 #include <tinker/profiler.h>
 #include <tinker/cvar.h>
+#include <tinker_platform.h>
 
 #include "panel_container.h"
 #include "panel_console.h"
@@ -33,9 +34,17 @@ void ConsoleOutput(const char* pszText)
 	MonitorWindow()->GetConsolePanel()->PrintConsole(pszText);
 }
 
+void DebugOutput(const char* pszText)
+{
+	TMsg(sprintf(tstring("VB: %s"), pszText));
+}
+
 void CMonitorWindow::Run()
 {
-	Viewback()->Initialize(&::RegistrationUpdate, &ConsoleOutput);
+	EnableMulticast();
+
+	if (!Viewback()->Initialize(&::RegistrationUpdate, &ConsoleOutput, &DebugOutput))
+		TError("Could not initialize Viewback.\n");
 
 	CVar::SetCVar("r_bloom", 0);
 
