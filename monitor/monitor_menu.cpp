@@ -1,5 +1,9 @@
 #include "monitor_menu.h"
 
+#include <glgui/label.h>
+#include <glgui/textfield.h>
+#include <glgui/button.h>
+
 #include "monitor_window.h"
 
 using namespace glgui;
@@ -14,6 +18,8 @@ CMonitorMenu::CMonitorMenu()
 void CMonitorMenu::OnOpenMenu()
 {
 	ClearSubmenus();
+
+	AddSubmenu("Manual Connect", this, ManualConnect);
 
 	if (MonitorWindow()->GetViewback()->HasConnection())
 	{
@@ -37,6 +43,13 @@ void CMonitorMenu::Think()
 		SetVisible(false);
 }
 
+void CMonitorMenu::ManualConnectCallback(const tstring& sArgs)
+{
+	CManualConnectPanel::Create();
+
+	CloseMenu();
+}
+
 void CMonitorMenu::FindServerCallback(const tstring& sArgs)
 {
 	MonitorWindow()->GetViewback()->FindServer();
@@ -53,6 +66,62 @@ void CMonitorMenu::QuitCallback(const tstring& sArgs)
 {
 	Application()->Close();
 	CloseMenu();
+}
+
+
+CManualConnectPanel::CManualConnectPanel()
+	: CMovablePanel("Manual Connect")
+{
+	m_pIPLabel = AddControl(new CLabel("IP:"));
+	m_pIP = AddControl(new CTextField());
+	m_pPortLabel = AddControl(new CLabel("Port:"));
+	m_pPort = AddControl(new CTextField());
+	m_pConnect = AddControl(new CButton("Connect"));
+	m_pConnect->SetClickedListener(this, Connect);
+}
+
+void CManualConnectPanel::Create()
+{
+	CManualConnectPanel* pPanel = new CManualConnectPanel();
+	pPanel->SetSize(350, 150);
+	pPanel->Layout();
+	pPanel->MoveToCenter();
+}
+
+void CManualConnectPanel::Layout()
+{
+	BaseClass::Layout();
+
+	float flOutsideMargin = 25;
+	float flInsideMargin = 10;
+
+	m_pIPLabel->SetAlign(CLabel::TA_LEFTCENTER);
+	m_pIPLabel->SetLeft(flOutsideMargin);
+	m_pIPLabel->SetTop(40);
+	m_pIPLabel->SetWidth(0);
+	m_pIPLabel->EnsureTextFits();
+
+	m_pPortLabel->SetAlign(CLabel::TA_LEFTCENTER);
+	m_pPortLabel->SetLeft(220);
+	m_pPortLabel->SetTop(40);
+	m_pPortLabel->SetWidth(0);
+	m_pPortLabel->EnsureTextFits();
+
+	m_pIP->SetLeft(m_pIPLabel->GetRight() + flInsideMargin);
+	m_pIP->SetTop(40);
+	m_pIP->SetRight(m_pPortLabel->GetLeft() - flInsideMargin);
+
+	m_pPort->SetLeft(m_pPortLabel->GetRight() + flInsideMargin);
+	m_pPort->SetTop(40);
+	m_pPort->SetRight(GetWidth() - flOutsideMargin);
+
+	m_pConnect->SetPos(0, 90);
+	m_pConnect->Layout_CenterHorizontal();
+}
+
+void CManualConnectPanel::ConnectCallback(const tstring& sArgs)
+{
+	MonitorWindow()->GetViewback()->Connect(m_pIP->GetText().c_str(), stoi(m_pPort->GetText()));
 }
 
 

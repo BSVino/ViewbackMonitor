@@ -55,6 +55,7 @@ namespace glgui
 
 	public:
 		virtual void			Layout();
+		virtual void			MoveToCenter();
 
 		virtual void			Think();
 

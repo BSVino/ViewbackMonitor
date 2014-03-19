@@ -98,6 +98,9 @@ void CMonitorWindow::WindowResize(int x, int y)
 	if (m_pPanelContainer)
 		m_pPanelContainer->Layout();
 
+	m_pMenu->Layout_AlignBottom(nullptr, 0);
+	m_pMenu->Layout_CenterHorizontal();
+
 	BaseClass::WindowResize(x, y);
 }
 
