@@ -74,10 +74,10 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 	monitor/panel_2d.cpp \
 	monitor/panel_console.cpp \
 	monitor/panel_time.cpp \
-	../../../viewback/client/viewback_client.cpp \
-	../../../viewback/client/viewback_data.cpp \
-	../../../viewback/client/viewback_servers.cpp \
-	../../../viewback/protobuf/data.pb.cc \
+	../viewback/client/viewback_client.cpp \
+	../viewback/client/viewback_data.cpp \
+	../viewback/client/viewback_servers.cpp \
+	../viewback/protobuf/data.pb.cc \
 
 LOCAL_SHARED_LIBRARIES := SDL2 SDL2_image protobuf250 ftgl3
 
