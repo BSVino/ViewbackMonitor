@@ -14,9 +14,10 @@
 #define GL_MULTISAMPLE ~0
 
 inline void glTexImage2DMultisample(int, int, int, int, int, int) { TUnimplemented(); }
-inline void gluBuild2DMipmaps(int texture, int, int, int, int, int, void*)
+inline void gluBuild2DMipmaps(GLenum target, GLint components, GLint width, GLint height, GLenum format, GLenum type, const void *data)
 {
-	glGenerateMipmap(texture);
+	glTexImage2D(target, 0, format, width, height, 0, format, type, data);
+	glGenerateMipmap(target);
 }
 
 #else
@@ -42,9 +43,10 @@ inline void gluBuild2DMipmaps(int texture, int, int, int, int, int, void*)
 inline void glTexImage2DMultisample(int, int, int, int, int, int) { TUnimplemented(); }
 inline void glRenderbufferStorageMultisample(int, int, int, int, int) { TUnimplemented(); }
 inline void glBlitFramebuffer(int, int, int, int, int, int, int, int, int, int) { TUnimplemented(); }
-inline void gluBuild2DMipmaps(int texture, int, int, int, int, int, void*)
+inline void gluBuild2DMipmaps(GLenum target, GLint components, GLint width, GLint height, GLenum format, GLenum type, const void *data)
 {
-	glGenerateMipmap(texture);
+	glTexImage2D(target, 0, format, width, height, 0, format, type, data);
+	glGenerateMipmap(target);
 }
 
 #endif
