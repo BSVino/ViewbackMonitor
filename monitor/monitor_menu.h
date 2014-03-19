@@ -12,6 +12,7 @@ public:
 public:
 	void Think();
 
+	EVENT_CALLBACK(CMonitorMenu, FindServer);
 	EVENT_CALLBACK(CMonitorMenu, Disconnect);
 	EVENT_CALLBACK(CMonitorMenu, Quit);
 };

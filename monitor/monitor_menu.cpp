@@ -7,6 +7,7 @@ using namespace glgui;
 CMonitorMenu::CMonitorMenu()
 	: CMenu("Options")
 {
+	AddSubmenu("Search for Servers", this, FindServer);
 	AddSubmenu("Disconnect", this, Disconnect);
 	AddSubmenu("Quit", this, Quit);
 }
@@ -19,6 +20,12 @@ void CMonitorMenu::Think()
 
 	if (Application()->PlatformHasMenuKey() && !bHeightWasZero && m_flMenuHeight == 0)
 		SetVisible(false);
+}
+
+void CMonitorMenu::FindServerCallback(const tstring& sArgs)
+{
+	MonitorWindow()->GetViewback()->FindServer();
+	CloseMenu();
 }
 
 void CMonitorMenu::DisconnectCallback(const tstring& sArgs)
