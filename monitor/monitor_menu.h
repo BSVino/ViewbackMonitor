@@ -10,6 +10,8 @@ public:
 	CMonitorMenu();
 
 public:
+	void OnOpenMenu();
+
 	void Think();
 
 	EVENT_CALLBACK(CMonitorMenu, FindServer);

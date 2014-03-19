@@ -64,6 +64,9 @@ namespace glgui
 		void						CloseMenu();
 		bool                        IsOpen() { return m_flMenuHeightGoal > 0; }
 
+		virtual void OnOpenMenu() {};
+		virtual void OnCloseMenu() {};
+
 		virtual void				AddSubmenu(const tstring& sTitle, IEventListener* pListener = NULL, IEventListener::Callback pfnCallback = NULL);
 		virtual void				AddSubmenu(CMenu* pMenu, IEventListener* pListener = NULL, IEventListener::Callback pfnCallback = NULL);
 		virtual void				ClearSubmenus();

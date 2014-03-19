@@ -7,8 +7,23 @@ using namespace glgui;
 CMonitorMenu::CMonitorMenu()
 	: CMenu("Options")
 {
-	AddSubmenu("Search for Servers", this, FindServer);
-	AddSubmenu("Disconnect", this, Disconnect);
+	// Add one or else the menu won't open.
+	AddSubmenu("Quit", this, Quit);
+}
+
+void CMonitorMenu::OnOpenMenu()
+{
+	ClearSubmenus();
+
+	if (MonitorWindow()->GetViewback()->HasConnection())
+	{
+		AddSubmenu("Disconnect", this, Disconnect);
+	}
+	else
+	{
+		AddSubmenu("Connect To Best Server", this, FindServer);
+	}
+
 	AddSubmenu("Quit", this, Quit);
 }
 
