@@ -346,7 +346,6 @@ int TranslateKeyFromQwerty(int iKey)
 void GetScreenDPI(float& xdpi, float& ydpi)
 {
 	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
-
 	jobject activity = (jobject)SDL_AndroidGetActivity();
 
 	jclass activity_class = env->GetObjectClass(activity);
@@ -363,6 +362,60 @@ void GetScreenDPI(float& xdpi, float& ydpi)
 
 	xdpi = env->GetFloatField(display_metrics, xdpi_field);
 	ydpi = env->GetFloatField(display_metrics, ydpi_field);
+}
+
+void EnableMulticast()
+{
+	//WifiManager.MulticastLock mclock;
+	//WifiManager wifimanager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
+	//if (wifimanager != null)
+	//{
+	//	mclock = wifimanager.createMulticastLock("lock");
+	//	mcLock.acquire();
+	//}
+
+	JNIEnv* env = (JNIEnv*)SDL_AndroidGetJNIEnv();
+	jobject activity = (jobject)SDL_AndroidGetActivity();
+
+	jclass activity_class = env->GetObjectClass(activity);
+	jmethodID activity_class_getSystemService = env->GetMethodID(activity_class, "getSystemService", "(Ljava/lang/String;)Ljava/lang/Object;");
+	jstring getSystemService_wifi = env->NewStringUTF("wifi");
+	jobject wifimanager = env->CallObjectMethod(activity, activity_class_getSystemService, getSystemService_wifi); // activity.getSystemService(Context.WIFI_SERVICE);
+	env->DeleteLocalRef(getSystemService_wifi);
+
+	if (wifimanager == nullptr)
+	{
+		DebugPrint("ERROR: Couldn't get WifiManager to enable multicast.\n");
+		return;
+	}
+
+	jclass wifimanager_class = env->GetObjectClass(wifimanager);
+	jmethodID wifimanager_class_createMulticastLock = env->GetMethodID(wifimanager_class, "createMulticastLock", "(Ljava/lang/String;)Landroid/net/wifi/WifiManager$MulticastLock;");
+	jstring createMulticastLock_lock = env->NewStringUTF("tinker_multicast_lock");
+	jobject mclock = env->CallObjectMethod(wifimanager, wifimanager_class_createMulticastLock, createMulticastLock_lock); // wifimanager.createMulticastLock("lock");
+	env->DeleteLocalRef(createMulticastLock_lock);
+
+	if (mclock == nullptr)
+	{
+		DebugPrint("ERROR: Couldn't get multicast lock object.\n");
+		return;
+	}
+
+	jobject global_mclock = env->NewGlobalRef(mclock);
+
+	jclass mclock_class = env->GetObjectClass(mclock);
+	jmethodID mclock_class_acquire = env->GetMethodID(mclock_class, "acquire", "()V");
+	env->CallVoidMethod(mclock, mclock_class_acquire); // mclock.acquire();
+
+	DebugPrint("Acquired multicast lock.\n");
+}
+
+void DisableMulticast()
+{
+	//if (mclock.isHeld())
+	//{
+	//	mclock.release();
+	//}
 }
 
 

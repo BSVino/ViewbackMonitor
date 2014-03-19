@@ -419,8 +419,8 @@ void GetScreenDPI(float& xdpi, float& ydpi)
 	HDC hdc = GetDC(NULL);
 	if (hdc)
 	{
-		xdpi = GetDeviceCaps(hdc, LOGPIXELSX);
-		ydpi = GetDeviceCaps(hdc, LOGPIXELSY);
+		xdpi = (float)GetDeviceCaps(hdc, LOGPIXELSX);
+		ydpi = (float)GetDeviceCaps(hdc, LOGPIXELSY);
 		ReleaseDC(NULL, hdc);
 	}
 	else
@@ -429,4 +429,9 @@ void GetScreenDPI(float& xdpi, float& ydpi)
 		ydpi = 96;
 	}
 }
+
+// Don't need to.
+void EnableMulticast() {}
+
+
 
