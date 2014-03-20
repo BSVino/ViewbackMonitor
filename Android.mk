@@ -7,7 +7,7 @@ LOCAL_MODULE := main
 SDL_PATH := ../SDL
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include $(LOCAL_PATH)/ $(LOCAL_PATH)/common $(LOCAL_PATH)/common/math $(LOCAL_PATH)/tinker
-LOCAL_C_INCLUDES += ../viewback
+LOCAL_C_INCLUDES += $(LOCAL_PATH)/../viewback
 LOCAL_C_INCLUDES += ../ext-deps/protobuf-2.5.0/src ../ext-deps/ftgl-gl3/src ../ext-deps/freetype-2.3.11/include
 LOCAL_C_INCLUDES += $(LOCAL_PATH)/../SDL2_image
 
