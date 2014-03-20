@@ -22,6 +22,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <common.h>
 #include <vector.h>
 #include <color.h>
+#include <geometry.h>
 
 #include "shell.h"
 #include "keys.h"
@@ -91,7 +92,7 @@ public:
 	void						SetMouseCursorEnabled(bool bEnabled);
 	bool						IsMouseCursorEnabled();
 
-	void                        ActivateKeyboard();
+	void                        ActivateKeyboard(const FRect& rInputArea);
 	void                        DeactivateKeyboard();
 
 	int							GetWindowWidth() { return (int)m_iWindowWidth; };

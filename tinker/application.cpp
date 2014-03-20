@@ -1017,16 +1017,20 @@ bool CApplication::IsMouseCursorEnabled()
 	return m_bMouseEnabled;
 }
 
-void CApplication::ActivateKeyboard()
+void CApplication::ActivateKeyboard(const FRect& rInputArea)
 {
-	if (SDL_HasScreenKeyboardSupport())
-		SDL_StartTextInput();
+	SDL_Rect r;
+	r.x = (int)rInputArea.x;
+	r.y = (int)rInputArea.y;
+	r.w = (int)rInputArea.w;
+	r.h = (int)rInputArea.h;
+	SDL_SetTextInputRect(&r);
+	SDL_StartTextInput();
 }
 
 void CApplication::DeactivateKeyboard()
 {
-	if (SDL_HasScreenKeyboardSupport())
-		SDL_StopTextInput();
+	SDL_StopTextInput();
 }
 
 void CApplication::GetViewportSize(size_t& w, size_t& h)

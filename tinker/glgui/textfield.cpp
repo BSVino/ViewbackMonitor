@@ -254,7 +254,9 @@ bool CTextField::SetFocus(bool bFocus)
 
 		m_iSelection = m_iCursor = m_sText.length();
 
-		Application()->ActivateKeyboard();
+		FRect r = GetAbsDimensions();
+		r /= Application()->GetGUIScale();
+		Application()->ActivateKeyboard(r);
 
 		return true;
 	}

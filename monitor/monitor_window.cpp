@@ -42,7 +42,7 @@ void DebugOutput(const char* pszText)
 
 void CMonitorWindow::Run()
 {
-	EnableMulticast();
+	//EnableMulticast();
 
 	if (!Viewback()->Initialize(&::RegistrationUpdate, &ConsoleOutput, &DebugOutput))
 		TError("Could not initialize Viewback.\n");
