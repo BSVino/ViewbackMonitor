@@ -19,6 +19,10 @@ void CMonitorMenu::OnOpenMenu()
 {
 	ClearSubmenus();
 
+#ifdef _DEBUG
+	AddSubmenu("Open Console", this, Console);
+#endif
+
 	AddSubmenu("Manual Connect", this, ManualConnect);
 
 	if (MonitorWindow()->GetViewback()->HasConnection())
@@ -41,6 +45,12 @@ void CMonitorMenu::Think()
 
 	if (Application()->PlatformHasMenuKey() && !bHeightWasZero && m_flMenuHeight == 0)
 		SetVisible(false);
+}
+
+void CMonitorMenu::ConsoleCallback(const tstring& sArgs)
+{
+	Application()->ToggleConsole();
+	CloseMenu();
 }
 
 void CMonitorMenu::ManualConnectCallback(const tstring& sArgs)

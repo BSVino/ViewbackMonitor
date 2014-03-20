@@ -14,6 +14,7 @@ public:
 
 	void Think();
 
+	EVENT_CALLBACK(CMonitorMenu, Console);
 	EVENT_CALLBACK(CMonitorMenu, ManualConnect);
 	EVENT_CALLBACK(CMonitorMenu, FindServer);
 	EVENT_CALLBACK(CMonitorMenu, Disconnect);
