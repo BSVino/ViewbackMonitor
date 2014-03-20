@@ -22,3 +22,9 @@
 /modelconverter/Release (Demo)
 /digitanks/src/dtintro/Debug
 /digitanks/src/dtintro/Release
+/android/libs
+/android/obj
+/android/jni/SDL
+/android/jni/SDL2_image
+/android/bin
+/android/gen
