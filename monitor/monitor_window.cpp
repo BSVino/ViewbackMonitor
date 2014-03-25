@@ -5,6 +5,7 @@
 #include <tinker/profiler.h>
 #include <tinker/cvar.h>
 #include <tinker_platform.h>
+#include <datamanager/dataserializer.h>
 
 #include "panel_container.h"
 #include "panel_console.h"
@@ -42,6 +43,19 @@ void DebugOutput(const char* pszText)
 
 void CMonitorWindow::Run()
 {
+	FILE* fp = tfopen(MonitorWindow()->GetAppDataDirectory("viewback.txt"), "r");
+
+	if (fp)
+	{
+		std::shared_ptr<CData> pData(new CData());
+		CDataSerializer::Read(fp, pData.get());
+
+		m_sLastSuccessfulIP = pData->FindChildValueString("LastIP", "");
+		m_sLastSuccessfulPort = pData->FindChildValueString("LastPort", "");
+
+		fclose(fp);
+	}
+
 	//EnableMulticast();
 
 	if (!Viewback()->Initialize(&::RegistrationUpdate, &ConsoleOutput, &DebugOutput))
@@ -132,3 +146,24 @@ CControl<CPanel_Console> CMonitorWindow::GetConsolePanel()
 {
 	return m_pPanelContainer->GetConsolePanel();
 }
+
+void CMonitorWindow::SaveConfig()
+{
+	FILE* fp = tfopen(MonitorWindow()->GetAppDataDirectory("viewback.txt"), "w");
+
+	if (!fp)
+		return;
+
+	std::shared_ptr<CData> pData(new CData());
+
+	if (m_sLastSuccessfulIP.length())
+		pData->AddChild("LastIP", m_sLastSuccessfulIP);
+
+	if (m_sLastSuccessfulPort.length())
+		pData->AddChild("LastPort", m_sLastSuccessfulPort);
+
+	CDataSerializer::Save(fp, pData.get());
+
+	fclose(fp);
+}
+

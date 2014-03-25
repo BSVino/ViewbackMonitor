@@ -102,6 +102,9 @@ void CManualConnectPanel::Create()
 	pPanel->MoveToCenter();
 	pPanel->SetVisible(true);
 
+	pPanel->m_pIP->SetText(MonitorWindow()->GetLastSuccessfulIP());
+	pPanel->m_pPort->SetText(MonitorWindow()->GetLastSuccessfulPort());
+
 	CRootPanel::Get()->SetFocus(pPanel->m_pIP);
 }
 
@@ -141,7 +144,12 @@ void CManualConnectPanel::ConnectCallback(const tstring& sArgs)
 	MonitorWindow()->GetViewback()->Connect(m_pIP->GetText().c_str(), stoi(m_pPort->GetText()));
 
 	if (MonitorWindow()->GetViewback()->HasConnection())
+	{
 		SetVisible(false);
+		MonitorWindow()->SetLastSuccessfulIP(m_pIP->GetText());
+		MonitorWindow()->SetLastSuccessfulPort(m_pPort->GetText());
+		MonitorWindow()->SaveConfig();
+	}
 }
 
 

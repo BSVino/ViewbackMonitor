@@ -37,11 +37,21 @@ public:
 
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
 
+	void SaveConfig();
+
+	tstring GetLastSuccessfulIP() { return m_sLastSuccessfulIP; }
+	void SetLastSuccessfulIP(const tstring& sIP) { m_sLastSuccessfulIP = sIP; }
+	tstring GetLastSuccessfulPort() { return m_sLastSuccessfulPort; }
+	void SetLastSuccessfulPort(const tstring& sPort) { m_sLastSuccessfulPort = sPort; }
+
 private:
 	CViewbackClient vb;
 
 	glgui::CControl<CPanelContainer> m_pPanelContainer;
 	glgui::CControl<CMonitorMenu>    m_pMenu;
+
+	tstring m_sLastSuccessfulIP;
+	tstring m_sLastSuccessfulPort;
 };
 
 inline CMonitorWindow* MonitorWindow()
