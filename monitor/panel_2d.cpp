@@ -64,13 +64,21 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 
 		size_t iStart = FindStartTime(aVectorData, flLatestData, oMeta[i].m_flDisplayDuration);
 
-		for (size_t j = iStart; j < aVectorData.size() - 1; j++)
+		if (oRegistrations[i].m_flMax != 0)
 		{
-			if (std::fabs(aVectorData[j].data.x) > oMeta[i].m_vecMaxValue.x)
-				oMeta[i].m_vecMaxValue.x = std::fabs(aVectorData[j].data.x);
+			oMeta[i].m_vecMaxValue.x = oRegistrations[i].m_flMax;
+			oMeta[i].m_vecMaxValue.y = oRegistrations[i].m_flMax;
+		}
+		else
+		{
+			for (size_t j = iStart; j < aVectorData.size() - 1; j++)
+			{
+				if (std::fabs(aVectorData[j].data.x) > oMeta[i].m_vecMaxValue.x)
+					oMeta[i].m_vecMaxValue.x = std::fabs(aVectorData[j].data.x);
 
-			if (std::fabs(aVectorData[j].data.y) > oMeta[i].m_vecMaxValue.y)
-				oMeta[i].m_vecMaxValue.y = std::fabs(aVectorData[j].data.y);
+				if (std::fabs(aVectorData[j].data.y) > oMeta[i].m_vecMaxValue.y)
+					oMeta[i].m_vecMaxValue.y = std::fabs(aVectorData[j].data.y);
+			}
 		}
 
 		float flMaxX = oMeta[i].m_vecMaxValue.x * 1.3f;

@@ -156,30 +156,43 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		{
 			auto& aFloatData = oData[i].m_aFloatData;
 
-			float flMin = aFloatData[iStart].data;
-			float flMax = aFloatData[iStart].data;
-
-			for (size_t j = iStart; j < aFloatData.size(); j++)
+			if (oRegistrations[i].m_flMin != 0 || oRegistrations[i].m_flMax != 0)
 			{
-				if (aFloatData[j].time > flTimeNow)
-					break;
+				oMeta[i].m_vecMaxValue.x = oRegistrations[i].m_flMin;
+				oMeta[i].m_vecMaxValue.y = oRegistrations[i].m_flMax;
 
-				if (aFloatData[j].data < flMin)
-					flMin = aFloatData[j].data;
+				float flRange = oRegistrations[i].m_flMax - oRegistrations[i].m_flMin;
 
-				if (aFloatData[j].data > flMax)
-					flMax = aFloatData[j].data;
+				oMeta[i].m_vecMaxValue.x -= flRange * 0.3f;
+				oMeta[i].m_vecMaxValue.y += flRange * 0.3f;
 			}
-
-			float flRange = flMax - flMin;
-
-			if (flRange > 0)
+			else
 			{
-				flMin -= flRange * 0.3f;
-				flMax += flRange * 0.3f;
+				float flMin = aFloatData[iStart].data;
+				float flMax = aFloatData[iStart].data;
 
-				oMeta[i].m_vecMaxValue.x = flMin; // Consider x the min
-				oMeta[i].m_vecMaxValue.y = flMax; // Consider y the max
+				for (size_t j = iStart; j < aFloatData.size(); j++)
+				{
+					if (aFloatData[j].time > flTimeNow)
+						break;
+
+					if (aFloatData[j].data < flMin)
+						flMin = aFloatData[j].data;
+
+					if (aFloatData[j].data > flMax)
+						flMax = aFloatData[j].data;
+				}
+
+				float flRange = flMax - flMin;
+
+				if (flRange > 0)
+				{
+					flMin -= flRange * 0.3f;
+					flMax += flRange * 0.3f;
+
+					oMeta[i].m_vecMaxValue.x = flMin; // Consider x the min
+					oMeta[i].m_vecMaxValue.y = flMax; // Consider y the max
+				}
 			}
 
 			CRenderingContext c(MonitorWindow()->GetRenderer(), true);
