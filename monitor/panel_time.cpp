@@ -267,16 +267,21 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 bool CPanel_Time::MousePressed(int code, int mx, int my)
 {
-	m_bDragging = true;
-	m_flLastDragVelocity = 0;
+	bool bUsed = BaseClass::MousePressed(code, mx, my);
 
-	if (!m_bOverrideTime)
+	if (!bUsed)
 	{
-		m_bOverrideTime = true;
-		m_flOverrideTime = MonitorWindow()->GetViewback()->PredictCurrentTime();
+		m_bDragging = true;
+		m_flLastDragVelocity = 0;
+
+		if (!m_bOverrideTime)
+		{
+			m_bOverrideTime = true;
+			m_flOverrideTime = MonitorWindow()->GetViewback()->PredictCurrentTime();
+		}
 	}
 
-	return BaseClass::MousePressed(code, mx, my);
+	return true;
 }
 
 bool CPanel_Time::MouseReleased(int code, int mx, int my)
