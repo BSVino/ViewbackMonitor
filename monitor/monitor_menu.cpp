@@ -92,10 +92,17 @@ CManualConnectPanel::CManualConnectPanel()
 
 void CManualConnectPanel::Create()
 {
-	CManualConnectPanel* pPanel = new CManualConnectPanel();
+	static CManualConnectPanel* pPanel = NULL;
+
+	if (!pPanel)
+		pPanel = new CManualConnectPanel();
+
 	pPanel->SetSize(350, 150);
 	pPanel->Layout();
 	pPanel->MoveToCenter();
+	pPanel->SetVisible(true);
+
+	CRootPanel::Get()->SetFocus(pPanel->m_pIP);
 }
 
 void CManualConnectPanel::Layout()
@@ -132,6 +139,9 @@ void CManualConnectPanel::Layout()
 void CManualConnectPanel::ConnectCallback(const tstring& sArgs)
 {
 	MonitorWindow()->GetViewback()->Connect(m_pIP->GetText().c_str(), stoi(m_pPort->GetText()));
+
+	if (MonitorWindow()->GetViewback()->HasConnection())
+		SetVisible(false);
 }
 
 
