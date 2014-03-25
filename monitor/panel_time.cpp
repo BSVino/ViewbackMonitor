@@ -222,7 +222,8 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			c.EndRender();
 
 			tstring sValue = sprintf("%.2f", aFloatData.back().data);
-			CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, v.x - 40, v.y - 14, Color(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f));
+			float flWidth = CLabel::GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
+			CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, x + w - flWidth - 10, v.y - 14, Color(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f));
 		}
 
 		if (oReg.m_eDataType == VB_DATATYPE_INT)
