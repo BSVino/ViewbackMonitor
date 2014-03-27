@@ -481,10 +481,10 @@ void CBaseControl::Paint(float x, float y, float w, float h)
 
 void CBaseControl::PaintBackground(float x, float y, float w, float h)
 {
-	if (m_eBorder == BT_NONE && m_clrBackground.a() == 0)
+	if (m_flBorder == 0 && m_clrBackground.a() == 0)
 		return;
 
-	PaintRect(x, y, w, h, m_clrBackground, (m_eBorder == BT_SOME)?2.0f:0.0f, true);
+	PaintRect(x, y, w, h, m_clrBackground, m_flBorder, true);
 }
 
 void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c, float flBorder, bool bHighlight)
@@ -634,6 +634,19 @@ void CBaseControl::SetTooltip(const tstring& sTip)
 
 	if (m_flMouseInTime > 0)
 		m_flMouseInTime = CRootPanel::Get()->GetTime();
+}
+
+void CBaseControl::SetBorder(Border b)
+{
+	if (b == BT_SOME)
+		m_flBorder = 2;
+	else
+		m_flBorder = 0;
+}
+
+void CBaseControl::SetBorder(float flBorder)
+{
+	m_flBorder = flBorder;
 }
 
 CControlHandle CBaseControl::GetHasCursor() const

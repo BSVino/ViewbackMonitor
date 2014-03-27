@@ -47,8 +47,10 @@ void CPanel_Time::RegistrationUpdate()
 		m_apLabels.back()->SetClickedListener(this, ToggleVisible, sprintf("%d", i));
 		m_apLabels.back()->SetHeight(15);
 
-		if (oReg.m_eDataType == VB_DATATYPE_INT)
-			m_apLabels.back()->SetBackgroundColor(Color(0, 0, 0, 155));
+		if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
+			m_apLabels.back()->SetBorder(BT_NONE);
+		else
+			m_apLabels.back()->SetBorder(BT_SOME);
 
 		flYPos += m_apLabels.back()->GetHeight() + 10;
 

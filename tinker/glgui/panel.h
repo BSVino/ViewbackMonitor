@@ -84,6 +84,8 @@ namespace glgui
 		void					SetScissoring(bool b) { m_bScissoring = b; };
 		bool					IsScissoring() const;
 
+		virtual void            SetBorder(Border b);
+
 		FRect					GetControlBounds() const { return m_rControlBounds; };
 		FRect					GetControlOffset() const { return m_rControlOffset; };
 

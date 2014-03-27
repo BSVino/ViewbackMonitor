@@ -137,7 +137,8 @@ namespace glgui
 			BT_SOME = 1
 		} Border;
 
-		void			SetBorder(Border b) { m_eBorder = b; };
+		virtual void    SetBorder(Border b);
+		void            SetBorder(float flBorder);
 
 		CControlHandle	GetHandle() const { return m_hThis; }
 		virtual void	OnSetHandle() {}
@@ -180,7 +181,7 @@ namespace glgui
 		tstring			m_sTip;
 
 		Color			m_clrBackground;
-		Border			m_eBorder;
+		float           m_flBorder;
 
 		CControlHandle	m_hThis;
 
