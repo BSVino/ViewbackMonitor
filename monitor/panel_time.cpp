@@ -45,7 +45,7 @@ void CPanel_Time::RegistrationUpdate()
 		m_apLabels.back()->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
 		m_apLabels.back()->SetAlign(CLabel::TA_MIDDLECENTER);
 		m_apLabels.back()->SetClickedListener(this, ToggleVisible, sprintf("%d", i));
-		m_apLabels.back()->SetHeight(15);
+		m_apLabels.back()->SetHeight(18);
 
 		if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
 			m_apLabels.back()->SetBorder(BT_NONE);

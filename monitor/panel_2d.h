@@ -11,6 +11,8 @@ public:
 
 	void Paint(float x, float y, float w, float h);
 
+	EVENT_CALLBACK(CPanel_2D, ToggleVisible)
+
 private:
-	tvector<glgui::CControl<glgui::CLabel>> m_apLabels;
+	tvector<glgui::CControl<glgui::CButton>> m_apLabels;
 };

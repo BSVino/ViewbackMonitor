@@ -2,7 +2,7 @@
 
 #include <renderer/renderingcontext.h>
 #include <tinker/profiler.h>
-#include <glgui/label.h>
+#include <glgui/button.h>
 
 #include "monitor_window.h"
 
@@ -25,10 +25,13 @@ void CPanel_2D::RegistrationUpdate()
 		if (oReg.m_eDataType != VB_DATATYPE_VECTOR)
 			continue;
 
-		m_apLabels.push_back(AddControl(new CLabel(oReg.m_sFieldName)));
+		m_apLabels.push_back(AddControl(new CButton(oReg.m_sFieldName)));
 		m_apLabels.back()->SetPos(10, flYPos);
 		m_apLabels.back()->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
-		m_apLabels.back()->SetAlign(CLabel::TA_BOTTOMLEFT);
+		m_apLabels.back()->SetAlign(CLabel::TA_MIDDLECENTER);
+		m_apLabels.back()->SetHeight(18);
+		m_apLabels.back()->SetClickedListener(this, ToggleVisible, sprintf("%d", i));
+		m_apLabels.back()->SetBorder(BT_SOME);
 
 		flYPos += m_apLabels.back()->GetHeight() + 10;
 	}
@@ -58,6 +61,9 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 			continue;
 
 		if (oData[i].m_aVectorData.size() < 2)
+			continue;
+
+		if (!oMeta[i].m_bVisible)
 			continue;
 
 		auto& aVectorData = oData[i].m_aVectorData;
@@ -113,5 +119,20 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 
 		c.EndRender();
 	}
+}
+
+void CPanel_2D::ToggleVisibleCallback(const tstring& sArgs)
+{
+	unsigned int i = stoi(sArgs);
+
+	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
+
+	if (i < 0)
+		return;
+
+	if (i >= aMeta.size())
+		return;
+
+	aMeta[i].m_bVisible = !aMeta[i].m_bVisible;
 }
 
