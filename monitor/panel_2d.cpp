@@ -12,7 +12,7 @@ void CPanel_2D::RegistrationUpdate()
 {
 	m_apLabels.clear();
 
-	auto& aRegistrations = MonitorWindow()->GetViewback()->GetRegistrations();
+	auto& aRegistrations = MonitorWindow()->GetViewback()->GetChannels();
 	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
 
 	float flYPos = 10;
@@ -35,6 +35,35 @@ void CPanel_2D::RegistrationUpdate()
 
 		flYPos += m_apLabels.back()->GetHeight() + 10;
 	}
+
+	Layout();
+}
+
+void CPanel_2D::Layout()
+{
+	BaseClass::Layout();
+
+	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
+
+	for (auto& pLabel : m_apLabels)
+	{
+		int iChannel = stoi(pLabel->GetClickedListenerArgs());
+
+		TAssert(iChannel >= 0);
+		TAssert(iChannel < (int)aMeta.size());
+
+		if (iChannel < 0)
+			continue;
+		if (iChannel >= (int)aMeta.size())
+			continue;
+
+		auto& oMeta = aMeta[iChannel];
+
+		if (oMeta.m_bVisible)
+			pLabel->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
+		else
+			pLabel->SetTextColor(Color(0.4f, 0.4f, 0.4f, 1.0f));
+	}
 }
 
 void CPanel_2D::Paint(float x, float y, float w, float h)
@@ -48,15 +77,15 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 	CBaseControl::PaintRect(x + w / 2, y + h / 4, 1, h / 2, Color(128, 128, 128, 255));
 	CBaseControl::PaintRect(x + w / 2 - (flRatio * w / 4), y + h / 2, w * flRatio / 2, 1, Color(128, 128, 128, 255));
 
-	auto& oRegistrations = MonitorWindow()->GetViewback()->GetRegistrations();
+	auto& oChannels = MonitorWindow()->GetViewback()->GetChannels();
 	auto& oData = MonitorWindow()->GetViewback()->GetData();
 	auto& oMeta = MonitorWindow()->GetViewback()->GetMeta();
 
 	double flLatestData = MonitorWindow()->GetViewback()->GetLatestDataTime();
 
-	for (size_t i = 0; i < oRegistrations.size(); i++)
+	for (size_t i = 0; i < oChannels.size(); i++)
 	{
-		auto& oReg = oRegistrations[i];
+		auto& oReg = oChannels[i];
 		if (oReg.m_eDataType != VB_DATATYPE_VECTOR)
 			continue;
 
@@ -70,10 +99,10 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 
 		size_t iStart = FindStartTime(aVectorData, flLatestData - oMeta[i].m_flDisplayDuration);
 
-		if (oRegistrations[i].m_flMax != 0)
+		if (oChannels[i].m_flMax != 0)
 		{
-			oMeta[i].m_vecMaxValue.x = oRegistrations[i].m_flMax;
-			oMeta[i].m_vecMaxValue.y = oRegistrations[i].m_flMax;
+			oMeta[i].m_vecMaxValue.x = oChannels[i].m_flMax;
+			oMeta[i].m_vecMaxValue.y = oChannels[i].m_flMax;
 		}
 		else
 		{
@@ -134,5 +163,7 @@ void CPanel_2D::ToggleVisibleCallback(const tstring& sArgs)
 		return;
 
 	aMeta[i].m_bVisible = !aMeta[i].m_bVisible;
+
+	Layout();
 }
 

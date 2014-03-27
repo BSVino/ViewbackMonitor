@@ -3,6 +3,7 @@
 #include <glgui/label.h>
 #include <glgui/textfield.h>
 #include <glgui/button.h>
+#include <textures/texturesheet.h>
 
 #include "monitor_window.h"
 
@@ -13,6 +14,9 @@ CMonitorMenu::CMonitorMenu()
 {
 	// Add one or else the menu won't open.
 	AddSubmenu("Quit", this, Quit);
+
+	CTextureSheet oSheet("materials/buttons.txt");
+	SetSheetTexture(oSheet.GetSheet("Viewback"), oSheet.GetArea("Viewback"), oSheet.GetSheetWidth("Viewback"), oSheet.GetSheetHeight("Viewback"));
 }
 
 void CMonitorMenu::OnOpenMenu()

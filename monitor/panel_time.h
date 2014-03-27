@@ -12,6 +12,8 @@ public:
 public:
 	void RegistrationUpdate();
 
+	void Layout();
+
 	double GetCurrentViewTime();
 
 	void Think();

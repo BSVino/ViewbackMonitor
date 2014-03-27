@@ -23,18 +23,18 @@ void CPanel_Time::RegistrationUpdate()
 	m_apLabels.clear();
 	m_aiDataLabels.clear();
 
-	auto& aRegistrations = MonitorWindow()->GetViewback()->GetRegistrations();
+	auto& aChannels = MonitorWindow()->GetViewback()->GetChannels();
 	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
 
-	m_aiDataLabels.resize(aRegistrations.size());
+	m_aiDataLabels.resize(aChannels.size());
 	for (int& i : m_aiDataLabels)
 		i = 0;
 
 	float flYPos = 20;
 
-	for (size_t i = 0; i < aRegistrations.size(); i++)
+	for (size_t i = 0; i < aChannels.size(); i++)
 	{
-		auto& oReg = aRegistrations[i];
+		auto& oReg = aChannels[i];
 		auto& oMeta = aMeta[i];
 
 		if (oReg.m_eDataType != VB_DATATYPE_INT && oReg.m_eDataType != VB_DATATYPE_FLOAT)
@@ -62,6 +62,35 @@ void CPanel_Time::RegistrationUpdate()
 	m_flShowTime = 5;
 	m_flFastForwardStartTime = 0;
 	m_flFastForwardFromTime = 0;
+
+	Layout();
+}
+
+void CPanel_Time::Layout()
+{
+	BaseClass::Layout();
+
+	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
+
+	for (auto& pLabel : m_apLabels)
+	{
+		int iChannel = stoi(pLabel->GetClickedListenerArgs());
+
+		TAssert(iChannel >= 0);
+		TAssert(iChannel < (int)aMeta.size());
+
+		if (iChannel < 0)
+			continue;
+		if (iChannel >= (int)aMeta.size())
+			continue;
+
+		auto& oMeta = aMeta[iChannel];
+
+		if (oMeta.m_bVisible)
+			pLabel->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
+		else
+			pLabel->SetTextColor(Color(0.4f, 0.4f, 0.4f, 1.0f));
+	}
 }
 
 double CPanel_Time::GetCurrentViewTime()
@@ -123,13 +152,13 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		CLabel::PaintText(sTime, sTime.length(), "sans-serif", 12, flX + 5, y + h - 14, Color(128, 128, 128, 255));
 	}
 
-	auto& oRegistrations = MonitorWindow()->GetViewback()->GetRegistrations();
+	auto& oChannels = MonitorWindow()->GetViewback()->GetChannels();
 	auto& oData = MonitorWindow()->GetViewback()->GetData();
 	auto& oMeta = MonitorWindow()->GetViewback()->GetMeta();
 
-	for (size_t i = 0; i < oRegistrations.size(); i++)
+	for (size_t i = 0; i < oChannels.size(); i++)
 	{
-		auto& oReg = oRegistrations[i];
+		auto& oReg = oChannels[i];
 
 		if (oReg.m_eDataType != VB_DATATYPE_INT && oReg.m_eDataType != VB_DATATYPE_FLOAT)
 			continue;
@@ -174,12 +203,12 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		{
 			auto& aFloatData = oData[i].m_aFloatData;
 
-			if (oRegistrations[i].m_flMin != 0 || oRegistrations[i].m_flMax != 0)
+			if (oChannels[i].m_flMin != 0 || oChannels[i].m_flMax != 0)
 			{
-				oMeta[i].m_vecMaxValue.x = oRegistrations[i].m_flMin;
-				oMeta[i].m_vecMaxValue.y = oRegistrations[i].m_flMax;
+				oMeta[i].m_vecMaxValue.x = oChannels[i].m_flMin;
+				oMeta[i].m_vecMaxValue.y = oChannels[i].m_flMax;
 
-				float flRange = oRegistrations[i].m_flMax - oRegistrations[i].m_flMin;
+				float flRange = oChannels[i].m_flMax - oChannels[i].m_flMin;
 
 				oMeta[i].m_vecMaxValue.x -= flRange * 0.3f;
 				oMeta[i].m_vecMaxValue.y += flRange * 0.3f;
@@ -349,6 +378,8 @@ void CPanel_Time::ToggleVisibleCallback(const tstring& sArgs)
 		return;
 
 	aMeta[i].m_bVisible = !aMeta[i].m_bVisible;
+
+	Layout();
 }
 
 

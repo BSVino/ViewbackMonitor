@@ -44,6 +44,8 @@ public:
 	tstring GetLastSuccessfulPort() { return m_sLastSuccessfulPort; }
 	void SetLastSuccessfulPort(const tstring& sPort) { m_sLastSuccessfulPort = sPort; }
 
+	float ButtonPanelWidth() const { return 60; }
+
 private:
 	CViewbackClient vb;
 

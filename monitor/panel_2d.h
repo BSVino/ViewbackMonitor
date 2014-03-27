@@ -9,6 +9,8 @@ class CPanel_2D : public CPanel_Base
 public:
 	void RegistrationUpdate();
 
+	void Layout();
+
 	void Paint(float x, float y, float w, float h);
 
 	EVENT_CALLBACK(CPanel_2D, ToggleVisible)

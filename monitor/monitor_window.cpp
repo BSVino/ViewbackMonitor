@@ -97,9 +97,7 @@ void CMonitorWindow::SetupGUI()
 	m_pMenu->SetSize(60, 20);
 	m_pMenu->Layout_AlignBottom(nullptr, 0);
 	m_pMenu->Layout_CenterHorizontal();
-
-	if (PlatformHasMenuKey())
-		m_pMenu->SetVisible(false);
+	m_pMenu->SetVisible(false);
 }
 
 void CMonitorWindow::RegistrationUpdate()

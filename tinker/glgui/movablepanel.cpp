@@ -76,9 +76,11 @@ CMovablePanel::CMovablePanel(const tstring& sName)
 
 	m_hCloseButton = AddControl(new CCloseButton());
 	m_hCloseButton->SetClickedListener(this, CloseWindow);
+	m_hCloseButton->SetBorder(0);
 
 	m_hMinimizeButton = AddControl(new CMinimizeButton());
 	m_hMinimizeButton->SetClickedListener(this, MinimizeWindow);
+	m_hMinimizeButton->SetBorder(0);
 
 	RootPanel()->AddControl(this, true);
 }

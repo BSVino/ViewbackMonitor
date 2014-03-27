@@ -1,11 +1,15 @@
 #include "panel_container.h"
 
-#include <application.h>
 #include <renderer/renderer.h>
+#include <glgui/menu.h>
 
 #include "panel_console.h"
 #include "panel_2D.h"
 #include "panel_time.h"
+#include "monitor_window.h"
+#include "monitor_menu.h"
+
+using namespace glgui;
 
 void CPanelContainer::Setup()
 {
@@ -24,6 +28,11 @@ void CPanelContainer::Setup()
 	m_pPanelTime->SetBackgroundColor(Color(0, 0, 0, 255));
 	m_pPanelTime->SetHighlighted(true);
 
+	m_pViewbackButton = AddControl(new CMonitorMenu());
+	m_pViewbackButton->SetMenuOpen(MENUOPEN_SIDE);
+	m_pGroupsButton = AddControl(new CMenu("Groups"));
+	m_pGroupsButton->SetMenuOpen(MENUOPEN_SIDE);
+
 	Layout();
 }
 
@@ -37,6 +46,15 @@ void CPanelContainer::RegistrationUpdate()
 
 		pPanelBase->RegistrationUpdate();
 	}
+
+	m_pGroupsButton->ClearSubmenus();
+
+	const auto& aGroups = Viewback()->GetGroups();
+
+	for (auto& oGroup : aGroups)
+		m_pGroupsButton->AddSubmenu(oGroup.m_sName.c_str(), this, ShowGroup);
+
+	Layout();
 }
 
 void CPanelContainer::Layout()
@@ -49,6 +67,8 @@ void CPanelContainer::Layout()
 
 	SetSize(flWindowWidth, flWindowHeight);
 
+	flWindowWidth -= MonitorWindow()->ButtonPanelWidth();
+
 	if (m_pMaximizedPanel)
 	{
 		m_pPanelConsole->SetIsMaximized(false);
@@ -58,19 +78,23 @@ void CPanelContainer::Layout()
 		m_pPanelTime->SetIsMaximized(false);
 
 		m_pMaximizedPanel->SetIsMaximized(true);
-		m_pMaximizedPanel->SetDimensionsAnimate(FRect(0, 0, flWindowWidth, flWindowHeight), 0.3);
+		m_pMaximizedPanel->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelWidth(), 0, flWindowWidth, flWindowHeight), 0.3);
 	}
 	else
 	{
 		m_pPanelConsole->SetIsMaximized(false);
-		m_pPanelConsole->SetDimensionsAnimate(FRect(0, 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
+		m_pPanelConsole->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelWidth(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
 
 		m_pPanel2D->SetIsMaximized(false);
-		m_pPanel2D->SetDimensionsAnimate(FRect(flWindowWidth / 2, 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
+		m_pPanel2D->SetDimensionsAnimate(FRect(m_pPanelConsole->GetRight(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
 
 		m_pPanelTime->SetIsMaximized(false);
-		m_pPanelTime->SetDimensionsAnimate(FRect(0, flWindowHeight / 2, flWindowWidth, flWindowHeight / 2), 0.3);
+		m_pPanelTime->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelWidth(), flWindowHeight / 2, flWindowWidth, flWindowHeight / 2), 0.3);
 	}
+
+	m_pViewbackButton->SetSize(MonitorWindow()->ButtonPanelWidth(), MonitorWindow()->ButtonPanelWidth());
+	m_pGroupsButton->SetSize(MonitorWindow()->ButtonPanelWidth(), MonitorWindow()->ButtonPanelWidth());
+	m_pGroupsButton->SetPos(0, MonitorWindow()->ButtonPanelWidth());
 
 	BaseClass::Layout();
 }
@@ -84,6 +108,23 @@ void CPanelContainer::SetMaximizedPanel(const glgui::CControl<CPanel_Base>& pPan
 		MoveToTop(pPanel);
 
 	m_pMaximizedPanel = pPanel;
+
+	Layout();
+}
+
+void CPanelContainer::ShowGroupCallback(const tstring& sArgs)
+{
+	m_pGroupsButton->CloseMenu();
+
+	int iGroup = stoi(sArgs);
+
+	auto& aMeta = Viewback()->GetMeta();
+	for (auto& oMeta : aMeta)
+		oMeta.m_bVisible = false;
+
+	auto& aGroups = Viewback()->GetGroups();
+	for (auto& i : aGroups[iGroup].m_iChannels)
+		aMeta[i].m_bVisible = true;
 
 	Layout();
 }

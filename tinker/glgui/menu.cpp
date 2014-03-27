@@ -75,8 +75,12 @@ void CMenuBar::SetActive( CMenu* pActiveMenu )
 }
 
 CMenu::CMenu(const tstring& sText, bool bSubmenu)
-	: CButton(0, 0, 41, MENU_HEIGHT, sText, true)
+	: CPictureButton(sText)
 {
+	SetWidth(41);
+	SetHeight(MENU_HEIGHT);
+	SetToggleButton(true);
+
 	m_bSubmenu = bSubmenu;
 
 	m_flHighlightGoal = m_flHighlight = m_flMenuHighlightGoal = m_flMenuHighlight = m_flMenuHeightGoal = m_flMenuHeight
@@ -90,6 +94,8 @@ CMenu::CMenu(const tstring& sText, bool bSubmenu)
 
 	m_pfnMenuCallback = NULL;
 	m_pMenuListener = NULL;
+
+	m_eMenuOpen = MENUOPEN_BOTTOM;
 
 	m_hMenu = RootPanel()->AddControl(new CSubmenuPanel(m_hThis), true);
 
@@ -191,17 +197,36 @@ void CMenu::Layout()
 
 	m_hMenu->SetSize(iWidth, iHeight);
 
-	if (y + GetHeight() + 5 + iHeight < RootPanel()->GetHeight())
-		m_hMenu->SetPos(x, y + 5 + GetHeight());
-	else if (y - 5 - iHeight > 0)
-		m_hMenu->SetPos(x, y - 5 - iHeight);
+	if (m_eMenuOpen == MENUOPEN_BOTTOM)
+	{
+		if (y + GetHeight() + 5 + iHeight < RootPanel()->GetHeight())
+			m_hMenu->SetPos(x, y + 5 + GetHeight());
+		else if (y - 5 - iHeight > 0)
+			m_hMenu->SetPos(x, y - 5 - iHeight);
+		else
+		{
+			m_hMenu->SetPos(x, 0);
+			if (iHeight > RootPanel()->GetHeight())
+			{
+				m_hMenu->SetVerticalScrollBarEnabled(true);
+				m_hMenu->SetHeight(RootPanel()->GetHeight());
+			}
+		}
+	}
 	else
 	{
-		m_hMenu->SetPos(x, 0);
-		if (iHeight > RootPanel()->GetHeight())
+		if (y + iHeight < RootPanel()->GetHeight())
+			m_hMenu->SetPos(x + GetWidth() + 5, y);
+		else if (y - 5 - iHeight > 0)
+			m_hMenu->SetPos(x + GetWidth() + 5, y - iHeight);
+		else
 		{
-			m_hMenu->SetVerticalScrollBarEnabled(true);
-			m_hMenu->SetHeight(RootPanel()->GetHeight());
+			m_hMenu->SetPos(x + GetWidth() + 5, 0);
+			if (iHeight > RootPanel()->GetHeight())
+			{
+				m_hMenu->SetVerticalScrollBarEnabled(true);
+				m_hMenu->SetHeight(RootPanel()->GetHeight());
+			}
 		}
 	}
 
@@ -217,7 +242,7 @@ void CMenu::Paint(float x, float y, float w, float h)
 		CRootPanel::PaintRect(x, y, w, h, clrBox, 1);
 	}
 
-	CLabel::Paint(x, y, w, h);
+	BaseClass::Paint(x, y, w, h);
 }
 
 void CMenu::PostPaint()
@@ -228,14 +253,14 @@ void CMenu::CursorIn()
 {
 	m_flHighlightGoal = 1;
 
-	CButton::CursorIn();
+	BaseClass::CursorIn();
 }
 
 void CMenu::CursorOut()
 {
 	m_flHighlightGoal = 0;
 
-	CButton::CursorOut();
+	BaseClass::CursorOut();
 }
 
 void CMenu::SetMenuListener(IEventListener* pListener, IEventListener::Callback pfnCallback)
@@ -298,6 +323,8 @@ void CMenu::AddSubmenu(CMenu* pMenu, IEventListener* pListener, IEventListener::
 	hMenu->SetWrap(false);
 	hMenu->EnsureTextFits();
 	hMenu->SetToggleButton(false);
+	hMenu->SetBorder(BT_NONE);
+	hMenu->m_bShowBackground = false;
 
 	if (pListener)
 		hMenu->SetMenuListener(pListener, pfnCallback);

@@ -2,7 +2,7 @@
 
 #include <glgui/panel.h>
 
-class CPanelContainer : public glgui::CPanel
+class CPanelContainer : public glgui::CPanel, public glgui::IEventListener
 {
 	DECLARE_CLASS(CPanelContainer, glgui::CPanel);
 
@@ -13,6 +13,8 @@ public:
 
 	void SetMaximizedPanel(const glgui::CControl<class CPanel_Base>& pPanel);
 
+	EVENT_CALLBACK(CPanelContainer, ShowGroup);
+
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
 
 private:
@@ -21,4 +23,7 @@ private:
 	glgui::CControl<class CPanel_Time>    m_pPanelTime;
 
 	glgui::CControl<class CPanel_Base>    m_pMaximizedPanel;
+
+	glgui::CControl<glgui::CMenu> m_pViewbackButton;
+	glgui::CControl<glgui::CMenu> m_pGroupsButton;
 };
