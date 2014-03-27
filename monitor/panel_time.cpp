@@ -1,6 +1,6 @@
 #include "panel_time.h"
 
-#include <glgui/label.h>
+#include <glgui/button.h>
 #include <glgui/rootpanel.h>
 #include <tinker/profiler.h>
 #include <renderer/renderingcontext.h>
@@ -40,15 +40,17 @@ void CPanel_Time::RegistrationUpdate()
 		if (oReg.m_eDataType != VB_DATATYPE_INT && oReg.m_eDataType != VB_DATATYPE_FLOAT)
 			continue;
 
-		m_apLabels.push_back(AddControl(new CLabel(oReg.m_sFieldName)));
+		m_apLabels.push_back(AddControl(new CButton(oReg.m_sFieldName)));
 		m_apLabels.back()->SetPos(20, flYPos);
 		m_apLabels.back()->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
 		m_apLabels.back()->SetAlign(CLabel::TA_MIDDLECENTER);
+		m_apLabels.back()->SetClickedListener(this, ToggleVisible, sprintf("%d", i));
+		m_apLabels.back()->SetHeight(15);
 
 		if (oReg.m_eDataType == VB_DATATYPE_INT)
 			m_apLabels.back()->SetBackgroundColor(Color(0, 0, 0, 155));
 
-		flYPos += m_apLabels.back()->GetHeight() + 20;
+		flYPos += m_apLabels.back()->GetHeight() + 10;
 
 		m_aiDataLabels[i] = m_apLabels.size() - 1;
 	}
@@ -130,25 +132,39 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		if (oReg.m_eDataType != VB_DATATYPE_INT && oReg.m_eDataType != VB_DATATYPE_FLOAT)
 			continue;
 
+		if (!oMeta[i].m_bVisible)
+			continue;
+
 		size_t iStart = 0;
+		size_t iEnd = 0;
 		if (oReg.m_eDataType == VB_DATATYPE_INT)
 		{
 			if (oData[i].m_aIntData.size() < 2)
 				continue;
 
-			iStart = FindStartTime(oData[i].m_aIntData, flTimeNow, flSecondsToShow);
+			iStart = FindStartTime(oData[i].m_aIntData, flTimeNow - flSecondsToShow);
+			iEnd = FindStartTime(oData[i].m_aIntData, flTimeNow);
+
+			// Allow the data to go flush up to the screen edge.
+			if (iEnd < oData[i].m_aIntData.size() - 1)
+				iEnd++;
 		}
 		else if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
 		{
 			if (oData[i].m_aFloatData.size() < 2)
 				continue;
 
-			iStart = FindStartTime(oData[i].m_aFloatData, flTimeNow, flSecondsToShow);
+			iStart = FindStartTime(oData[i].m_aFloatData, flTimeNow - flSecondsToShow);
+			iEnd = FindStartTime(oData[i].m_aFloatData, flTimeNow);
+
+			// Allow the data to go flush up to the screen edge.
+			if (iEnd < oData[i].m_aFloatData.size() - 1)
+				iEnd++;
 		}
 		else
 			continue;
 
-		// Allow the data to go flush up to the left screen edge.
+		// Allow the data to go flush up to the screen edge.
 		if (iStart > 0)
 			iStart--;
 
@@ -171,7 +187,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 				float flMin = aFloatData[iStart].data;
 				float flMax = aFloatData[iStart].data;
 
-				for (size_t j = iStart; j < aFloatData.size(); j++)
+				for (size_t j = iStart; j <= iEnd; j++)
 				{
 					if (aFloatData[j].time > flTimeNow)
 						break;
@@ -208,7 +224,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			c.Color(Color(255, 255, 255, 255));
 
 			Vector v;
-			for (size_t j = iStart; j < aFloatData.size() - 1; j++)
+			for (size_t j = iStart; j < iEnd; j++)
 			{
 				v.x = (float)RemapVal(aFloatData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 				v.y = RemapVal(aFloatData[j].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
@@ -221,7 +237,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 			c.EndRender();
 
-			tstring sValue = sprintf("%.2f", aFloatData.back().data);
+			tstring sValue = sprintf("%.2f", aFloatData[iEnd].data);
 			float flWidth = CLabel::GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
 			CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, x + w - flWidth - 10, v.y - 14, Color(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f));
 		}
@@ -241,7 +257,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 			Color clrBox(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f);
 
-			for (size_t j = iStart + 1; j < aIntData.size(); j++)
+			for (size_t j = iStart + 1; j <= iEnd; j++)
 			{
 				float flXStart = (float)RemapVal(flValueTimeStart, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 				float flXEnd = (float)RemapVal(aIntData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w) - 2;
@@ -316,6 +332,21 @@ void CPanel_Time::CursorMoved(int mx, int my, int dx, int dy)
 		if (m_flOverrideTime > MonitorWindow()->GetViewback()->PredictCurrentTime())
 			m_bOverrideTime = false;
 	}
+}
+
+void CPanel_Time::ToggleVisibleCallback(const tstring& sArgs)
+{
+	unsigned int i = stoi(sArgs);
+
+	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
+
+	if (i < 0)
+		return;
+
+	if (i >= aMeta.size())
+		return;
+
+	aMeta[i].m_bVisible = !aMeta[i].m_bVisible;
 }
 
 

@@ -4,7 +4,7 @@
 
 #include <glgui/panel.h>
 
-class CPanel_Base : public glgui::CPanel, glgui::IEventListener
+class CPanel_Base : public glgui::CPanel, public glgui::IEventListener
 {
 	DECLARE_CLASS(CPanel_Base, glgui::CPanel);
 
@@ -21,13 +21,13 @@ public:
 	void SetIsMaximized(bool bMaximized);
 
 	template <typename T>
-	size_t FindStartTime(const std::deque<T>& aData, double flNow, double flDuration)
+	size_t FindStartTime(const std::deque<T>& aData, double flTime)
 	{
 		if (aData.size() < 2)
 			return 0;
 
 		double flFirstTime = aData.front().time;
-		double flTimeFrom = flNow - flDuration;
+		double flTimeFrom = flTime;
 
 		size_t iStart = 0;
 

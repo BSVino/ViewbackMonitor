@@ -21,8 +21,10 @@ public:
 	virtual bool MouseReleased(int code, int mx, int my);
 	virtual void CursorMoved(int mx, int my, int dx, int dy);
 
+	EVENT_CALLBACK(CPanel_Time, ToggleVisible)
+
 private:
-	tvector<glgui::CControl<glgui::CLabel>> m_apLabels;
+	tvector<glgui::CControl<glgui::CButton>> m_apLabels;
 
 	tvector<int> m_aiDataLabels; // Maps a data index to an m_apLabels position.
 

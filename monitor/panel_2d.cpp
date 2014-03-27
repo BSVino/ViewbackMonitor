@@ -62,7 +62,7 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 
 		auto& aVectorData = oData[i].m_aVectorData;
 
-		size_t iStart = FindStartTime(aVectorData, flLatestData, oMeta[i].m_flDisplayDuration);
+		size_t iStart = FindStartTime(aVectorData, flLatestData - oMeta[i].m_flDisplayDuration);
 
 		if (oRegistrations[i].m_flMax != 0)
 		{
