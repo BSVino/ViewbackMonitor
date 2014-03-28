@@ -339,7 +339,7 @@ bool CPanel_Time::MousePressed(int code, int mx, int my)
 	if (!bUsed)
 	{
 		m_bDragging = true;
-		m_flLastDragVelocity = 0;
+		m_aflLastDragVelocity.clear();
 
 		if (!m_bOverrideTime)
 		{
@@ -353,7 +353,16 @@ bool CPanel_Time::MousePressed(int code, int mx, int my)
 
 bool CPanel_Time::MouseReleased(int code, int mx, int my)
 {
-	if (m_bDragging && m_bOverrideTime && m_flLastDragVelocity < -2000)
+	// Our heuristic for whether the user wants to fling is, is the finger
+	// speeding up or slowing down at the end of the mouse event?
+	int iNegativeAccel = 0;
+	for (size_t i = 1; i < m_aflLastDragVelocity.size(); i++)
+	{
+		if (m_aflLastDragVelocity[i] < m_aflLastDragVelocity[i - 1])
+			iNegativeAccel++;
+	}
+
+	if (m_bDragging && m_bOverrideTime && iNegativeAccel > 3 && m_aflLastDragVelocity.back() < -50.0f)
 	{
 		m_bOverrideTime = false;
 		m_flFastForwardStartTime = RootPanel()->GetTime();
@@ -372,7 +381,10 @@ void CPanel_Time::CursorMoved(int mx, int my, int dx, int dy)
 	if (m_bDragging && RootPanel()->GetFrameTime())
 	{
 		double flNewVelocity = dx / RootPanel()->GetFrameTime();
-		m_flLastDragVelocity = (m_flLastDragVelocity + flNewVelocity)/2; // Use a bit of smoothing.
+		m_aflLastDragVelocity.push_back(flNewVelocity);
+
+		if (m_aflLastDragVelocity.size() > 6)
+			m_aflLastDragVelocity.pop_front();
 	}
 
 	if (m_bDragging && m_bOverrideTime)

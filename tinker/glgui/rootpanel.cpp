@@ -244,14 +244,17 @@ bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)
 
 void CRootPanel::CursorMoved(int x, int y)
 {
-	int dx = (int)((x - m_iMX) * Application()->GetGUIScale());
-	int dy = (int)((y - m_iMY) * Application()->GetGUIScale());
+	x = x * Application()->GetGUIScale();
+	y = y * Application()->GetGUIScale();
+
+	int dx = (int)(x - m_iMX);
+	int dy = (int)(y - m_iMY);
 
 	m_iMX = x;
 	m_iMY = y;
 
 	if (!m_pDragging)
-		CPanel::CursorMoved(x, y, dx, dy);
+		CPanel::CursorMoved(m_iMX, m_iMY, dx, dy);
 }
 
 void CRootPanel::DragonDrop(IDroppable* pDroppable)

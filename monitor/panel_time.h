@@ -33,7 +33,8 @@ private:
 	bool   m_bDragging;
 	bool   m_bOverrideTime;
 	double m_flOverrideTime;
-	double m_flLastDragVelocity;
+
+	std::deque<double> m_aflLastDragVelocity;
 
 	double m_flFastForwardStartTime;
 	double m_flFastForwardFromTime;
