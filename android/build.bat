@@ -7,13 +7,7 @@ IF ERRORLEVEL 1 (
 	exit /b
 )
 
-set /p PACKAGE="Pack it up? y/n: "
-
-if "%PACKAGE%"=="n" (
-    rem
-) else (
-    xcopy /s /y ..\install assets
-    del "assets\*.dll" 
-    call \adt-bundle-windows-x86_64-20131030\apache-ant-1.9.3\bin\ant debug install
-    pause
-)
+xcopy /s /y ..\install assets
+del "assets\*.dll" 
+call \adt-bundle-windows-x86_64-20131030\apache-ant-1.9.3\bin\ant debug install
+pause
