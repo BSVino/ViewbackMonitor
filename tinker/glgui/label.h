@@ -121,6 +121,8 @@ namespace glgui
 		virtual void	ComputeLines(float w = -1, float h = -1);
 		virtual void	PushSection(const CLineSection& oSection, const tstring& sText);
 
+		virtual int     GetNumLines();
+
 		virtual size_t				GetNumLines() const { return m_aLines.size(); }
 		virtual const CLine&		GetLine(size_t iLine) const { return m_aLines[iLine]; }
 		virtual size_t				GetNumSections(size_t iLine) const { return m_aLines[iLine].m_aSections.size(); }

@@ -384,7 +384,7 @@ void CLabel::PaintText(const tstring& sText, unsigned iLength, class ::FTFont* p
 	c.SetUniform("vecColor", clrText);
 	c.Translate(Vector(x, CRootPanel::Get()->GetBottom()-y-flBaseline, 0) / Application()->GetGUIScale());
 
-	if (rStencil.x > 0)
+	if (rStencil.x >= 0)
 	{
 		c.SetUniform("bScissor", true);
 
@@ -873,6 +873,14 @@ void CLabel::PushSection(const CLineSection& oSection, const tstring& sLine)
 
 	m_aLines.back().m_aSections.push_back(s);
 	m_aLines.back().m_flLineWidth += flSectionWidth;
+}
+
+int CLabel::GetNumLines()
+{
+	if (m_bNeedsCompute)
+		ComputeLines();
+
+	return m_aLines.size();
 }
 
 tstring CLabel::GetText() const

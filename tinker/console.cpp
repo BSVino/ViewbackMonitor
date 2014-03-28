@@ -110,6 +110,39 @@ void CConsole::Layout()
 	BaseClass::Layout();
 }
 
+void CConsole::Think()
+{
+	BaseClass::Think();
+
+	if (m_hOutput->GetTextHeight() > GetHeight() * 2)
+	{
+		tvector<tstring> asTokens;
+		explode(m_hOutput->GetText(), asTokens, "\n");
+
+		// About how many lines can we fit in the space we have?
+		size_t iLinesInSpace = (int)(GetHeight() / m_hOutput->GetTextHeight() * m_hOutput->GetNumLines());
+
+		iLinesInSpace = (size_t)((float)iLinesInSpace * 1.5f);
+
+		if (asTokens.size() > iLinesInSpace)
+		{
+			int iInitialLines = asTokens.size();
+			asTokens.erase(asTokens.begin(), asTokens.end() - iLinesInSpace);
+
+			tstring sNewOutput;
+			for (size_t i = 0; i < asTokens.size(); i++)
+			{
+				if (!asTokens[i].length())
+					continue;
+
+				sNewOutput += asTokens[i] + "\n";
+			}
+
+			m_hOutput->SetText(sNewOutput);
+		}
+	}
+}
+
 void CConsole::Paint(float x, float y, float w, float h)
 {
 	if (!CApplication::Get()->IsOpen())
@@ -140,9 +173,6 @@ void CConsole::PrintConsole(const tstring& sText)
 		DebugPrint(sText.c_str());
 
 	m_hOutput->AppendText(sText);
-
-	if (m_hOutput->GetText().length() > 2500)
-		m_hOutput->SetText(m_hOutput->GetText().substr(500));
 
 	if (!CApplication::Get()->IsOpen())
 		return;

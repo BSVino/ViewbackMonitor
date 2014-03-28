@@ -4,6 +4,7 @@
 #include <glgui/textfield.h>
 #include <glgui/rootpanel.h>
 #include <tinker/application.h>
+#include <tinker/profiler.h>
 
 #include "monitor_window.h"
 
@@ -18,6 +19,8 @@ CPanel_Console::CPanel_Console()
 
 	m_hStatus = AddControl(new CLabel(0, 0, 100, 100, ""));
 	m_hStatus->SetAlign(CLabel::TA_TOPLEFT);
+
+	m_bScissoring = true;
 }
 
 void CPanel_Console::Layout()
@@ -45,6 +48,42 @@ void CPanel_Console::Think()
 	}
 	else
 		m_hStatus->SetVisible(false);
+
+	// If there's too much shit in the console, throw some out.
+	if (m_hOutput->GetTextHeight() > GetHeight() * 2)
+	{
+		tvector<tstring> asTokens;
+		explode(m_hOutput->GetText(), asTokens, "\n");
+
+		// About how many lines can we fit in the space we have?
+		size_t iLinesInSpace = (int)(GetHeight() / m_hOutput->GetTextHeight() * m_hOutput->GetNumLines());
+
+		iLinesInSpace = (size_t)((float)iLinesInSpace * 1.5f);
+
+		if (asTokens.size() > iLinesInSpace)
+		{
+			int iInitialLines = asTokens.size();
+			asTokens.erase(asTokens.begin(), asTokens.end() - iLinesInSpace);
+
+			tstring sNewOutput;
+			for (size_t i = 0; i < asTokens.size(); i++)
+			{
+				if (!asTokens[i].length())
+					continue;
+
+				sNewOutput += asTokens[i] + "\n";
+			}
+
+			m_hOutput->SetText(sNewOutput);
+		}
+	}
+}
+
+void CPanel_Console::Paint(float x, float y, float w, float h)
+{
+	TPROF("CPanel_Console::Paint()");
+
+	BaseClass::Paint(x, y, w, h);
 }
 
 void CPanel_Console::PrintConsole(const tstring& sText)

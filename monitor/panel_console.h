@@ -13,6 +13,7 @@ public:
 	void Layout();
 
 	void Think();
+	void Paint(float x, float y, float w, float h);
 
 	void PrintConsole(const tstring& sText);
 
