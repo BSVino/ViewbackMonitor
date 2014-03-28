@@ -165,3 +165,8 @@ void CMonitorWindow::SaveConfig()
 	fclose(fp);
 }
 
+bool CMonitorWindow::ButtonPanelSide() const
+{
+	return m_iWindowWidth > m_iWindowHeight;
+}
+

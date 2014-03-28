@@ -44,7 +44,8 @@ public:
 	tstring GetLastSuccessfulPort() { return m_sLastSuccessfulPort; }
 	void SetLastSuccessfulPort(const tstring& sPort) { m_sLastSuccessfulPort = sPort; }
 
-	float ButtonPanelWidth() const { return 60; }
+	float ButtonPanelSize() const { return 60; }
+	bool  ButtonPanelSide() const; // If return true, the button panel goes on the side. False, it goes on the top.
 
 private:
 	CViewbackClient vb;

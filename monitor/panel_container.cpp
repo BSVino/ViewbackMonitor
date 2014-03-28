@@ -67,7 +67,10 @@ void CPanelContainer::Layout()
 
 	SetSize(flWindowWidth, flWindowHeight);
 
-	flWindowWidth -= MonitorWindow()->ButtonPanelWidth();
+	if (MonitorWindow()->ButtonPanelSide())
+		flWindowWidth -= MonitorWindow()->ButtonPanelSize();
+	else
+		flWindowHeight -= MonitorWindow()->ButtonPanelSize();
 
 	if (m_pMaximizedPanel)
 	{
@@ -78,23 +81,54 @@ void CPanelContainer::Layout()
 		m_pPanelTime->SetIsMaximized(false);
 
 		m_pMaximizedPanel->SetIsMaximized(true);
-		m_pMaximizedPanel->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelWidth(), 0, flWindowWidth, flWindowHeight), 0.3);
+
+		if (MonitorWindow()->ButtonPanelSide())
+			m_pMaximizedPanel->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelSize(), 0, flWindowWidth, flWindowHeight), 0.3);
+		else
+			m_pMaximizedPanel->SetDimensionsAnimate(FRect(0, MonitorWindow()->ButtonPanelSize(), flWindowWidth, flWindowHeight), 0.3);
 	}
 	else
 	{
 		m_pPanelConsole->SetIsMaximized(false);
-		m_pPanelConsole->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelWidth(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
 
 		m_pPanel2D->SetIsMaximized(false);
-		m_pPanel2D->SetDimensionsAnimate(FRect(m_pPanelConsole->GetRight(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
 
 		m_pPanelTime->SetIsMaximized(false);
-		m_pPanelTime->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelWidth(), flWindowHeight / 2, flWindowWidth, flWindowHeight / 2), 0.3);
+
+		if (MonitorWindow()->ButtonPanelSide())
+		{
+			m_pPanelConsole->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelSize(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
+			m_pPanel2D->SetDimensionsAnimate(FRect(m_pPanelConsole->GetRight(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
+			m_pPanelTime->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelSize(), flWindowHeight / 2, flWindowWidth, flWindowHeight / 2), 0.3);
+		}
+		else
+		{
+			m_pPanelConsole->SetDimensionsAnimate(FRect(0, MonitorWindow()->ButtonPanelSize(), flWindowWidth / 2, flWindowHeight / 2), 0.3);
+			m_pPanel2D->SetDimensionsAnimate(FRect(m_pPanelConsole->GetRight(), MonitorWindow()->ButtonPanelSize(), flWindowWidth / 2, flWindowHeight / 2), 0.3);
+			m_pPanelTime->SetDimensionsAnimate(FRect(0, m_pPanelConsole->GetBottom(), flWindowWidth, flWindowHeight / 2), 0.3);
+		}
 	}
 
-	m_pViewbackButton->SetSize(MonitorWindow()->ButtonPanelWidth(), MonitorWindow()->ButtonPanelWidth());
-	m_pGroupsButton->SetSize(MonitorWindow()->ButtonPanelWidth(), MonitorWindow()->ButtonPanelWidth());
-	m_pGroupsButton->SetPos(0, MonitorWindow()->ButtonPanelWidth());
+	tvector<CButton*> apButtons;
+	apButtons.push_back(m_pViewbackButton);
+	apButtons.push_back(m_pGroupsButton);
+
+	if (MonitorWindow()->ButtonPanelSide())
+	{
+		for (size_t i = 0; i < apButtons.size(); i++)
+		{
+			apButtons[i]->SetSize(MonitorWindow()->ButtonPanelSize(), MonitorWindow()->ButtonPanelSize());
+			apButtons[i]->SetPos(0, MonitorWindow()->ButtonPanelSize() * i);
+		}
+	}
+	else
+	{
+		for (size_t i = 0; i < apButtons.size(); i++)
+		{
+			apButtons[i]->SetSize(MonitorWindow()->ButtonPanelSize(), MonitorWindow()->ButtonPanelSize());
+			apButtons[i]->SetPos(MonitorWindow()->ButtonPanelSize() * i, 0);
+		}
+	}
 
 	BaseClass::Layout();
 }
