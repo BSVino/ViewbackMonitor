@@ -27,7 +27,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include <csignal>
 
 #define TDebugBreak() \
-	::raise(SIGTRAP); \
+	// Nothing for now.
 
 #else
 
@@ -85,10 +85,12 @@ extern void DebugPrint(const char* pszText);
 
 #if defined(__ANDROID__)
 // If you hit this, the code is either incomplete or untested.
-#define TUnimplemented() {TAssertNoMsg(false); \
+#define TUnimplemented() { \
 	char s[1000]; \
 	sprintf(s, "TUnimplemented file " __FILE__ " line %d\n", __LINE__); \
-	DebugPrint(s); }
+	DebugPrint(s); \
+	TAssertNoMsg(false); \
+	}
 #else
 // If you hit this, the code is either incomplete or untested.
 #define TUnimplemented() TAssertNoMsg(false)
