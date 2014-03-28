@@ -140,16 +140,19 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 	{
 		float flX = (float)RemapVal((double)i, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 
-		if (flX < x - 20)
-			continue;
-
 		if (flX > x + w)
 			continue;
 
-		CBaseControl::PaintRect(flX, y, 1, h, Color(128, 128, 128, 255));
+		if (flX < x - 30)
+			continue;
 
 		tstring sTime = tsprintf("%ds", i);
-		CLabel::PaintText(sTime, sTime.length(), "sans-serif", 12, flX + 5, y + h - 14, Color(128, 128, 128, 255));
+		CLabel::PaintText(sTime, sTime.length(), "sans-serif", 12, flX + 5, y + h - 14, Color(128, 128, 128, 255), FRect(x, y, x+w, y+h));
+
+		if (flX < x)
+			continue;
+
+		CBaseControl::PaintRect(flX, y, 1, h, Color(128, 128, 128, 255));
 	}
 
 	auto& oChannels = MonitorWindow()->GetViewback()->GetChannels();
@@ -257,12 +260,28 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			Vector v;
 			for (size_t j = iStart; j < iEnd; j++)
 			{
-				v.x = (float)RemapVal(aFloatData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
-				v.y = RemapVal(aFloatData[j].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
+				float x1, x2, y1, y2;
+				x1 = (float)RemapVal(aFloatData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
+				x2 = (float)RemapVal(aFloatData[j + 1].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
+
+				if (x1 < x && x2 < x)
+					continue;
+
+				y1 = RemapVal(aFloatData[j].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
+				y2 = RemapVal(aFloatData[j + 1].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
+
+				if (x1 < x)
+				{
+					y1 = RemapVal(x, x1, x2, y1, y2);
+					x1 = x;
+				}
+
+				v.x = x1;
+				v.y = y1;
 				c.Vertex(v);
 
-				v.x = (float)RemapVal(aFloatData[j + 1].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
-				v.y = RemapVal(aFloatData[j + 1].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
+				v.x = x2;
+				v.y = y2;
 				c.Vertex(v);
 			}
 
