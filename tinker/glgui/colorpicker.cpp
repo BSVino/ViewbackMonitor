@@ -202,10 +202,10 @@ bool CColorPicker::Update(int x, int y)
 		m_flLightness = RemapVal((float)y, BarY(), BarY() + BarH(), 1, 0);
 		m_clrRGB.SetHSL(m_flHue, m_flSaturation, m_flLightness);
 
-		m_hValue->SetText(sprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
+		m_hValue->SetText(tsprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
 
 		if (m_pfnChangedCallback)
-			m_pfnChangedCallback(m_pChangedListener, sprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
+			m_pfnChangedCallback(m_pChangedListener, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
 
 		return true;
 	}
@@ -227,10 +227,10 @@ bool CColorPicker::Update(int x, int y)
 
 	m_clrRGB.SetHSL(m_flHue, m_flSaturation, m_flLightness);
 
-	m_hValue->SetText(sprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
+	m_hValue->SetText(tsprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
 
 	if (m_pfnChangedCallback)
-		m_pfnChangedCallback(m_pChangedListener, sprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
+		m_pfnChangedCallback(m_pChangedListener, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
 
 	return true;
 }
@@ -250,7 +250,7 @@ void CColorPicker::ValueChangedCallback(const tstring& sArgs)
 	m_clrRGB.GetHSL(m_flHue, m_flSaturation, m_flLightness);
 
 	if (m_pfnChangedCallback)
-		m_pfnChangedCallback(m_pChangedListener, sprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
+		m_pfnChangedCallback(m_pChangedListener, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
 }
 
 void CColorPicker::Close()
@@ -273,7 +273,7 @@ void CColorPicker::SetColor(const Vector& vecColor)
 
 	m_clrRGB.GetHSL(m_flHue, m_flSaturation, m_flLightness);
 
-	m_hValue->SetText(sprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
+	m_hValue->SetText(tsprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
 }
 
 Vector CColorPicker::GetColorVector()

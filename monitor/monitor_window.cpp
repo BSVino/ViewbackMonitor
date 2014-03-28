@@ -38,7 +38,7 @@ void ConsoleOutput(const char* pszText)
 
 void DebugOutput(const char* pszText)
 {
-	TMsg(sprintf(tstring("VB: %s"), pszText));
+	TMsg(tsprintf("VB: %s", pszText));
 }
 
 void CMonitorWindow::Run()

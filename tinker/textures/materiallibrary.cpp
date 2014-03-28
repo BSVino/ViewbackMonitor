@@ -84,7 +84,7 @@ CMaterial* CMaterialLibrary::CreateMaterial(const CData* pData, const tstring& s
 	if (!sMaterialOutput.length())
 	{
 		static int i = 0;
-		sMaterial = sprintf("[from data %x]", i++);
+		sMaterial = tsprintf("[from data %x]", i++);
 	}
 
 	CData* pShaderData = pData->FindChild("Shader");
@@ -355,12 +355,12 @@ void CMaterial::SetParameter(const tstring& sParameterName, const tstring& sValu
 
 void CMaterial::SetParameter(const tstring& sParameterName, const Vector& vecValue)
 {
-	SetParameter(sParameterName, sprintf("%f %f %f 1", vecValue.x, vecValue.y, vecValue.z));
+	SetParameter(sParameterName, tsprintf("%f %f %f 1", vecValue.x, vecValue.y, vecValue.z));
 }
 
 void CMaterial::SetParameter(const tstring& sParameterName, float flValue)
 {
-	SetParameter(sParameterName, sprintf("%f", flValue));
+	SetParameter(sParameterName, tsprintf("%f", flValue));
 }
 
 void CMaterial::FillParameter(size_t iParameter, const tstring& sData, class CShader* pShader)

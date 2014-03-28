@@ -44,7 +44,7 @@ void CPanel_Time::RegistrationUpdate()
 		m_apLabels.back()->SetPos(20, flYPos);
 		m_apLabels.back()->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
 		m_apLabels.back()->SetAlign(CLabel::TA_MIDDLECENTER);
-		m_apLabels.back()->SetClickedListener(this, ToggleVisible, sprintf("%d", i));
+		m_apLabels.back()->SetClickedListener(this, ToggleVisible, tsprintf("%d", i));
 		m_apLabels.back()->SetHeight(18);
 
 		if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
@@ -148,7 +148,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 		CBaseControl::PaintRect(flX, y, 1, h, Color(128, 128, 128, 255));
 
-		tstring sTime = sprintf("%ds", i);
+		tstring sTime = tsprintf("%ds", i);
 		CLabel::PaintText(sTime, sTime.length(), "sans-serif", 12, flX + 5, y + h - 14, Color(128, 128, 128, 255));
 	}
 
@@ -268,7 +268,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 			c.EndRender();
 
-			tstring sValue = sprintf("%.2f", aFloatData[iEnd].data);
+			tstring sValue = tsprintf("%.2f", aFloatData[iEnd].data);
 			float flWidth = CLabel::GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
 			CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, x + w - flWidth - 10, v.y - 14, Color(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f));
 		}

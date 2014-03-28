@@ -247,7 +247,7 @@ inline tstring convert_from_wstring(const std::wstring& s)
 	return t;
 }
 
-inline tstring sprintf(tstring s, ...)
+inline tstring tsprintf(tstring s, ...)
 {
 	va_list arguments;
 	va_start(arguments, s);
@@ -268,7 +268,7 @@ inline tstring sprintf(tstring s, ...)
 
 	if(iCharacters >= (int)q.length())
 	{
-		q.resize(iCharacters*2);
+		q.resize(iCharacters*2+1);
 		iCharacters = VSNPRINTF8(&q[0], q.size()-1, s.c_str(), arguments);
 	}
 	else if(iCharacters < 0)
@@ -367,7 +367,7 @@ inline C* strdup(const C* s)
 
 inline tstring pretty_float(float f, int iMaxLength=8)
 {
-	tstring s = sprintf("%." + sprintf("%d", iMaxLength) + "f", f);
+	tstring s = tsprintf("%." + tsprintf("%d", iMaxLength) + "f", f);
 
 	size_t i = s.length();
 	while (s[i-1] == '0')

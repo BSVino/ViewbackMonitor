@@ -343,7 +343,7 @@ void CMenu::AddSubmenu(CMenu* pMenu, IEventListener* pListener, IEventListener::
 		iTotalControls++;
 	}
 
-	hMenu->SetClickedListener(hMenu, Clicked, sprintf("%d " + pMenu->GetText(), iTotalControls-1));
+	hMenu->SetClickedListener(hMenu, Clicked, tsprintf("%d " + pMenu->GetText(), iTotalControls-1));
 
 	m_ahEntries.push_back(hMenu);
 }

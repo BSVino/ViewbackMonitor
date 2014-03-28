@@ -94,7 +94,7 @@ void CFrameBuffer::RemoveFromBufferList(CFrameBuffer* pBuffer)
 
 CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 {
-	TMsg(sprintf("Initializing %dx%d renderer\n", iWidth, iHeight));
+	TMsg(tsprintf("Initializing %dx%d renderer\n", iWidth, iHeight));
 
 	if (!HardwareSupported())
 	{
@@ -136,7 +136,7 @@ void CRenderer::Initialize()
 		exit(1);
 	}
 	else
-		TMsg(sprintf("%d shaders loaded.\n", CShaderLibrary::GetNumShaders()));
+		TMsg(tsprintf("%d shaders loaded.\n", CShaderLibrary::GetNumShaders()));
 }
 
 void CRenderer::LoadShaders()
@@ -174,8 +174,8 @@ void CRenderer::ViewportResize(size_t w, size_t h)
 	{
 		m_oBloom1Buffers[i].Destroy();
 		m_oBloom2Buffers[i].Destroy();
-		m_oBloom1Buffers[i] = CreateFrameBuffer(sprintf(tstring("bloom1_%d"), i), iWidth, iHeight, (fb_options_e)(FB_TEXTURE|FB_LINEAR));
-		m_oBloom2Buffers[i] = CreateFrameBuffer(sprintf(tstring("bloom2_%d"), i), iWidth, iHeight, (fb_options_e)(FB_TEXTURE));
+		m_oBloom1Buffers[i] = CreateFrameBuffer(tsprintf("bloom1_%d", i), iWidth, iHeight, (fb_options_e)(FB_TEXTURE|FB_LINEAR));
+		m_oBloom2Buffers[i] = CreateFrameBuffer(tsprintf("bloom2_%d", i), iWidth, iHeight, (fb_options_e)(FB_TEXTURE));
 		iWidth /= 2;
 		iHeight /= 2;
 	}
@@ -291,7 +291,7 @@ CFrameBuffer CRenderer::CreateFrameBuffer(const tstring& sName, size_t iWidth, s
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
-		TMsg(sprintf("Framebuffer '" + sName + "' (%dx%d) incomplete, options: %d status: %d\n", iWidth, iHeight, eOptions, status));
+		TMsg(tsprintf("Framebuffer '" + sName + "' (%dx%d) incomplete, options: %d status: %d\n", iWidth, iHeight, eOptions, status));
 	TAssert(status == GL_FRAMEBUFFER_COMPLETE);
 
 	GLint iFBSamples;
@@ -829,7 +829,7 @@ bool CRenderer::HardwareSupported()
     GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
 	{
-		TError(sprintf("Test framebuffer compile failed. Status: %d\n", status));
+		TError(tsprintf("Test framebuffer compile failed. Status: %d\n", status));
 		glDeleteTextures(1, &oBuffer.m_iMap);
 		glDeleteRenderbuffers(1, &oBuffer.m_iDepth);
 		glDeleteFramebuffers(1, &oBuffer.m_iFB);
@@ -1360,7 +1360,7 @@ void R_DumpFBO(class CCommand* pCommand, tvector<tstring>& asTokens, const tstri
 			std::swap(aclrPixels[j*iWidth + i], aclrPixels[iWidth*(iHeight-j-1) + i]);
 	}
 
-	CRenderer::WriteTextureToFile(aclrPixels.data(), iWidth, iHeight, sprintf("fbo-%d.png", iFBO));
+	CRenderer::WriteTextureToFile(aclrPixels.data(), iWidth, iHeight, tsprintf("fbo-%d.png", iFBO));
 }
 
 CCommand r_dumpfbo(tstring("r_dumpfbo"), ::R_DumpFBO);
@@ -1370,7 +1370,7 @@ void R_ListFBOs(class CCommand* pCommand, tvector<tstring>& asTokens, const tstr
 	for (size_t i = 0; i < CFrameBuffer::GetFrameBuffers().size(); i++)
 	{
 		auto& oFrameBuffer = CFrameBuffer::GetFrameBuffers()[i];
-		TMsg(sprintf(tstring("Buffer %d \"%s\" (%dx%d): RB:%d, Map:%d, Depth:%d, DepthTexture:%d, Multisample:%s\n"),
+		TMsg(tsprintf("Buffer %d \"%s\" (%dx%d): RB:%d, Map:%d, Depth:%d, DepthTexture:%d, Multisample:%s\n",
 			oFrameBuffer.m_iFB, oFrameBuffer.m_sName.c_str(), oFrameBuffer.m_iWidth, oFrameBuffer.m_iHeight, oFrameBuffer.m_iRB,
 			oFrameBuffer.m_iMap, oFrameBuffer.m_iDepth, oFrameBuffer.m_iDepthTexture, oFrameBuffer.m_bMultiSample?"yes":"no"));
 	}

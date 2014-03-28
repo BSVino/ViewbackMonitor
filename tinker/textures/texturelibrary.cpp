@@ -48,14 +48,14 @@ CTextureHandle CTextureLibrary::AddTexture(const tstring& sTexture, int iClamp)
 CTextureHandle CTextureLibrary::AddTexture(Vector* vecColors, size_t iWidth, size_t iHeight, bool bMipMaps)
 {
 	static int i = 0;
-	tstring sName = sprintf("[generated vector texture %d]", i++);
+	tstring sName = tsprintf("[generated vector texture %d]", i++);
 	return CTextureHandle(sName, AddAsset(sName, vecColors, iWidth, iHeight, bMipMaps));
 }
 
 CTextureHandle CTextureLibrary::AddTexture(Color* clrColors, size_t iWidth, size_t iHeight, bool bMipMaps)
 {
 	static int i = 0;
-	tstring sName = sprintf("[generated vector texture %d]", i++);
+	tstring sName = tsprintf("[generated vector texture %d]", i++);
 	return CTextureHandle(sName, AddAsset(sName, clrColors, iWidth, iHeight, bMipMaps));
 }
 

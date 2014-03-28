@@ -134,7 +134,7 @@ void CLabel::Paint(float x, float y, float w, float h)
 				if (MouseIsInside(oLine, oSection))
 				{
 					if (m_pSectionHoverListener)
-						m_pfnSectionHoverCallback(m_pSectionHoverListener, sprintf("%d %d", i, j));
+						m_pfnSectionHoverCallback(m_pSectionHoverListener, tsprintf("%d %d", i, j));
 
 					if (glgui_showsections.GetBool())
 					{
@@ -937,7 +937,7 @@ void CLabel::SetSectionHoverListener(IEventListener* pListener, IEventListener::
 #if defined(__ANDROID__)
 		sFont = "/system/fonts/DroidSans.ttf";
 #elif defined(_WIN32)
-		sFont = sprintf(tstring("%s\\Fonts\\Arial.ttf"), getenv("windir"));
+		sFont = tsprintf(tstring("%s\\Fonts\\Arial.ttf"), getenv("windir"));
 #else
 		sFont = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
 #endif

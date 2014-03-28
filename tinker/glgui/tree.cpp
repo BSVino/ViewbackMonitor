@@ -219,7 +219,7 @@ bool CTree::MouseDoubleClicked(int code, int mx, int my)
 			pTreeNode->Selected();
 
 			if (m_pfnConfirmedCallback)
-				m_pfnConfirmedCallback(m_pConfirmedListener, sprintf("%d", GetSelectedNodeId()));
+				m_pfnConfirmedCallback(m_pConfirmedListener, tsprintf("%d", GetSelectedNodeId()));
 
 			return true;
 		}
@@ -353,7 +353,7 @@ void CTree::SetSelectedNode(size_t iNode)
 	m_iSelected = iNode;
 
 	if (m_pSelectedListener)
-		m_pfnSelectedCallback(m_pSelectedListener, sprintf("%d", GetSelectedNodeId()));
+		m_pfnSelectedCallback(m_pSelectedListener, tsprintf("%d", GetSelectedNodeId()));
 }
 
 void CTree::SetSelectedListener(IEventListener* pListener, IEventListener::Callback pfnCallback)
@@ -555,7 +555,7 @@ CControl<CTreeNode> CTreeNode::GetNode(size_t i)
 void CTreeNode::Selected()
 {
 	if (m_hTree->m_pSelectedListener)
-		m_hTree->m_pfnSelectedCallback(m_hTree->m_pSelectedListener, sprintf("%d", m_hTree->GetSelectedNodeId()));
+		m_hTree->m_pfnSelectedCallback(m_hTree->m_pSelectedListener, tsprintf("%d", m_hTree->GetSelectedNodeId()));
 }
 
 bool CTreeNode::IsVisible()

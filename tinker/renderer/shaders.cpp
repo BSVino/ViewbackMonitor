@@ -278,7 +278,7 @@ void CShaderLibrary::WriteLog(const tstring& sFile, const char* pszLog, const ch
 
 	tstring sLogFile = Application()->GetAppDataDirectory("shaders.txt");
 
-	TMsg(sprintf(tstring("Log file location: %s"), sLogFile.c_str()));
+	TMsg(tsprintf("Log file location: %s", sLogFile.c_str()));
 
 	if (m_bLogNeedsClearing)
 	{
@@ -471,7 +471,7 @@ bool CShader::Compile()
 	m_iTangentAttribute = glGetAttribLocation(m_iProgram, "vecTangent");
 	m_iBitangentAttribute = glGetAttribLocation(m_iProgram, "vecBitangent");
 	for (size_t i = 0; i < MAX_TEXTURE_CHANNELS; i++)
-		m_aiTexCoordAttributes[i] = glGetAttribLocation(m_iProgram, sprintf("vecTexCoord%d", i).c_str());
+		m_aiTexCoordAttributes[i] = glGetAttribLocation(m_iProgram, tsprintf("vecTexCoord%d", i).c_str());
 	m_iColorAttribute = glGetAttribLocation(m_iProgram, "vecVertexColor");
 
 	TAssert(m_iPositionAttribute != ~0);
