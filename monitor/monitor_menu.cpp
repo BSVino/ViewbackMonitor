@@ -9,9 +9,11 @@
 
 using namespace glgui;
 
-CMonitorMenu::CMonitorMenu()
+CMonitorMenu::CMonitorMenu(bool bHideOnClose)
 	: CMenu("Options")
 {
+	m_bHideOnClose = bHideOnClose;
+
 	// Add one or else the menu won't open.
 	AddSubmenu("Quit", this, Quit);
 
@@ -47,7 +49,7 @@ void CMonitorMenu::Think()
 
 	BaseClass::Think();
 
-	if (Application()->PlatformHasMenuKey() && !bHeightWasZero && m_flMenuHeight == 0)
+	if (m_bHideOnClose && Application()->PlatformHasMenuKey() && !bHeightWasZero && m_flMenuHeight == 0)
 		SetVisible(false);
 }
 

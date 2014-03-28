@@ -93,7 +93,7 @@ void CMonitorWindow::SetupGUI()
 
 	m_pPanelContainer->Setup();
 
-	m_pMenu = RootPanel()->AddControl(new CMonitorMenu(), true);
+	m_pMenu = RootPanel()->AddControl(new CMonitorMenu(true), true);
 	m_pMenu->SetSize(60, 20);
 	m_pMenu->Layout_AlignBottom(nullptr, 0);
 	m_pMenu->Layout_CenterHorizontal();

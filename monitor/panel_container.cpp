@@ -28,7 +28,7 @@ void CPanelContainer::Setup()
 	m_pPanelTime->SetBackgroundColor(Color(0, 0, 0, 255));
 	m_pPanelTime->SetHighlighted(true);
 
-	m_pViewbackButton = AddControl(new CMonitorMenu());
+	m_pViewbackButton = AddControl(new CMonitorMenu(false));
 	m_pViewbackButton->SetMenuOpen(MENUOPEN_SIDE);
 	m_pGroupsButton = AddControl(new CMenu("Groups"));
 	m_pGroupsButton->SetMenuOpen(MENUOPEN_SIDE);

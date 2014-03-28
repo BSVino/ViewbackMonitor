@@ -7,7 +7,7 @@ class CMonitorMenu : public glgui::CMenu
 	DECLARE_CLASS(CMonitorMenu, glgui::CMenu);
 
 public:
-	CMonitorMenu();
+	CMonitorMenu(bool bHideOnClose);
 
 public:
 	void OnOpenMenu();
@@ -19,6 +19,9 @@ public:
 	EVENT_CALLBACK(CMonitorMenu, FindServer);
 	EVENT_CALLBACK(CMonitorMenu, Disconnect);
 	EVENT_CALLBACK(CMonitorMenu, Quit);
+
+private:
+	bool m_bHideOnClose;
 };
 
 #include <glgui/movablepanel.h>
