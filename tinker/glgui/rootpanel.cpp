@@ -49,6 +49,9 @@ CRootPanel::CRootPanel() :
 	s_bRootPanelValid = true;
 
 	m_hMenuBar = AddControl(new CMenuBar(), true);
+
+	m_iMX = 0;
+	m_iMY = 0;
 }
 
 CRootPanel::~CRootPanel( )

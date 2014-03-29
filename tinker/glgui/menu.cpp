@@ -387,6 +387,8 @@ CMenu::CSubmenuPanel::CSubmenuPanel(CControl<CMenu> hMenu)
 	: CPanel(0, 0, 100, 100)
 {
 	m_hMenu = hMenu;
+
+	m_flFakeHeight = 0;
 }
 
 void CMenu::CSubmenuPanel::Think()
