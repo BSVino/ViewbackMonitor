@@ -24,10 +24,15 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #ifdef __GNUC__
 
+#if defined(__i386__) || defined(__x86_64__)
+#define TDebugBreak() __asm__ __volatile__ ( "int $3\n\t" )
+#else
 #include <csignal>
 
 #define TDebugBreak() \
-	// Nothing for now.
+	::raise(SIGTRAP); \
+
+#endif
 
 #else
 
