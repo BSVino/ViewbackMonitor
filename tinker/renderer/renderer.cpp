@@ -116,6 +116,7 @@ CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 	m_bCustomProjection = false;
 	m_bFrustumOverride = false;
 	m_bDrawBackground = true;
+	m_bRenderOrthographic = true;
 
 	m_vecCameraDirection = Vector(1, 0, 0);
 	m_vecCameraUp = Vector(0, 0, 1);
