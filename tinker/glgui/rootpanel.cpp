@@ -247,8 +247,8 @@ bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)
 
 void CRootPanel::CursorMoved(int x, int y)
 {
-	x = x * Application()->GetGUIScale();
-	y = y * Application()->GetGUIScale();
+	x = (int)(x * Application()->GetGUIScale());
+	y = (int)(y * Application()->GetGUIScale());
 
 	int dx = (int)(x - m_iMX);
 	int dy = (int)(y - m_iMY);
@@ -353,6 +353,6 @@ bool CRootPanel::SetFocus(CControlHandle hFocus)
 
 void CRootPanel::GetFullscreenMousePos(int& mx, int& my)
 {
-	mx = (int)(Get()->m_iMX * Application()->GetGUIScale());
-	my = (int)(Get()->m_iMY * Application()->GetGUIScale());
+	mx = Get()->m_iMX;
+	my = Get()->m_iMY;
 }
