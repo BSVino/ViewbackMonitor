@@ -477,7 +477,7 @@ void CRenderingContext::UseProgram(class CShader* pShader)
 		return;
 	}
 
-	tstrncpy(oContext.m_szProgram, PROGRAM_LEN, pShader->m_sName.c_str(), PROGRAM_LEN);
+	tstrncpy(oContext.m_szProgram, PROGRAM_LEN, pShader->m_sName.c_str(), pShader->m_sName.length()+1);
 
 	m_iProgram = m_pShader->m_iProgram;
 	glUseProgram((GLuint)m_pShader->m_iProgram);
