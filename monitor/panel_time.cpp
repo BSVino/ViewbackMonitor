@@ -326,6 +326,12 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 				c.Vertex(v);
 			}
 
+			// Now draw a line to the right screen edge to indicate predicted data.
+			c.Vertex(v);
+
+			v.x = x + w;
+			c.Vertex(v);
+
 			c.EndRender();
 
 			tstring sValue = tsprintf("%.2f", aFloatData[iEnd].data);
@@ -356,7 +362,11 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 				if (flXStart < x)
 					flXStart = x;
 
-				PaintRect(flXStart, ay, flXEnd - flXStart, pLabel->GetHeight(), clrBox, 2);
+				if (j == iEnd)
+					// Draw it all the way to the screen edge to simulate predicted data
+					PaintRect(flXStart, ay, x + w - flXStart, pLabel->GetHeight(), clrBox, 2);
+				else
+					PaintRect(flXStart, ay, flXEnd - flXStart, pLabel->GetHeight(), clrBox, 2);
 
 				tstring sValue = MonitorWindow()->GetViewback()->GetLabelForValue(oReg.m_iHandle, iValue).c_str();
 				CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, flXStart + 5, ay + pLabel->GetHeight() - 14, Color(0, 0, 0, 255));
