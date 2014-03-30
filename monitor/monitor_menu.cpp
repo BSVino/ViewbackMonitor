@@ -197,7 +197,8 @@ void CChannelPanel::RegistrationUpdate()
 	for (size_t i = 0; i < aChannels.size(); i++)
 	{
 		CControl<CCheckBox> pChannel = AddControl(new CCheckBox());
-		pChannel->SetPos(20, 30 + (float)i * 20);
+		pChannel->SetPos(20, T_HEADER_HEIGHT + 10 + (float)i * (pChannel->GetHeight() + 10));
+		pChannel->SetWidth(GetWidth() - 40);
 		pChannel->SetText(aChannels[i].m_sFieldName);
 		pChannel->SetClickedListener(this, ChannelOn, tsprintf("%d", i));
 		pChannel->SetUnclickedListener(this, ChannelOff, tsprintf("%d", i));
