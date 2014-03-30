@@ -4,14 +4,14 @@ Area: Maximize
 {
 	x: 0
 	y: 0
-	w: 35
-	h: 35
+	w: 70
+	h: 70
 }
 
 Area: Viewback
 {
-	x: 35
+	x: 70
 	y: 0
-	w: 60
-	h: 60
+	w: 120
+	h: 120
 }
