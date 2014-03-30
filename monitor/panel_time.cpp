@@ -146,8 +146,28 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		if (flX < x - 30)
 			continue;
 
-		tstring sTime = tsprintf("%ds", i);
-		CLabel::PaintText(sTime, sTime.length(), "sans-serif", 12, flX + 5, y + h - 14, Color(128, 128, 128, 255), FRect(x, y, x+w, y+h));
+		int iSeconds = i;
+		tstring sTime;
+		if (iSeconds < 60)
+			sTime = tsprintf("%ds", iSeconds);
+		else if (i < 60 * 60)
+		{
+			int iMinutes = iSeconds / 60;
+			iSeconds = iSeconds - iMinutes * 60;
+
+			sTime = tsprintf("%dm %ds", iMinutes, iSeconds);
+		}
+		else
+		{
+			int iMinutes = iSeconds / 60;
+			iSeconds = iSeconds - iMinutes * 60;
+
+			int iHours = iMinutes / 24;
+			iMinutes = iMinutes - iHours * 24;
+			sTime = tsprintf("%dh %dm %ds", iHours, iMinutes, iSeconds);
+		}
+
+		CLabel::PaintText(sTime, sTime.length(), "sans-serif", 12, flX + 5, y + h - 14, Color(128, 128, 128, 255), FRect(x, y, x + w, y + h));
 
 		if (flX < x)
 			continue;
