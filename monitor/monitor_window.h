@@ -35,6 +35,7 @@ public:
 
 	CViewbackClient* GetViewback() { return &vb; }
 
+	glgui::CControl<class CPanelContainer> GetPanelContainer();
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
 
 	void SaveConfig();

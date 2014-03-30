@@ -14,6 +14,7 @@ public:
 	void SetMaximizedPanel(const glgui::CControl<class CPanel_Base>& pPanel);
 
 	EVENT_CALLBACK(CPanelContainer, ShowGroup);
+	EVENT_CALLBACK(CPanelContainer, Channels);
 
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
 

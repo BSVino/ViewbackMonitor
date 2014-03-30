@@ -34,6 +34,7 @@ void CPanelContainer::Setup()
 	m_pViewbackButton->SetTooltip("Options");
 	m_pChannelsButton = AddControl(new CPictureButton("Channels"));
 	m_pChannelsButton->SetTooltip("Channels");
+	m_pChannelsButton->SetClickedListener(this, Channels);
 	m_pGroupsButton = AddControl(new CMenu("Groups"));
 	m_pGroupsButton->SetMenuOpen(MENUOPEN_SIDE);
 	m_pGroupsButton->SetTooltip("Groups");
@@ -63,6 +64,8 @@ void CPanelContainer::RegistrationUpdate()
 
 	for (auto& oGroup : aGroups)
 		m_pGroupsButton->AddSubmenu(oGroup.m_sName.c_str(), this, ShowGroup);
+
+	CChannelPanel::Get()->RegistrationUpdate();
 
 	Layout();
 }
@@ -165,13 +168,20 @@ void CPanelContainer::ShowGroupCallback(const tstring& sArgs)
 
 	auto& aMeta = Viewback()->GetMeta();
 	for (auto& oMeta : aMeta)
-		oMeta.m_bVisible = false;
+		oMeta.m_bActive = false;
 
 	auto& aGroups = Viewback()->GetGroups();
 	for (auto& i : aGroups[iGroup].m_iChannels)
-		aMeta[i].m_bVisible = true;
+		aMeta[i].m_bActive = true;
 
 	Layout();
+
+	CChannelPanel::Get()->Layout();
+}
+
+void CPanelContainer::ChannelsCallback(const tstring& sArgs)
+{
+	CChannelPanel::Create();
 }
 
 glgui::CControl<class CPanel_Console> CPanelContainer::GetConsolePanel()

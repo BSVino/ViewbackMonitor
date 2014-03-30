@@ -49,6 +49,7 @@ namespace glgui
 		virtual void			Paint(float x, float y);
 		virtual void			Paint(float x, float y, float w, float h);
 		virtual void			PostPaint();
+		virtual const FRect     GetScissorArea();
 		virtual void			Layout();
 		virtual void			Think();
 		virtual void			UpdateScene();
@@ -75,6 +76,9 @@ namespace glgui
 		virtual void			RemoveControl(CBaseControl* pControl);
 		virtual tvector<CControlResource>&	GetControls() { return m_apControls; };
 		virtual void			MoveToTop(CBaseControl* pControl);
+
+		void                    ClearControls();
+		virtual bool            ShouldClearControl(CBaseControl* pControl);
 
 		virtual void            DirtyVisible();
 

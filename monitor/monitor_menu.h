@@ -48,5 +48,26 @@ private:
 	glgui::CControl<glgui::CButton>    m_pConnect;
 };
 
+class CChannelPanel : public glgui::CMovablePanel
+{
+	DECLARE_CLASS(CChannelPanel, glgui::CMovablePanel);
+
+private:
+	CChannelPanel();
+
+public:
+	static CChannelPanel* Get();
+	static void Create();
+
+	void RegistrationUpdate();
+	void Layout();
+
+	EVENT_CALLBACK(CChannelPanel, ChannelOn);
+	EVENT_CALLBACK(CChannelPanel, ChannelOff);
+
+private:
+	tvector<glgui::CControl<glgui::CCheckBox>> m_ahChannels;
+};
+
 
 

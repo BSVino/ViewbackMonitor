@@ -17,4 +17,6 @@ public:
 
 private:
 	tvector<glgui::CControl<glgui::CButton>> m_apLabels;
+
+	tvector<int> m_aiDataLabels; // Maps a data index to an m_apLabels position.
 };

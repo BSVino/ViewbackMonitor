@@ -28,9 +28,7 @@ void CPanel_Time::RegistrationUpdate()
 
 	m_aiDataLabels.resize(aChannels.size());
 	for (int& i : m_aiDataLabels)
-		i = 0;
-
-	float flYPos = 20;
+		i = -1;
 
 	for (size_t i = 0; i < aChannels.size(); i++)
 	{
@@ -41,7 +39,7 @@ void CPanel_Time::RegistrationUpdate()
 			continue;
 
 		m_apLabels.push_back(AddControl(new CButton(oReg.m_sFieldName)));
-		m_apLabels.back()->SetPos(20, flYPos);
+
 		m_apLabels.back()->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
 		m_apLabels.back()->SetAlign(CLabel::TA_MIDDLECENTER);
 		m_apLabels.back()->SetClickedListener(this, ToggleVisible, tsprintf("%d", i));
@@ -51,8 +49,6 @@ void CPanel_Time::RegistrationUpdate()
 			m_apLabels.back()->SetBorder(BT_NONE);
 		else
 			m_apLabels.back()->SetBorder(BT_SOME);
-
-		flYPos += m_apLabels.back()->GetHeight() + 10;
 
 		m_aiDataLabels[i] = m_apLabels.size() - 1;
 	}
@@ -90,6 +86,28 @@ void CPanel_Time::Layout()
 			pLabel->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
 		else
 			pLabel->SetTextColor(Color(0.4f, 0.4f, 0.4f, 1.0f));
+	}
+
+	float flYPos = 20;
+
+	for (size_t i = 0; i < aMeta.size(); i++)
+	{
+		if (m_aiDataLabels[i] < 0)
+			continue;
+
+		auto& oMeta = aMeta[i];
+
+		int iLabel = m_aiDataLabels[i];
+
+		m_apLabels[iLabel]->SetVisible(false);
+
+		if (!oMeta.m_bActive)
+			continue;
+
+		m_apLabels[iLabel]->SetVisible(true);
+		m_apLabels[iLabel]->SetPos(20, flYPos);
+
+		flYPos += m_apLabels[iLabel]->GetHeight() + 10;
 	}
 }
 
@@ -187,6 +205,9 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			continue;
 
 		if (!oMeta[i].m_bVisible)
+			continue;
+
+		if (!oMeta[i].m_bActive)
 			continue;
 
 		size_t iStart = 0;

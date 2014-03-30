@@ -37,7 +37,7 @@ CControl<CMenu> CRootPanel::AddMenu(const tstring& sText)
 }
 
 CMenuBar::CMenuBar()
-	: CPanel(0, 0, 1024, MENU_HEIGHT)
+: CPanel(0, 0, 1024, T_MENU_HEIGHT)
 {
 	SetVisible(false);
 }
@@ -46,8 +46,8 @@ void CMenuBar::Layout( void )
 {
 	if (GetParent())
 	{
-		SetSize(GetParent()->GetWidth(), MENU_HEIGHT);
-		SetPos(MENU_SPACING, MENU_SPACING);
+		SetSize(GetParent()->GetWidth(), T_MENU_HEIGHT);
+		SetPos(T_MENU_SPACING, T_MENU_SPACING);
 	}
 
 	CPanel::Layout();
@@ -56,7 +56,7 @@ void CMenuBar::Layout( void )
 	for (size_t i = 0; i < m_apControls.size(); i++)
 	{
 		m_apControls[i]->SetPos(x, 0);
-		x += m_apControls[i]->GetWidth() + MENU_SPACING;
+		x += m_apControls[i]->GetWidth() + T_MENU_SPACING;
 	}
 }
 
@@ -78,7 +78,7 @@ CMenu::CMenu(const tstring& sText, bool bSubmenu)
 	: CPictureButton(sText)
 {
 	SetWidth(41);
-	SetHeight(MENU_HEIGHT);
+	SetHeight(T_MENU_HEIGHT);
 	SetToggleButton(true);
 
 	m_bSubmenu = bSubmenu;
@@ -184,7 +184,7 @@ void CMenu::Layout()
 		if (pControl == m_hMenu->m_hHorizontalScrollBar.Get())
 			continue;
 
-		pControl->SetPos(5, (float)(iControls*MENU_HEIGHT));
+		pControl->SetPos(5, (float)(iControls*T_MENU_HEIGHT));
 		iHeight = pControl->GetBottom() + 5;
 		if (pControl->GetWidth()+10 > iWidth)
 			iWidth = pControl->GetWidth()+10;

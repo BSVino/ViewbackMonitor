@@ -140,6 +140,11 @@ bool CMonitorWindow::KeyPress(int c)
 	return BaseClass::KeyPress(c);
 }
 
+CControl<CPanelContainer> CMonitorWindow::GetPanelContainer()
+{
+	return m_pPanelContainer;
+}
+
 CControl<CPanel_Console> CMonitorWindow::GetConsolePanel()
 {
 	return m_pPanelContainer->GetConsolePanel();

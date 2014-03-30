@@ -219,9 +219,7 @@ void CLabel::DrawSection(const CLine& l, const CLineSection& s, float x, float y
 		{
 			if (pParent && pParent->IsScissoring())
 			{
-				pParent->GetAbsPos(r.x, r.y);
-				r.w = pParent->GetWidth();
-				r.h = pParent->GetHeight();
+				r = pParent->GetScissorArea();
 				break;
 			}
 			pParent = pParent->GetParent().Downcast<CPanel>();

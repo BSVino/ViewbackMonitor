@@ -23,8 +23,14 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 namespace glgui
 {
-#define MENU_SPACING 10
-#define MENU_HEIGHT 22
+#ifdef T_TOUCH_PLATFORM
+// Nice fat finger friendly size.
+#define T_MENU_SPACING 10
+#define T_MENU_HEIGHT 30
+#else
+#define T_MENU_SPACING 10
+#define T_MENU_HEIGHT 22
+#endif
 
 	typedef enum
 	{

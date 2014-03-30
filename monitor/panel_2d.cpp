@@ -11,29 +11,31 @@ using namespace glgui;
 void CPanel_2D::RegistrationUpdate()
 {
 	m_apLabels.clear();
+	m_aiDataLabels.clear();
 
-	auto& aRegistrations = MonitorWindow()->GetViewback()->GetChannels();
+	auto& aChannels = MonitorWindow()->GetViewback()->GetChannels();
 	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
 
-	float flYPos = 10;
+	m_aiDataLabels.resize(aChannels.size());
+	for (int& i : m_aiDataLabels)
+		i = -1;
 
-	for (size_t i = 0; i < aRegistrations.size(); i++)
+	for (size_t i = 0; i < aChannels.size(); i++)
 	{
-		auto& oReg = aRegistrations[i];
+		auto& oReg = aChannels[i];
 		auto& oMeta = aMeta[i];
 
 		if (oReg.m_eDataType != VB_DATATYPE_VECTOR)
 			continue;
 
 		m_apLabels.push_back(AddControl(new CButton(oReg.m_sFieldName)));
-		m_apLabels.back()->SetPos(10, flYPos);
 		m_apLabels.back()->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
 		m_apLabels.back()->SetAlign(CLabel::TA_MIDDLECENTER);
 		m_apLabels.back()->SetHeight(18);
 		m_apLabels.back()->SetClickedListener(this, ToggleVisible, tsprintf("%d", i));
 		m_apLabels.back()->SetBorder(BT_SOME);
 
-		flYPos += m_apLabels.back()->GetHeight() + 10;
+		m_aiDataLabels[i] = m_apLabels.size() - 1;
 	}
 
 	Layout();
@@ -64,6 +66,28 @@ void CPanel_2D::Layout()
 		else
 			pLabel->SetTextColor(Color(0.4f, 0.4f, 0.4f, 1.0f));
 	}
+
+	float flYPos = 10;
+
+	for (size_t i = 0; i < aMeta.size(); i++)
+	{
+		if (m_aiDataLabels[i] < 0)
+			continue;
+
+		auto& oMeta = aMeta[i];
+
+		int iLabel = m_aiDataLabels[i];
+
+		m_apLabels[iLabel]->SetVisible(false);
+
+		if (!oMeta.m_bActive)
+			continue;
+
+		m_apLabels[iLabel]->SetVisible(true);
+		m_apLabels[iLabel]->SetPos(10, flYPos);
+
+		flYPos += m_apLabels[iLabel]->GetHeight() + 10;
+	}
 }
 
 void CPanel_2D::Paint(float x, float y, float w, float h)
@@ -93,6 +117,9 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 			continue;
 
 		if (!oMeta[i].m_bVisible)
+			continue;
+
+		if (!oMeta[i].m_bActive)
 			continue;
 
 		auto& aVectorData = oData[i].m_aVectorData;

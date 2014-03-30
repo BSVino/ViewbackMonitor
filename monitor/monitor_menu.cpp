@@ -4,8 +4,10 @@
 #include <glgui/textfield.h>
 #include <glgui/button.h>
 #include <textures/texturesheet.h>
+#include <glgui/checkbox.h>
 
 #include "monitor_window.h"
+#include "panel_container.h"
 
 using namespace glgui;
 
@@ -156,6 +158,96 @@ void CManualConnectPanel::ConnectCallback(const tstring& sArgs)
 		MonitorWindow()->SetLastSuccessfulPort(m_pPort->GetText());
 		MonitorWindow()->SaveConfig();
 	}
+}
+
+CChannelPanel::CChannelPanel()
+: CMovablePanel("Channels")
+{
+	SetSize(250, 350);
+	MoveToCenter();
+	SetVisible(false);
+	SetScissoring(true);
+	SetVerticalScrollBarEnabled(true);
+}
+
+CChannelPanel* CChannelPanel::Get()
+{
+	static CChannelPanel* pPanel = NULL;
+
+	if (!pPanel)
+		pPanel = new CChannelPanel();
+
+	return pPanel;
+}
+
+void CChannelPanel::Create()
+{
+	Get()->Layout();
+	Get()->SetVisible(true);
+}
+
+void CChannelPanel::RegistrationUpdate()
+{
+	m_ahChannels.clear();
+	ClearControls();
+
+	const auto& aChannels = Viewback()->GetChannels();
+	const auto& aMeta = Viewback()->GetMeta();
+
+	for (size_t i = 0; i < aChannels.size(); i++)
+	{
+		CControl<CCheckBox> pChannel = AddControl(new CCheckBox());
+		pChannel->SetPos(20, 30 + (float)i * 20);
+		pChannel->SetText(aChannels[i].m_sFieldName);
+		pChannel->SetClickedListener(this, ChannelOn, tsprintf("%d", i));
+		pChannel->SetUnclickedListener(this, ChannelOff, tsprintf("%d", i));
+
+		m_ahChannels.push_back(pChannel);
+	}
+
+	Layout();
+}
+
+void CChannelPanel::Layout()
+{
+	const auto& aMeta = Viewback()->GetMeta();
+
+	for (size_t i = 0; i < m_ahChannels.size(); i++)
+		m_ahChannels[i]->SetState(aMeta[i].m_bActive, false);
+
+	BaseClass::Layout();
+}
+
+void CChannelPanel::ChannelOnCallback(const tstring& sArgs)
+{
+	auto& aMeta = Viewback()->GetMeta();
+
+	size_t iChannel = stoi(sArgs);
+	if (iChannel < 0)
+		return;
+
+	if (iChannel >= aMeta.size())
+		return;
+
+	aMeta[iChannel].m_bActive = true;
+
+	MonitorWindow()->GetPanelContainer()->Layout();
+}
+
+void CChannelPanel::ChannelOffCallback(const tstring& sArgs)
+{
+	auto& aMeta = Viewback()->GetMeta();
+
+	size_t iChannel = stoi(sArgs);
+	if (iChannel < 0)
+		return;
+
+	if (iChannel >= aMeta.size())
+		return;
+
+	aMeta[iChannel].m_bActive = false;
+
+	MonitorWindow()->GetPanelContainer()->Layout();
 }
 
 

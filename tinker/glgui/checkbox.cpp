@@ -24,8 +24,10 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 using namespace glgui;
 
 CCheckBox::CCheckBox()
-	: CButton(0, 0, 10, 10, "", true)
+	: CButton(0, 0, 15, 15, "", true)
 {
+	SetAlign(TA_LEFTCENTER);
+	SetBorder(BT_NONE);
 }
 
 void CCheckBox::Paint(float x, float y, float w, float h)
@@ -34,4 +36,10 @@ void CCheckBox::Paint(float x, float y, float w, float h)
 
 	if (m_bDown)
 		CRootPanel::PaintRect(x+2, y+2, w-4, h-4, g_clrBoxHi);
+
+	BaseClass::Paint(x + w + 4, y, w, h);
+}
+
+void CCheckBox::PaintButton(float x, float y, float w, float h)
+{
 }
