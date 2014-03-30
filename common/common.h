@@ -147,4 +147,8 @@ private:
 #include <stdint.h>
 #endif
 
+#ifdef __ANDROID__
+#define T_TOUCH_PLATFORM
+#endif
+
 #endif

@@ -472,6 +472,7 @@ void CBaseControl::PaintBackground(float x, float y, float w, float h)
 
 void CBaseControl::PostPaint()
 {
+#ifndef T_TOUCH_PLATFORM
 	if (m_sTip.length() > 0 && m_flMouseInTime > 0 && CRootPanel::Get()->GetTime() > m_flMouseInTime + 0.5f)
 	{
 		int iFontSize = 12;
@@ -491,6 +492,7 @@ void CBaseControl::PostPaint()
 		PaintRect((float)mx - 3, y - 3, flTextWidth + 6, flFontHeight + 6, g_clrBox, 3);
 		CLabel::PaintText(m_sTip, m_sTip.length(), "sans-serif", iFontSize, (float)mx, y);
 	}
+#endif
 }
 
 void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c, float flBorder, bool bHighlight)
