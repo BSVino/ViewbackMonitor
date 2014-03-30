@@ -460,6 +460,18 @@ void CBaseControl::Paint(float x, float y)
 
 void CBaseControl::Paint(float x, float y, float w, float h)
 {
+}
+
+void CBaseControl::PaintBackground(float x, float y, float w, float h)
+{
+	if (m_flBorder == 0 && m_clrBackground.a() == 0)
+		return;
+
+	PaintRect(x, y, w, h, m_clrBackground, m_flBorder, true);
+}
+
+void CBaseControl::PostPaint()
+{
 	if (m_sTip.length() > 0 && m_flMouseInTime > 0 && CRootPanel::Get()->GetTime() > m_flMouseInTime + 0.5f)
 	{
 		int iFontSize = 12;
@@ -474,17 +486,11 @@ void CBaseControl::Paint(float x, float y, float w, float h)
 		if (iTooltipRight > CRootPanel::Get()->GetWidth())
 			mx -= (int)(iTooltipRight - CRootPanel::Get()->GetWidth());
 
-		PaintRect((float)mx-3, (float)my-3, flTextWidth+6, flFontHeight+6, g_clrBox, 3); 
-		CLabel::PaintText(m_sTip, m_sTip.length(), "sans-serif", iFontSize, (float)mx, (float)my);
+		float y = my - flFontHeight;
+
+		PaintRect((float)mx - 3, y - 3, flTextWidth + 6, flFontHeight + 6, g_clrBox, 3);
+		CLabel::PaintText(m_sTip, m_sTip.length(), "sans-serif", iFontSize, (float)mx, y);
 	}
-}
-
-void CBaseControl::PaintBackground(float x, float y, float w, float h)
-{
-	if (m_flBorder == 0 && m_clrBackground.a() == 0)
-		return;
-
-	PaintRect(x, y, w, h, m_clrBackground, m_flBorder, true);
 }
 
 void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c, float flBorder, bool bHighlight)

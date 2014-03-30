@@ -2,6 +2,7 @@
 
 #include <renderer/renderer.h>
 #include <glgui/menu.h>
+#include <textures/texturesheet.h>
 
 #include "panel_console.h"
 #include "panel_2D.h"
@@ -30,8 +31,17 @@ void CPanelContainer::Setup()
 
 	m_pViewbackButton = AddControl(new CMonitorMenu(false));
 	m_pViewbackButton->SetMenuOpen(MENUOPEN_SIDE);
+	m_pViewbackButton->SetTooltip("Options");
+	m_pChannelsButton = AddControl(new CPictureButton("Channels"));
+	m_pChannelsButton->SetTooltip("Channels");
 	m_pGroupsButton = AddControl(new CMenu("Groups"));
 	m_pGroupsButton->SetMenuOpen(MENUOPEN_SIDE);
+	m_pGroupsButton->SetTooltip("Groups");
+
+	CTextureSheet oSheet("materials/buttons.txt");
+
+	m_pChannelsButton->SetSheetTexture(oSheet.GetSheet("Channels"), oSheet.GetArea("Channels"), oSheet.GetSheetWidth("Channels"), oSheet.GetSheetHeight("Channels"));
+	m_pGroupsButton->SetSheetTexture(oSheet.GetSheet("Groups"), oSheet.GetArea("Groups"), oSheet.GetSheetWidth("Groups"), oSheet.GetSheetHeight("Groups"));
 
 	Layout();
 }
@@ -111,6 +121,7 @@ void CPanelContainer::Layout()
 
 	tvector<CButton*> apButtons;
 	apButtons.push_back(m_pViewbackButton);
+	apButtons.push_back(m_pChannelsButton);
 	apButtons.push_back(m_pGroupsButton);
 
 	if (MonitorWindow()->ButtonPanelSide())

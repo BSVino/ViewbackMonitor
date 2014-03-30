@@ -247,6 +247,7 @@ void CMenu::Paint(float x, float y, float w, float h)
 
 void CMenu::PostPaint()
 {
+	BaseClass::PostPaint();
 }
 
 void CMenu::CursorIn()

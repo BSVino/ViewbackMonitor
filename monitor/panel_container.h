@@ -25,5 +25,6 @@ private:
 	glgui::CControl<class CPanel_Base>    m_pMaximizedPanel;
 
 	glgui::CControl<glgui::CMenu> m_pViewbackButton;
+	glgui::CControl<glgui::CPictureButton> m_pChannelsButton;
 	glgui::CControl<glgui::CMenu> m_pGroupsButton;
 };

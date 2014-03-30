@@ -15,3 +15,20 @@ Area: Viewback
 	w: 120
 	h: 120
 }
+
+Area: Channels
+{
+	x: 0
+	y: 120
+	w: 120
+	h: 120
+}
+
+Area: Groups
+{
+	x: 120
+	y: 120
+	w: 120
+	h: 120
+}
+
