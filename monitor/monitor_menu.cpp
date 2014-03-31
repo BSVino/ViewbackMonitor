@@ -19,8 +19,11 @@ CMonitorMenu::CMonitorMenu(bool bHideOnClose)
 	// Add one or else the menu won't open.
 	AddSubmenu("Quit", this, Quit);
 
-	CTextureSheet oSheet("materials/buttons.txt");
-	SetSheetTexture(oSheet.GetSheet("Viewback"), oSheet.GetArea("Viewback"), oSheet.GetSheetWidth("Viewback"), oSheet.GetSheetHeight("Viewback"));
+	if (!m_bHideOnClose)
+	{
+		CTextureSheet oSheet("materials/buttons.txt");
+		SetSheetTexture(oSheet.GetSheet("Viewback"), oSheet.GetArea("Viewback"), oSheet.GetSheetWidth("Viewback"), oSheet.GetSheetHeight("Viewback"));
+	}
 }
 
 void CMonitorMenu::OnOpenMenu()
