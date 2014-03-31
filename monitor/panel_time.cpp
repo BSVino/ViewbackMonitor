@@ -227,7 +227,35 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		else if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
 		{
 			if (oData[i].m_aFloatData.size() < 2)
+			{
+				if (oData[i].m_aFloatData.size())
+				{
+					// There is exactly one point of data. Draw it through the center.
+
+					CRenderingContext c(MonitorWindow()->GetRenderer(), true);
+
+					Color clrColor(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f);
+					c.UseProgram("line");
+
+					c.SetUniform("vecColor", clrColor);
+					c.SetBlend(BLEND_ALPHA);
+
+					c.BeginRenderLines();
+
+					c.Color(Color(255, 255, 255, 255));
+
+					c.Vertex(Vector(x, y + h/2, 0));
+					c.Vertex(Vector(x + w, y + h / 2, 0));
+
+					c.EndRender();
+
+					tstring sValue = tsprintf("%.2f", oData[i].m_aFloatData[0].data);
+					float flWidth = CLabel::GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
+					CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, x + w - flWidth - 10, y + h/2 - 14, Color(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f));
+				}
+
 				continue;
+			}
 
 			iStart = FindStartTime(oData[i].m_aFloatData, flTimeNow - flSecondsToShow);
 			iEnd = FindStartTime(oData[i].m_aFloatData, flTimeNow);
@@ -298,6 +326,10 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 			c.Color(Color(255, 255, 255, 255));
 
+			// Have we drawn an element that extends off the screen to the left?
+			bool bHaveDrawnOnLeftScreenEdge = false;
+			bool bHaveDrawnLeftScreenEdgeSimulation = false;
+
 			Vector v;
 			for (size_t j = iStart; j < iEnd; j++)
 			{
@@ -305,16 +337,38 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 				x1 = (float)RemapVal(aFloatData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 				x2 = (float)RemapVal(aFloatData[j + 1].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
 
-				if (x1 < x && x2 < x)
-					continue;
-
 				y1 = RemapVal(aFloatData[j].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
 				y2 = RemapVal(aFloatData[j + 1].data, oMeta[i].m_vecMaxValue.x, oMeta[i].m_vecMaxValue.y, y + h, y);
 
+				if (x1 < x && x2 < x)
+				{
+					// Still fill out v so that we can draw the predicted data.
+					v.x = x;
+					v.y = y2;
+					continue;
+				}
+
 				if (x1 < x)
 				{
+					bHaveDrawnOnLeftScreenEdge = true; // We have since we just truncated this one.
+
 					y1 = RemapVal(x, x1, x2, y1, y2);
 					x1 = x;
+				}
+
+				if (!bHaveDrawnOnLeftScreenEdge && !bHaveDrawnLeftScreenEdgeSimulation)
+				{
+					bHaveDrawnLeftScreenEdgeSimulation = true;
+
+					// This happens when the monitor has just connected or when the client deletes old data.
+					// Draw a horizontal line from the left screen edge to the first dot, to simulate data coming in.
+					v.x = x;
+					v.y = y1;
+					c.Vertex(v);
+
+					v.x = x1;
+					v.y = y1;
+					c.Vertex(v);
 				}
 
 				v.x = x1;
