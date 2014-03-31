@@ -260,6 +260,11 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 
 CApplication::~CApplication()
 {
+	delete m_pRenderer;
+	glgui::RootPanel()->RemoveControl(m_pConsole);
+	m_pConsole = nullptr;
+	s_pApplication = nullptr;
+
 	SDL_DestroyWindow(m_pWindow);
 	SDL_Quit();
 }
@@ -408,7 +413,7 @@ void CApplication::PollEvents()
 		{
 		case SDL_QUIT:
 			if (WindowClose())
-				exit(0);
+				m_bIsOpen = false;
 			break;
 
 		case SDL_WINDOWEVENT:

@@ -15,6 +15,7 @@ class CMonitorWindow : public CApplication
 
 public:
 	CMonitorWindow(int argc, char** argv);
+	~CMonitorWindow();
 
 public:
 	virtual tstring			WindowTitle() { return "Viewback Monitor"; }

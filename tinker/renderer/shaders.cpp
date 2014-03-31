@@ -61,6 +61,10 @@ void CShaderLibrary::Initialize()
 
 void CShaderLibrary::InitializeNonStatic()
 {
+	m_sHeader.clear();
+	m_sFunctions.clear();
+	m_sMain.clear();
+
 	m_bCompiled = false;
 	m_iSamples = -1;
 

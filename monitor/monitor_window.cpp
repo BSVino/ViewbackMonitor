@@ -18,6 +18,11 @@ CMonitorWindow::CMonitorWindow(int argc, char** argv)
 {
 }
 
+CMonitorWindow::~CMonitorWindow()
+{
+	Viewback()->Shutdown();
+}
+
 CRenderer* CMonitorWindow::CreateRenderer()
 {
 	size_t x, y;
