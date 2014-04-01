@@ -250,7 +250,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 					c.EndRender();
 
 					tstring sValue = tsprintf("%.2f", oData[i].m_aFloatData[0].data);
-					float flWidth = CLabel::GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
+					float flWidth = RootPanel()->GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
 					CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, x + w - flWidth - 10, y + h/2 - 14, Color(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f));
 				}
 
@@ -389,7 +389,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			c.EndRender();
 
 			tstring sValue = tsprintf("%.2f", aFloatData[iEnd].data);
-			float flWidth = CLabel::GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
+			float flWidth = RootPanel()->GetTextWidth(sValue, sValue.length(), "sans-serif", 12);
 			CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, x + w - flWidth - 10, v.y - 14, Color(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f));
 		}
 

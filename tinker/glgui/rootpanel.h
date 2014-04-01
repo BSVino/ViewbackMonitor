@@ -22,6 +22,7 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include "panel.h"
 
 class CRenderingContext;
+class FTFont;
 
 namespace glgui
 {
@@ -70,6 +71,19 @@ namespace glgui
 		bool						IsGarbageCollecting() const { return m_bGarbageCollecting; }
 		bool						IsDrawingDraggable() const { return m_bDrawingDraggable; }
 
+		::FTFont* GetFont(const tstring& sName, size_t iSize);
+		void      AddFont(const tstring& sName, const tstring& sFile);
+		void      AddFontSize(const tstring& sName, size_t iSize);
+
+		float GetTextWidth(const tstring& sText, unsigned iLength, const tstring& sFontName, int iFontFaceSize);
+		float GetFontHeight(const tstring& sFontName, int iFontFaceSize);
+		float GetFontAscender(const tstring& sFontName, int iFontFaceSize);
+
+		float GetTextWidth(const tstring& sText, unsigned iLength, class ::FTFont* pFont);
+		float GetFontHeight(class ::FTFont* pFont);
+		float GetFontAscender(class ::FTFont* pFont);
+		float GetFontDescender(class ::FTFont* pFont);
+
 		static CRootPanel*			Get();
 		static bool                 Exists();
 		static void                 Reset();
@@ -104,6 +118,9 @@ namespace glgui
 		bool						m_bDrawingDraggable;
 
 		::CRenderingContext*		m_pRenderingContext;
+
+		tmap<tstring, tmap<size_t, ::FTFont*> > m_apFonts;
+		tmap<tstring, tstring>                  m_apFontNames;
 	};
 
 	inline CRootPanel* RootPanel()

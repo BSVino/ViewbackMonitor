@@ -147,18 +147,6 @@ namespace glgui
 		virtual IEventListener::Callback	GetSectionHoverListenerCallback() { return m_pfnSectionHoverCallback; };
 		virtual IEventListener*				GetSectionHoverListener() { return m_pSectionHoverListener; };
 
-		static class ::FTFont*	GetFont(const tstring& sName, size_t iSize);
-		static void		AddFont(const tstring& sName, const tstring& sFile);
-		static void		AddFontSize(const tstring& sName, size_t iSize);
-
-		static float	GetTextWidth(const tstring& sText, unsigned iLength, const tstring& sFontName, int iFontFaceSize);
-		static float	GetFontHeight(const tstring& sFontName, int iFontFaceSize);
-		static float	GetFontAscender(const tstring& sFontName, int iFontFaceSize);
-
-		static float	GetTextWidth(const tstring& sText, unsigned iLength, class ::FTFont* pFont);
-		static float	GetFontHeight(class ::FTFont* pFont);
-		static float	GetFontAscender(class ::FTFont* pFont);
-
 		static void		PaintText(const tstring& sText, unsigned iLength, const tstring& sFontName, int iFontFaceSize, float x, float y, const Color& clrText = Color(255, 255, 255), const FRect& rStencil = FRect(-1, -1, -1, -1));
 		static void		PaintText(const tstring& sText, unsigned iLength, class ::FTFont* pFont, float x, float y, const Color& clrText = Color(255, 255, 255), const FRect& rStencil = FRect(-1, -1, -1, -1));
 		static void		PaintText3D(const tstring& sText, unsigned iLength, const tstring& sFontName, int iFontFaceSize, Vector vecPosition, const Color& clrText = Color(255, 255, 255));
@@ -184,9 +172,6 @@ namespace glgui
 		tstring			m_sFontName;
 		int				m_iFontFaceSize;
 		class ::FTFont*	m_pFont;
-
-		static tmap<tstring, tmap<size_t, class ::FTFont*> >	s_apFonts;
-		static tmap<tstring, tstring>							s_apFontNames;
 
 		IEventListener::Callback m_pfnLinkClickCallback;
 		IEventListener*	m_pLinkClickListener;

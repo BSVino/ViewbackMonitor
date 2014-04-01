@@ -17,6 +17,8 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include "rootpanel.h"
 
+#include <FTGL/ftgl.h>
+
 #include <tinker/application.h>
 #include <renderer/renderer.h>
 #include <renderer/renderingcontext.h>
@@ -420,4 +422,104 @@ void CRootPanel::GetFullscreenMousePos(int& mx, int& my)
 {
 	mx = Get()->m_iMX;
 	my = Get()->m_iMY;
+}
+
+::FTFont* CRootPanel::GetFont(const tstring& sName, size_t iSize)
+{
+	auto it = m_apFontNames.find(sName);
+	tstring sRealName = sName;
+	if (it == m_apFontNames.end())
+	{
+		sRealName = "sans-serif";
+		it = m_apFontNames.find(sRealName);
+	}
+
+	if (it == m_apFontNames.end())
+	{
+		tstring sFont;
+
+#if defined(__ANDROID__)
+		sFont = "/system/fonts/DroidSans.ttf";
+#elif defined(_WIN32)
+		sFont = tsprintf(tstring("%s\\Fonts\\Arial.ttf"), getenv("windir"));
+#else
+		sFont = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
+#endif
+
+		AddFont("sans-serif", sFont);
+	}
+
+	return m_apFonts[sRealName][iSize];
+}
+
+void CRootPanel::AddFont(const tstring& sName, const tstring& sFile)
+{
+	m_apFontNames[sName] = sFile;
+}
+
+void CRootPanel::AddFontSize(const tstring& sName, size_t iSize)
+{
+	if (m_apFontNames.find(sName) == m_apFontNames.end())
+		return;
+
+	float flGUIScale = 1;
+	if (Application())
+		flGUIScale = Application()->GetGUIScale();
+
+	FTTextureFont* pFont = new FTTextureFont(m_apFontNames[sName].c_str());
+	pFont->FaceSize((size_t)((float)iSize / flGUIScale));
+	m_apFonts[sName][iSize] = pFont;
+}
+
+float CRootPanel::GetTextWidth(const tstring& sText, unsigned iLength, const tstring& sFontName, int iFontFaceSize)
+{
+	if (!GetFont(sFontName, iFontFaceSize))
+		AddFontSize(sFontName, iFontFaceSize);
+
+	return GetTextWidth(sText, iLength, m_apFonts[sFontName][iFontFaceSize]);
+}
+
+float CRootPanel::GetFontHeight(const tstring& sFontName, int iFontFaceSize)
+{
+	if (!GetFont(sFontName, iFontFaceSize))
+		AddFontSize(sFontName, iFontFaceSize);
+
+	return GetFontHeight(m_apFonts[sFontName][iFontFaceSize]);
+}
+
+float CRootPanel::GetFontAscender(const tstring& sFontName, int iFontFaceSize)
+{
+	if (!GetFont(sFontName, iFontFaceSize))
+		AddFontSize(sFontName, iFontFaceSize);
+
+	return GetFontAscender(m_apFonts[sFontName][iFontFaceSize]);
+}
+
+float CRootPanel::GetTextWidth(const tstring& sText, unsigned iLength, class ::FTFont* pFont)
+{
+	if (!pFont)
+		return 0;
+
+	return pFont->Advance(sText.c_str(), iLength) * Application()->GetGUIScale();
+}
+
+float CRootPanel::GetFontHeight(class ::FTFont* pFont)
+{
+	if (!pFont)
+		return 0;
+
+	return pFont->LineHeight() * Application()->GetGUIScale();
+}
+
+float CRootPanel::GetFontAscender(class ::FTFont* pFont)
+{
+	if (!pFont)
+		return 0;
+
+	return pFont->Ascender() * Application()->GetGUIScale();
+}
+
+float CRootPanel::GetFontDescender(class ::FTFont* pFont)
+{
+	return pFont->Descender() * Application()->GetGUIScale();
 }

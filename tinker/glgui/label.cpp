@@ -17,8 +17,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 #include "label.h"
 
-#include <FTGL/ftgl.h>
-
 #include <tinker/application.h>
 #include <tinker/cvar.h>
 #include <renderer/renderer.h>
@@ -30,9 +28,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 using namespace glgui;
 
 typedef char FTGLchar;
-
-tmap<tstring, tstring> CLabel::s_apFontNames;
-tmap<tstring, tmap<size_t, class ::FTFont*> > CLabel::s_apFonts;
 
 CLabel::CLabel()
 	: CBaseControl(0, 0, 100, 30)
@@ -143,8 +138,8 @@ void CLabel::Paint(float x, float y, float w, float h)
 
 						if (Is3D())
 						{
-							float flHeight = GetFontHeight(oSection.m_pFont);
-							float flDescender = oSection.m_pFont->Descender() * Application()->GetGUIScale();
+							float flHeight = RootPanel()->GetFontHeight(oSection.m_pFont);
+							float flDescender = RootPanel()->GetFontDescender(oSection.m_pFont);
 
 							float x = oSection.m_rArea.x + ax + ox;
 							float y = oSection.m_rArea.h - (oSection.m_rArea.y + ay + oy) - flHeight + flDescender;
@@ -302,62 +297,14 @@ void CLabel::GetAlignmentOffset(float flLineWidth, float flLineHeight, const tst
 	}
 }
 
-float CLabel::GetTextWidth(const tstring& sText, unsigned iLength, const tstring& sFontName, int iFontFaceSize)
-{
-	if (!GetFont(sFontName, iFontFaceSize))
-		AddFontSize(sFontName, iFontFaceSize);
-
-	return GetTextWidth(sText, iLength, s_apFonts[sFontName][iFontFaceSize]);
-}
-
-float CLabel::GetFontHeight(const tstring& sFontName, int iFontFaceSize)
-{
-	if (!GetFont(sFontName, iFontFaceSize))
-		AddFontSize(sFontName, iFontFaceSize);
-
-	return GetFontHeight(s_apFonts[sFontName][iFontFaceSize]);
-}
-
-float CLabel::GetFontAscender(const tstring& sFontName, int iFontFaceSize)
-{
-	if (!GetFont(sFontName, iFontFaceSize))
-		AddFontSize(sFontName, iFontFaceSize);
-
-	return GetFontAscender(s_apFonts[sFontName][iFontFaceSize]);
-}
-
-float CLabel::GetTextWidth(const tstring& sText, unsigned iLength, class ::FTFont* pFont)
-{
-	if (!pFont)
-		return 0;
-
-	return pFont->Advance(convertstring<tchar, FTGLchar>(sText).c_str(), iLength) * Application()->GetGUIScale();
-}
-
-float CLabel::GetFontHeight(class ::FTFont* pFont)
-{
-	if (!pFont)
-		return 0;
-
-	return pFont->LineHeight() * Application()->GetGUIScale();
-}
-
-float CLabel::GetFontAscender(class ::FTFont* pFont)
-{
-	if (!pFont)
-		return 0;
-
-	return pFont->Ascender() * Application()->GetGUIScale();
-}
-
 void CLabel::PaintText(const tstring& sText, unsigned iLength, const tstring& sFontName, int iFontFaceSize, float x, float y, const Color& clrText, const FRect& rStencil)
 {
-	FTFont* pFont = glgui::CLabel::GetFont(sFontName, iFontFaceSize);
+	FTFont* pFont = RootPanel()->GetFont(sFontName, iFontFaceSize);
 
 	if (!pFont)
 	{
-		glgui::CLabel::AddFontSize(sFontName, iFontFaceSize);
-		pFont = glgui::CLabel::GetFont(sFontName, iFontFaceSize);
+		RootPanel()->AddFontSize(sFontName, iFontFaceSize);
+		pFont = RootPanel()->GetFont(sFontName, iFontFaceSize);
 	}
 
 	PaintText(sText, iLength, pFont, x, y, clrText, rStencil);
@@ -372,7 +319,7 @@ void CLabel::PaintText(const tstring& sText, unsigned iLength, class ::FTFont* p
 	Application()->GetViewportSize(vw, vh);
 	Matrix4x4 mFontProjection = Matrix4x4::ProjectOrthographic(0, (float)vw, 0, (float)vh, -1, 1);
 
-	float flBaseline = GetFontAscender(pFont);
+	float flBaseline = RootPanel()->GetFontAscender(pFont);
 
 	::CRenderingContext c(nullptr, true);
 
@@ -462,8 +409,8 @@ bool CLabel::MouseIsInside(const CLine& oLine, const CLineSection& oSection)
 
 	if (Is3D())
 	{
-		float flHeight = GetFontHeight(oSection.m_pFont);
-		float flDescender = oSection.m_pFont->Descender() * Application()->GetGUIScale();
+		float flHeight = RootPanel()->GetFontHeight(oSection.m_pFont);
+		float flDescender = RootPanel()->GetFontDescender(oSection.m_pFont);
 		flTop -= flHeight;
 		flTop -= flDescender;
 
@@ -529,10 +476,10 @@ void CLabel::SetFont(const tstring& sFontName, int iSize)
 	m_sFontName = sFontName;
 	m_iFontFaceSize = iSize;
 
-	if (!(m_pFont = GetFont(m_sFontName, m_iFontFaceSize)))
+	if (!(m_pFont = RootPanel()->GetFont(m_sFontName, m_iFontFaceSize)))
 	{
-		AddFontSize(m_sFontName, m_iFontFaceSize);
-		m_pFont = GetFont(m_sFontName, m_iFontFaceSize);
+		RootPanel()->AddFontSize(m_sFontName, m_iFontFaceSize);
+		m_pFont = RootPanel()->GetFont(m_sFontName, m_iFontFaceSize);
 	}
 
 	m_bNeedsCompute = true;
@@ -540,7 +487,7 @@ void CLabel::SetFont(const tstring& sFontName, int iSize)
 
 float CLabel::GetTextWidth() const
 {
-	return m_pFont->Advance(convertstring<tchar, FTGLchar>(m_sText).c_str()) * Application()->GetGUIScale();
+	return RootPanel()->GetTextWidth(m_sText, m_sText.length(), m_pFont);
 }
 
 float CLabel::GetTextHeight()
@@ -589,7 +536,7 @@ void CLabel::ComputeLines(float w, float h)
 	CLineSection oSection;
 	oSection.m_sFont = m_sFontName;
 	oSection.m_iFontSize = m_iFontFaceSize;
-	oSection.m_pFont = GetFont(m_sFontName, m_iFontFaceSize);
+	oSection.m_pFont = RootPanel()->GetFont(m_sFontName, m_iFontFaceSize);
 
 	// This stack is so that markups can be nested.
 	// ie [size=20]big[size=20]bigger[/size][/size]
@@ -613,7 +560,7 @@ void CLabel::ComputeLines(float w, float h)
 		// Default the line height to whatever's on the top of the section stack.
 		CLineSection& oTopSection = aSectionStack.back();
 		auto pFont = oTopSection.m_pFont;
-		m_aLines.back().m_flLineHeight = GetFontHeight(pFont);
+		m_aLines.back().m_flLineHeight = RootPanel()->GetFontHeight(pFont);
 
 		float lw = 0;
 		unsigned int iChar = 0;
@@ -643,8 +590,8 @@ void CLabel::ComputeLines(float w, float h)
 				oSection.m_iFontSize = iSize;
 				oSection.m_sText.clear();
 				aSectionStack.push_back(oSection);
-				AddFontSize(oSection.m_sFont, oSection.m_iFontSize);
-				aSectionStack.back().m_pFont = GetFont(oSection.m_sFont, iSize);
+				RootPanel()->AddFontSize(oSection.m_sFont, oSection.m_iFontSize);
+				aSectionStack.back().m_pFont = RootPanel()->GetFont(oSection.m_sFont, iSize);
 
 				iLastBreak = iChar;
 			}
@@ -742,8 +689,8 @@ void CLabel::ComputeLines(float w, float h)
 				oSection.m_sLink = sLink;
 				oSection.m_sText.clear();
 				aSectionStack.push_back(oSection);
-				AddFontSize(oSection.m_sFont, oSection.m_iFontSize);
-				aSectionStack.back().m_pFont = GetFont(oSection.m_sFont, oSection.m_iFontSize);
+				RootPanel()->AddFontSize(oSection.m_sFont, oSection.m_iFontSize);
+				aSectionStack.back().m_pFont = RootPanel()->GetFont(oSection.m_sFont, oSection.m_iFontSize);
 
 				iLastBreak = iChar;
 			}
@@ -781,12 +728,12 @@ void CLabel::ComputeLines(float w, float h)
 
 			CLineSection& oTopSection = aSectionStack.back();
 
-			float lh = GetFontHeight(oTopSection.m_pFont);
+			float lh = RootPanel()->GetFontHeight(oTopSection.m_pFont);
 
 			FTGLchar szChar[2];
 			szChar[0] = FTGLchar(sLine[iChar]);
 			szChar[1] = '\0';
-			float cw = GetTextWidth(szChar, 1, oTopSection.m_pFont);
+			float cw = RootPanel()->GetTextWidth(szChar, 1, oTopSection.m_pFont);
 
 			// If we make it this far then we are now adding to a block.
 			if (m_aLines.back().m_flLineHeight < lh)
@@ -860,8 +807,8 @@ void CLabel::PushSection(const CLineSection& oSection, const tstring& sLine)
 
 	CLineSection s = oSection;
 
-	float flSectionWidth = GetTextWidth(sLine, sLine.length(), oSection.m_pFont);
-	float flSectionHeight = GetFontHeight(oSection.m_pFont);
+	float flSectionWidth = RootPanel()->GetTextWidth(sLine, sLine.length(), oSection.m_pFont);
+	float flSectionHeight = RootPanel()->GetFontHeight(oSection.m_pFont);
 
 	s.m_sText = sLine;
 	s.m_rArea.x = m_aLines.back().m_flLineWidth;
@@ -926,49 +873,3 @@ void CLabel::SetSectionHoverListener(IEventListener* pListener, IEventListener::
 	m_pSectionHoverListener = pListener;
 }
 
-::FTFont* CLabel::GetFont(const tstring& sName, size_t iSize)
-{
-	auto it = s_apFontNames.find(sName);
-	tstring sRealName = sName;
-	if (it == s_apFontNames.end())
-	{
-		sRealName = "sans-serif";
-		it = s_apFontNames.find(sRealName);
-	}
-
-	if (it == s_apFontNames.end())
-	{
-		tstring sFont;
-
-#if defined(__ANDROID__)
-		sFont = "/system/fonts/DroidSans.ttf";
-#elif defined(_WIN32)
-		sFont = tsprintf(tstring("%s\\Fonts\\Arial.ttf"), getenv("windir"));
-#else
-		sFont = "/usr/share/fonts/truetype/freefont/FreeSans.ttf";
-#endif
-
-		AddFont("sans-serif", sFont);
-	}
-
-	return s_apFonts[sRealName][iSize];
-}
-
-void CLabel::AddFont(const tstring& sName, const tstring& sFile)
-{
-	s_apFontNames[sName] = sFile;
-}
-
-void CLabel::AddFontSize(const tstring& sName, size_t iSize)
-{
-	if (s_apFontNames.find(sName) == s_apFontNames.end())
-		return;
-
-	float flGUIScale = 1;
-	if (Application())
-		flGUIScale = Application()->GetGUIScale();
-
-	FTTextureFont* pFont = new FTTextureFont(s_apFontNames[sName].c_str());
-	pFont->FaceSize((size_t)((float)iSize / flGUIScale));
-	s_apFonts[sName][iSize] = pFont;
-}

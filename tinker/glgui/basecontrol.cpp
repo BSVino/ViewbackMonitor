@@ -477,8 +477,8 @@ void CBaseControl::PostPaint()
 	{
 		int iFontSize = 12;
 
-		float flFontHeight = CLabel::GetFontHeight("sans-serif", iFontSize);
-		float flTextWidth = CLabel::GetTextWidth(m_sTip, m_sTip.length(), "sans-serif", iFontSize);
+		float flFontHeight = RootPanel()->GetFontHeight("sans-serif", iFontSize);
+		float flTextWidth = RootPanel()->GetTextWidth(m_sTip, m_sTip.length(), "sans-serif", iFontSize);
 
 		int mx, my;
 		CRootPanel::GetFullscreenMousePos(mx, my);
