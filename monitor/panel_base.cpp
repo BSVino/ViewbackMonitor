@@ -12,7 +12,7 @@ CPanel_Base::CPanel_Base()
 {
 	CTextureSheet oSheet("materials/buttons.txt");
 
-	m_pMaximize = AddControl(new CPictureButton("Max", CMaterialLibrary::AddMaterial("materials/maximize.mat")));
+	m_pMaximize = AddControl(new CPictureButton("Max", CMaterialHandle()));
 	m_pMaximize->SetSheetTexture(oSheet.GetSheet("Maximize"), oSheet.GetArea("Maximize"), oSheet.GetSheetWidth("Maximize"), oSheet.GetSheetHeight("Maximize"));
 	m_pMaximize->SetClickedListener(this, Maximize);
 }

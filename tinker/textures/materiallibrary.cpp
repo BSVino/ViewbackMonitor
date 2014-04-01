@@ -38,11 +38,20 @@ CMaterialLibrary::CMaterialLibrary()
 
 CMaterialLibrary::~CMaterialLibrary()
 {
+	// Should be TAssert(m_aMaterials.size() == 0); ?
+	DebugPrint(tsprintf("Material library closing, %d materials\n", m_aMaterials.size()).c_str());
+
+	m_aMaterials.clear();
+
 	s_pMaterialLibrary = NULL;
 }
 
 CMaterialHandle CMaterialLibrary::AddMaterial(const tstring& sMaterial, int iClamp)
 {
+	CMaterialHandle hMaterial = FindAsset(sMaterial);
+	if (hMaterial.IsValid())
+		return hMaterial;
+
 	return CMaterialHandle(sMaterial, AddAsset(sMaterial, iClamp));
 }
 
@@ -177,6 +186,11 @@ CMaterialHandle CMaterialLibrary::FindAsset(const tstring& sMaterial)
 		return CMaterialHandle();
 
 	return CMaterialHandle(sMaterialForward, &it->second);
+}
+
+void CMaterialLibrary::RemoveAsset(const tstring& sName)
+{
+	Get()->m_aMaterials.erase(sName);
 }
 
 bool CMaterialLibrary::IsAssetLoaded(const tstring& sMaterial)

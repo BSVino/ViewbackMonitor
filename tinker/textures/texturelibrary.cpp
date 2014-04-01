@@ -30,8 +30,10 @@ CTextureLibrary::CTextureLibrary()
 
 CTextureLibrary::~CTextureLibrary()
 {
-	for (tmap<tstring, CTexture>::iterator it = m_aTextures.begin(); it != m_aTextures.end(); it++)
-		CRenderer::UnloadTextureFromGL(it->second.m_iGLID);
+	// Should be TAssert(m_aTextures.size() == 0); ?
+	DebugPrint(tsprintf("Texture library closing, %d textures\n", m_aTextures.size()).c_str());
+
+	m_aTextures.clear();
 
 	s_pTextureLibrary = NULL;
 }
@@ -135,6 +137,17 @@ CTextureHandle CTextureLibrary::FindAsset(const tstring& sTexture)
 size_t CTextureLibrary::FindTextureID(const tstring& sTexture)
 {
 	return FindAsset(sTexture)->m_iGLID;
+}
+
+void CTextureLibrary::RemoveAsset(const tstring& sName)
+{
+	tmap<tstring, CTexture>::iterator it = Get()->m_aTextures.find(sName);
+	if (it == Get()->m_aTextures.end())
+		return;
+
+	CRenderer::UnloadTextureFromGL(it->second.m_iGLID);
+
+	Get()->m_aTextures.erase(it);
 }
 
 size_t CTextureLibrary::GetTextureGLID(const tstring& sTexture)
