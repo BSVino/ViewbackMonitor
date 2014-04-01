@@ -88,7 +88,8 @@ class CRenderer
 	friend class CRenderingContext;
 
 public:
-					CRenderer(size_t iWidth, size_t iHeight);
+	CRenderer(size_t iWidth, size_t iHeight);
+	~CRenderer();
 
 public:
 	virtual void	Initialize();

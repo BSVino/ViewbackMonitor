@@ -124,6 +124,20 @@ CRenderer::CRenderer(size_t iWidth, size_t iHeight)
 	m_vecCameraUp = Vector(0, 0, 1);
 }
 
+CRenderer::~CRenderer()
+{
+	CShaderLibrary::Destroy();
+
+	m_oSceneBuffer.Destroy();
+	m_oResolvedSceneBuffer.Destroy();
+
+	for (int i = 0; i < BLOOM_FILTERS; i++)
+	{
+		m_oBloom1Buffers[i].Destroy();
+		m_oBloom2Buffers[i].Destroy();
+	}
+}
+
 void CRenderer::Initialize()
 {
 	LoadShaders();

@@ -41,15 +41,7 @@ CShaderLibrary::CShaderLibrary()
 
 CShaderLibrary::~CShaderLibrary()
 {
-	for (size_t i = 0; i < m_aShaders.size(); i++)
-	{
-		CShader* pShader = &m_aShaders[i];
-		glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iVShader);
-		glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iFShader);
-		glDeleteProgram((GLuint)pShader->m_iProgram);
-		glDeleteShader((GLuint)pShader->m_iVShader);
-		glDeleteShader((GLuint)pShader->m_iFShader);
-	}
+	DestroyNonStatic();
 
 	s_pShaderLibrary = NULL;
 }
@@ -123,6 +115,30 @@ void CShaderLibrary::InitializeNonStatic()
 	}
 	else
 		TMsg(tstring("Warning: Couldn't find shader main file: ") + sMain + "\n");
+}
+
+void CShaderLibrary::Destroy()
+{
+	s_pShaderLibrary->DestroyNonStatic();
+}
+
+void CShaderLibrary::DestroyNonStatic()
+{
+	for (size_t i = 0; i < m_aShaders.size(); i++)
+	{
+		CShader* pShader = &m_aShaders[i];
+		glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iVShader);
+		glDetachShader((GLuint)pShader->m_iProgram, (GLuint)pShader->m_iFShader);
+		glDeleteProgram((GLuint)pShader->m_iProgram);
+		glDeleteShader((GLuint)pShader->m_iVShader);
+		glDeleteShader((GLuint)pShader->m_iFShader);
+	}
+
+	m_aShaderNames.clear();
+	m_aShaders.clear();
+	m_sHeader.clear();
+	m_sFunctions.clear();
+	m_sMain.clear();
 }
 
 void CShaderLibrary::AddShader(const tstring& sFile)
@@ -226,6 +242,7 @@ void CShaderLibrary::CompileShaders(int iSamples)
 {
 	TAssert(Get()->m_sFunctions.length());
 	TAssert(Get()->m_sHeader.length());
+	TAssert(Get()->m_sMain.length());
 
 	if (iSamples != -1)
 		Get()->m_iSamples = iSamples;
