@@ -57,6 +57,13 @@ CRootPanel::CRootPanel() :
 
 CRootPanel::~CRootPanel( )
 {
+	for (auto& aFontMap : m_apFonts)
+	{
+		for (auto& pFont : aFontMap.second)
+			delete pFont.second;
+	}
+
+	m_apFonts.clear();
 }
 
 static bool bDeletingRoot = false;
