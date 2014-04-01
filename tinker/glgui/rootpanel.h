@@ -84,6 +84,9 @@ namespace glgui
 		float GetFontAscender(class ::FTFont* pFont);
 		float GetFontDescender(class ::FTFont* pFont);
 
+		void MakeQuad();
+		size_t GetQuad();
+
 		static CRootPanel*			Get();
 		static bool                 Exists();
 		static void                 Reset();
@@ -121,6 +124,9 @@ namespace glgui
 
 		tmap<tstring, tmap<size_t, ::FTFont*> > m_apFonts;
 		tmap<tstring, tstring>                  m_apFontNames;
+
+		// A quad for drawing GUI elements
+		size_t m_iQuad;
 	};
 
 	inline CRootPanel* RootPanel()

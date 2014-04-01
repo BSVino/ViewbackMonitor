@@ -53,6 +53,8 @@ CRootPanel::CRootPanel() :
 
 	m_iMX = 0;
 	m_iMY = 0;
+
+	m_iQuad = ~0;
 }
 
 CRootPanel::~CRootPanel( )
@@ -64,6 +66,8 @@ CRootPanel::~CRootPanel( )
 	}
 
 	m_apFonts.clear();
+
+	CRenderer::UnloadVertexDataFromGL(m_iQuad);
 }
 
 static bool bDeletingRoot = false;
@@ -530,3 +534,32 @@ float CRootPanel::GetFontDescender(class ::FTFont* pFont)
 {
 	return pFont->Descender() * Application()->GetGUIScale();
 }
+
+void CRootPanel::MakeQuad()
+{
+	if (m_iQuad != ~0)
+		return;
+
+	struct {
+		Vector vecPosition;
+		Vector2D vecTexCoord;
+	} avecData[] =
+	{
+		{ Vector(0, 0, 0), Vector2D(0, 0) },
+		{ Vector(0, 1, 0), Vector2D(0, 1) },
+		{ Vector(1, 1, 0), Vector2D(1, 1) },
+		{ Vector(0, 0, 0), Vector2D(0, 0) },
+		{ Vector(1, 1, 0), Vector2D(1, 1) },
+		{ Vector(1, 0, 0), Vector2D(1, 0) },
+	};
+
+	m_iQuad = CRenderer::LoadVertexDataIntoGL(sizeof(avecData), (float*)&avecData[0]);
+}
+
+size_t CRootPanel::GetQuad()
+{
+	MakeQuad();
+
+	return m_iQuad;
+}
+

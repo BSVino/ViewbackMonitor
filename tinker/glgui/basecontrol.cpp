@@ -28,8 +28,6 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 using namespace glgui;
 
-size_t CBaseControl::s_iQuad = ~0;
-
 tmap<CBaseControl*, CControlResource>* CBaseControl::s_papControls = nullptr;
 
 #ifdef _DEBUG
@@ -497,8 +495,6 @@ void CBaseControl::PostPaint()
 
 void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c, float flBorder, bool bHighlight)
 {
-	MakeQuad();
-
 	::CRenderingContext r(nullptr, true);
 
 	r.SetBlend(BLEND_ALPHA);
@@ -510,7 +506,7 @@ void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c,
 
 	r.SetUniform("vecDimensions", Vector4D(x, y, w, h));
 
-	r.BeginRenderVertexArray(s_iQuad);
+	r.BeginRenderVertexArray(RootPanel()->GetQuad());
 	r.SetPositionBuffer((size_t)0u, 20);
 	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
@@ -518,8 +514,6 @@ void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c,
 
 void CBaseControl::PaintTexture(const CMaterialHandle& hMaterial, float x, float y, float w, float h, const Color& c)
 {
-	MakeQuad();
-
 	::CRenderingContext r(nullptr, true);
 
 	if ((w < 0) ^ (h < 0))
@@ -536,7 +530,7 @@ void CBaseControl::PaintTexture(const CMaterialHandle& hMaterial, float x, float
 
 	r.SetUniform("vecDimensions", Vector4D(x, y, w, h));
 
-	r.BeginRenderVertexArray(s_iQuad);
+	r.BeginRenderVertexArray(RootPanel()->GetQuad());
 	r.SetPositionBuffer((size_t)0u, 20);
 	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
@@ -546,8 +540,6 @@ void CBaseControl::PaintTexture(const CMaterialHandle& hMaterial, float x, float
 
 void CBaseControl::PaintSheet(const CMaterialHandle& hMaterial, float x, float y, float w, float h, int sx, int sy, int sw, int sh, int tw, int th, const Color& c)
 {
-	MakeQuad();
-
 	::CRenderingContext r(nullptr, true);
 
 	if ((w < 0) ^ (h < 0))
@@ -566,33 +558,12 @@ void CBaseControl::PaintSheet(const CMaterialHandle& hMaterial, float x, float y
 	r.SetUniform("vecDimensions", Vector4D(x, y, w, h));
 	r.SetUniform("vecTexCoords", Vector4D((float)sx/(float)tw, (float)sy/(float)th, (float)sw/(float)tw, (float)sh/(float)th));
 
-	r.BeginRenderVertexArray(s_iQuad);
+	r.BeginRenderVertexArray(RootPanel()->GetQuad());
 	r.SetPositionBuffer((size_t)0u, 20);
 	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
 
 	r.SetBackCulling(true);
-}
-
-void CBaseControl::MakeQuad()
-{
-	if (s_iQuad != ~0)
-		return;
-
-	struct {
-		Vector vecPosition;
-		Vector2D vecTexCoord;
-	} avecData[] =
-	{
-		{ Vector(0, 0, 0), Vector2D(0, 0) },
-		{ Vector(0, 1, 0), Vector2D(0, 1) },
-		{ Vector(1, 1, 0), Vector2D(1, 1) },
-		{ Vector(0, 0, 0), Vector2D(0, 0) },
-		{ Vector(1, 1, 0), Vector2D(1, 1) },
-		{ Vector(1, 0, 0), Vector2D(1, 0) },
-	};
-
-	s_iQuad = CRenderer::LoadVertexDataIntoGL(sizeof(avecData), (float*)&avecData[0]);
 }
 
 bool CBaseControl::IsCursorListener()

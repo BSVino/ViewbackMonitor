@@ -139,7 +139,7 @@ void CColorPicker::Paint(float x, float y, float w, float h)
 	RootPanel()->GetFullscreenMousePos(mx, my);
 	r.SetUniform("vecMouse", Vector((float)mx, (float)my, 0));
 
-	r.BeginRenderVertexArray(s_iQuad);
+	r.BeginRenderVertexArray(RootPanel()->GetQuad());
 	r.SetPositionBuffer((size_t)0u, 20);
 	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
@@ -153,7 +153,7 @@ void CColorPicker::Paint(float x, float y, float w, float h)
 
 	r.SetUniform("vecMouse", Vector((float)mx, (float)my, 0));
 
-	r.BeginRenderVertexArray(s_iQuad);
+	r.BeginRenderVertexArray(RootPanel()->GetQuad());
 	r.SetPositionBuffer((size_t)0u, 20);
 	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);

@@ -617,8 +617,6 @@ CVar glgui_spinnyarrows("glgui_spinnyarrows", "off");
 
 void CTreeNode::CExpandButton::Paint(float x, float y, float w, float h)
 {
-	MakeQuad();
-
 	::CRenderingContext r(nullptr, true);
 
 	if ((w < 0) ^ (h < 0))
@@ -642,7 +640,7 @@ void CTreeNode::CExpandButton::Paint(float x, float y, float w, float h)
 	if (glgui_spinnyarrows.GetBool())
 		r.Rotate((float)RootPanel()->GetTime()*200, Vector(0, 0, 1));
 
-	r.BeginRenderVertexArray(s_iQuad);
+	r.BeginRenderVertexArray(RootPanel()->GetQuad());
 	r.SetPositionBuffer((size_t)0u, 20);
 	r.SetTexCoordBuffer(12, 20);
 	r.EndRenderVertexArray(6);
