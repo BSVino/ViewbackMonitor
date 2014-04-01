@@ -62,8 +62,6 @@ namespace glgui
 		CControl<CMenuBar>			GetMenuBar() { return m_hMenuBar; };
 		CControl<CMenu>				AddMenu(const tstring& sText);
 
-		void						SetLighting(bool bLighting) { m_bUseLighting = bLighting; };
-
 		double						GetFrameTime() { return m_flFrameTime; };
 		double						GetTime() { return m_flTime; };
 
@@ -98,7 +96,6 @@ namespace glgui
 		int							m_iMX;
 		int							m_iMY;
 
-		bool						m_bUseLighting;
 		bool						m_bGarbageCollecting;
 		bool						m_bDrawingDraggable;
 

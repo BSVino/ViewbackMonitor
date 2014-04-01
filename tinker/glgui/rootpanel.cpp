@@ -42,7 +42,6 @@ CRootPanel::CRootPanel() :
 
 	m_flNextGCSweep = 5;
 
-	m_bUseLighting = true;
 	m_bGarbageCollecting = false;
 	m_bDrawingDraggable = false;
 
