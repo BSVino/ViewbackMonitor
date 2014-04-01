@@ -85,7 +85,7 @@ CBaseControl::CBaseControl(const FRect& Rect)
 
 CBaseControl::~CBaseControl()
 {
-	TAssert(RootPanel()->IsGarbageCollecting());
+	TAssert(!CRootPanel::Exists() || RootPanel()->IsGarbageCollecting());
 
 	TAssert(!GetParent());
 	if (GetParent())

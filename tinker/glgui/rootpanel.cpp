@@ -55,15 +55,16 @@ CRootPanel::CRootPanel() :
 
 CRootPanel::~CRootPanel( )
 {
-	s_bRootPanelValid = false;
-
-	TAssert(s_pRootPanel == this);
 }
 
-CRootPanel*	CRootPanel::Get()
+static bool bDeletingRoot = false;
+
+CRootPanel* CRootPanel::Get()
 {
 	if (!s_pRootPanel)
 	{
+		TAssertNoMsg(!bDeletingRoot);
+
 		s_pRootPanel = (new CRootPanel())->shared_from_this();
 
 		// Go ahead and set the proper size now so that the console shows up in the right place.
@@ -74,6 +75,34 @@ CRootPanel*	CRootPanel::Get()
 		return nullptr;
 
 	return s_pRootPanel.DowncastStatic<CRootPanel>();
+}
+
+bool CRootPanel::Exists()
+{
+	return !!s_pRootPanel.get();
+}
+
+void CRootPanel::Reset()
+{
+	TAssert(s_bRootPanelValid);
+
+	CRootPanel* pRootPanel = s_pRootPanel.DowncastStatic<CRootPanel>();
+	while (pRootPanel->GetControls().size())
+		pRootPanel->RemoveControl(pRootPanel->GetControls()[0]);
+
+	// Collect all of the controls we just removed.
+	pRootPanel->CollectGarbage();
+
+	bDeletingRoot = true;
+
+	// This is the last pointer pointing at the root panel.
+	s_pRootPanel.reset();
+
+	// Collect again for the root panel.
+	pRootPanel->CollectGarbage();
+
+	bDeletingRoot = false;
+	s_bRootPanelValid = false;
 }
 
 void CRootPanel::Think(double flNewTime)
@@ -93,23 +122,38 @@ void CRootPanel::Think(double flNewTime)
 
 	if (m_flTime > m_flNextGCSweep)
 	{
-		m_bGarbageCollecting = true;
+		CollectGarbage();
+	}
+}
 
+void CRootPanel::CollectGarbage()
+{
+	m_bGarbageCollecting = true;
+
+	bool bSomethingCollected;
+	do
+	{
+		bSomethingCollected = false;
 		auto it = CBaseControl::GetControls().begin();
 		while (it != CBaseControl::GetControls().end())
 		{
-			if (it->second.use_count() == 1)
-				it->second.reset();
+			CControlResource& hControl = it->second;
 
-			if (!it->second.get())
+			if (hControl.use_count() == 1)
+			{
+				hControl.reset();
+				bSomethingCollected = true;
+			}
+
+			if (!hControl.get())
 				CBaseControl::GetControls().erase(it++);
 			else
 				it++;
 		}
+	} while (bSomethingCollected);
 
-		m_bGarbageCollecting = false;
-		m_flNextGCSweep = m_flTime + 5;
-	}
+	m_bGarbageCollecting = false;
+	m_flNextGCSweep = m_flTime + 5;
 }
 
 void CRootPanel::UpdateScene()

@@ -263,6 +263,7 @@ CApplication::~CApplication()
 	delete m_pRenderer;
 	glgui::RootPanel()->RemoveControl(m_pConsole);
 	m_pConsole = nullptr;
+	glgui::CRootPanel::Reset();
 	s_pApplication = nullptr;
 
 	SDL_DestroyWindow(m_pWindow);

@@ -65,10 +65,13 @@ namespace glgui
 		double						GetFrameTime() { return m_flFrameTime; };
 		double						GetTime() { return m_flTime; };
 
+		void                        CollectGarbage();
 		bool						IsGarbageCollecting() const { return m_bGarbageCollecting; }
 		bool						IsDrawingDraggable() const { return m_bDrawingDraggable; }
 
 		static CRootPanel*			Get();
+		static bool                 Exists();
+		static void                 Reset();
 
 		static void					GetFullscreenMousePos(int& mx, int& my);
 
