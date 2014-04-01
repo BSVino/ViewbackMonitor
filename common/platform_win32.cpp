@@ -230,6 +230,7 @@ bool IsFile(const tstring& sPath)
 {
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = FindFirstFile(convert_to_wstring(sPath).c_str(), &fd);
+	FindClose(hFind);
 
 	if (hFind == INVALID_HANDLE_VALUE)
 		return false;
@@ -249,6 +250,7 @@ bool IsDirectory(const tstring& sPath)
 
 	WIN32_FIND_DATA fd;
 	HANDLE hFind = FindFirstFile(convert_to_wstring(sPathNoSep).c_str(), &fd);
+	FindClose(hFind);
 
 	if (hFind == INVALID_HANDLE_VALUE)
 		return false;
