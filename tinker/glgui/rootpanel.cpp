@@ -99,7 +99,7 @@ void CRootPanel::Reset()
 	s_pRootPanel.reset();
 
 	// Collect again for the root panel.
-	pRootPanel->CollectGarbage();
+	pRootPanel->CollectGarbageFinal();
 
 	bDeletingRoot = false;
 	s_bRootPanelValid = false;
@@ -121,9 +121,7 @@ void CRootPanel::Think(double flNewTime)
 	m_flTime = flNewTime;
 
 	if (m_flTime > m_flNextGCSweep)
-	{
 		CollectGarbage();
-	}
 }
 
 void CRootPanel::CollectGarbage()
@@ -154,6 +152,30 @@ void CRootPanel::CollectGarbage()
 
 	m_bGarbageCollecting = false;
 	m_flNextGCSweep = m_flTime + 5;
+}
+
+void CRootPanel::CollectGarbageFinal()
+{
+	m_bGarbageCollecting = true;
+
+	TAssert(CBaseControl::GetControls().size() == 1);
+
+	if (!CBaseControl::GetControls().size())
+		return;
+
+	auto it = CBaseControl::GetControls().begin();
+	while (it != CBaseControl::GetControls().end())
+	{
+		CControlResource& hControl = it->second;
+
+		if (hControl.use_count() == 1)
+		{
+			TAssert(hControl.DowncastStatic<CRootPanel>());
+			hControl.reset(); // This deletes the root panel. No more CRootPanel:: accesses after this.
+			CBaseControl::GetControls().clear();
+			return;
+		}
+	}
 }
 
 void CRootPanel::UpdateScene()

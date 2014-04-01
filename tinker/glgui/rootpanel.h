@@ -66,6 +66,7 @@ namespace glgui
 		double						GetTime() { return m_flTime; };
 
 		void                        CollectGarbage();
+		void                        CollectGarbageFinal();
 		bool						IsGarbageCollecting() const { return m_bGarbageCollecting; }
 		bool						IsDrawingDraggable() const { return m_bDrawingDraggable; }
 
