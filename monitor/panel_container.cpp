@@ -30,13 +30,11 @@ void CPanelContainer::Setup()
 	m_pPanelTime->SetHighlighted(true);
 
 	m_pViewbackButton = AddControl(new CMonitorMenu(false));
-	m_pViewbackButton->SetMenuOpen(MENUOPEN_SIDE);
 	m_pViewbackButton->SetTooltip("Options");
 	m_pChannelsButton = AddControl(new CPictureButton("Channels"));
 	m_pChannelsButton->SetTooltip("Channels");
 	m_pChannelsButton->SetClickedListener(this, Channels);
 	m_pGroupsButton = AddControl(new CMenu("Groups"));
-	m_pGroupsButton->SetMenuOpen(MENUOPEN_SIDE);
 	m_pGroupsButton->SetTooltip("Groups");
 
 	CTextureSheet oSheet("materials/buttons.txt");
@@ -121,6 +119,13 @@ void CPanelContainer::Layout()
 			m_pPanelTime->SetDimensionsAnimate(FRect(0, m_pPanelConsole->GetBottom(), flWindowWidth, flWindowHeight / 2), 0.3);
 		}
 	}
+
+	menuopen_t eOpen = MENUOPEN_BOTTOM;
+	if (GetWidth() > GetHeight())
+		eOpen = MENUOPEN_SIDE;
+
+	m_pViewbackButton->SetMenuOpen(eOpen);
+	m_pGroupsButton->SetMenuOpen(eOpen);
 
 	tvector<CButton*> apButtons;
 	apButtons.push_back(m_pViewbackButton);
