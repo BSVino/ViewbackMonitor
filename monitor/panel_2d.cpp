@@ -28,7 +28,7 @@ void CPanel_2D::RegistrationUpdate()
 		if (oReg.m_eDataType != VB_DATATYPE_VECTOR)
 			continue;
 
-		m_apLabels.push_back(AddControl(new CButton(oReg.m_sFieldName)));
+		m_apLabels.push_back(AddControl(new CButton(oReg.m_sName)));
 		m_apLabels.back()->SetTextColor(Color(oMeta.m_clrColor.x, oMeta.m_clrColor.y, oMeta.m_clrColor.z, 1.0f));
 		m_apLabels.back()->SetAlign(CLabel::TA_MIDDLECENTER);
 		m_apLabels.back()->SetHeight(18);
@@ -45,6 +45,7 @@ void CPanel_2D::Layout()
 {
 	BaseClass::Layout();
 
+	auto& aChannels = MonitorWindow()->GetViewback()->GetChannels();
 	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
 
 	for (auto& pLabel : m_apLabels)
@@ -74,13 +75,11 @@ void CPanel_2D::Layout()
 		if (m_aiDataLabels[i] < 0)
 			continue;
 
-		auto& oMeta = aMeta[i];
-
 		int iLabel = m_aiDataLabels[i];
 
 		m_apLabels[iLabel]->SetVisible(false);
 
-		if (!oMeta.m_bActive)
+		if (!aChannels[i].m_bActive)
 			continue;
 
 		m_apLabels[iLabel]->SetVisible(true);
@@ -119,7 +118,7 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 		if (!oMeta[i].m_bVisible)
 			continue;
 
-		if (!oMeta[i].m_bActive)
+		if (!oChannels[i].m_bActive)
 			continue;
 
 		auto& aVectorData = oData[i].m_aVectorData;

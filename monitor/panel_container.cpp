@@ -166,13 +166,7 @@ void CPanelContainer::ShowGroupCallback(const tstring& sArgs)
 
 	int iGroup = stoi(sArgs);
 
-	auto& aMeta = Viewback()->GetMeta();
-	for (auto& oMeta : aMeta)
-		oMeta.m_bActive = false;
-
-	auto& aGroups = Viewback()->GetGroups();
-	for (auto& i : aGroups[iGroup].m_iChannels)
-		aMeta[i].m_bActive = true;
+	Viewback()->ActivateGroup(iGroup);
 
 	Layout();
 

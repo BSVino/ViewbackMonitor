@@ -202,7 +202,7 @@ void CChannelPanel::RegistrationUpdate()
 		CControl<CCheckBox> pChannel = AddControl(new CCheckBox());
 		pChannel->SetPos(20, T_HEADER_HEIGHT + 10 + (float)i * (pChannel->GetHeight() + 10));
 		pChannel->SetWidth(GetWidth() - 40);
-		pChannel->SetText(aChannels[i].m_sFieldName);
+		pChannel->SetText(aChannels[i].m_sName);
 		pChannel->SetClickedListener(this, ChannelOn, tsprintf("%d", i));
 		pChannel->SetUnclickedListener(this, ChannelOff, tsprintf("%d", i));
 
@@ -214,42 +214,42 @@ void CChannelPanel::RegistrationUpdate()
 
 void CChannelPanel::Layout()
 {
-	const auto& aMeta = Viewback()->GetMeta();
+	const auto& aChannels = Viewback()->GetChannels();
 
 	for (size_t i = 0; i < m_ahChannels.size(); i++)
-		m_ahChannels[i]->SetState(aMeta[i].m_bActive, false);
+		m_ahChannels[i]->SetState(aChannels[i].m_bActive, false);
 
 	BaseClass::Layout();
 }
 
 void CChannelPanel::ChannelOnCallback(const tstring& sArgs)
 {
-	auto& aMeta = Viewback()->GetMeta();
+	auto& aChannels = Viewback()->GetChannels();
 
 	size_t iChannel = stoi(sArgs);
 	if (iChannel < 0)
 		return;
 
-	if (iChannel >= aMeta.size())
+	if (iChannel >= aChannels.size())
 		return;
 
-	aMeta[iChannel].m_bActive = true;
+	Viewback()->ActivateChannel(iChannel);
 
 	MonitorWindow()->GetPanelContainer()->Layout();
 }
 
 void CChannelPanel::ChannelOffCallback(const tstring& sArgs)
 {
-	auto& aMeta = Viewback()->GetMeta();
+	auto& aChannels = Viewback()->GetChannels();
 
 	size_t iChannel = stoi(sArgs);
 	if (iChannel < 0)
 		return;
 
-	if (iChannel >= aMeta.size())
+	if (iChannel >= aChannels.size())
 		return;
 
-	aMeta[iChannel].m_bActive = false;
+	Viewback()->DeactivateChannel(iChannel);
 
 	MonitorWindow()->GetPanelContainer()->Layout();
 }
