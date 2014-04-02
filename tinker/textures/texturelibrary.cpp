@@ -154,7 +154,7 @@ size_t CTextureLibrary::GetTextureGLID(const tstring& sTexture)
 {
 	tmap<tstring, CTexture>::iterator it = Get()->m_aTextures.find(sTexture);
 	if (it == Get()->m_aTextures.end())
-		return ~0;
+		return (size_t)~0;
 
 	return it->second.m_iGLID;
 }

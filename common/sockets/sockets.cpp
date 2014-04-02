@@ -42,7 +42,7 @@ CClientSocket::~CClientSocket()
 
 void CClientSocket::Initialize()
 {
-	m_iSocket = -1;
+	m_iSocket = INVALID_SOCKET;
 	m_sError = "";
 
 #ifdef _WIN32
@@ -161,7 +161,7 @@ void CClientSocket::Close()
 	close(GetSocket());
 #endif
 
-	m_iSocket = -1;
+	m_iSocket = INVALID_SOCKET;
 
 	m_bOpen = false;
 }

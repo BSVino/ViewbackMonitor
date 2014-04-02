@@ -126,7 +126,7 @@ void CScrollBar::Think()
 	m_flHandlePosition = Approach(m_flHandlePositionGoal, m_flHandlePosition, (float)CRootPanel::Get()->GetFrameTime()*10);
 }
 
-bool CScrollBar::MousePressed(int code, int mx, int my)
+bool CScrollBar::MousePressed(int, int mx, int my)
 {
 	float x, y, w, h;
 	GetAbsDimensions(x, y, w, h);

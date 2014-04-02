@@ -103,17 +103,17 @@ namespace glgui
 		virtual bool	IsVisible();
 		virtual void    CalculateVisible();
 		virtual void    DirtyVisible();
-		virtual bool	IsChildVisible(CBaseControl* pChild) { return true; }
+		virtual bool	IsChildVisible(CBaseControl* /*pChild*/) { return true; }
 
 		virtual void	LevelShutdown( void ) { return; };
-		virtual bool	KeyPressed(int iKey, bool bCtrlDown = false) { return false; };
-		virtual bool	KeyReleased(int iKey) { return false; };
-		virtual bool	CharPressed(int iKey) { return false; };
+		virtual bool	KeyPressed(int /*iKey*/, bool bCtrlDown = false) { bCtrlDown = bCtrlDown;  return false; };
+		virtual bool	KeyReleased(int /*iKey*/) { return false; };
+		virtual bool	CharPressed(int /*iKey*/) { return false; };
 		virtual bool	MousePressed(int iButton, int mx, int my);
-		virtual bool	MouseReleased(int iButton, int mx, int my) { return false; };
-		virtual bool	MouseDoubleClicked(int iButton, int mx, int my) { return false; };
+		virtual bool	MouseReleased(int /*iButton*/, int /*mx*/, int /*my*/) { return false; };
+		virtual bool	MouseDoubleClicked(int /*iButton*/, int /*mx*/, int /*my*/) { return false; };
 		virtual bool	IsCursorListener();
-		virtual void	CursorMoved(int x, int y, int dx, int dy) {};
+		virtual void	CursorMoved(int /*x*/, int /*y*/, int /*dx*/, int /*dy*/) {};
 		virtual void	CursorIn();
 		virtual void	CursorOut();
 
@@ -214,7 +214,7 @@ namespace glgui
 		// What you need to do instead is p->shared_from_this() or CBaseControls::GetControls()[p] or better yet use a different function signature:
 		// void Function(CBaseControl* p)
 		// to avoid the conversion.
-		CControlResource(CBaseControl* p)
+		CControlResource(CBaseControl* /*p*/)
 		{
 		}
 

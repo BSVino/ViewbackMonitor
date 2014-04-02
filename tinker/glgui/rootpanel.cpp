@@ -54,7 +54,7 @@ CRootPanel::CRootPanel() :
 	m_iMX = 0;
 	m_iMY = 0;
 
-	m_iQuad = ~0;
+	m_iQuad = (size_t)~0;
 }
 
 CRootPanel::~CRootPanel( )

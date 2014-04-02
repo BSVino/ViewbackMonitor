@@ -59,7 +59,7 @@ size_t CData::FindChildIndex(const tstring& sKey) const
 		if (m_apChildren[i]->GetKey() == sKey)
 			return i;
 
-	return ~0;
+	return (size_t)~0;
 }
 
 CData* CData::FindChild(const tstring& sKey) const
@@ -140,7 +140,7 @@ bool CData::GetValueBool() const
 	tstring sValue = GetValueString();
 
 	for( tstring::iterator p = sValue.begin(); p != sValue.end(); ++p )
-		*p = toupper(*p);  // make string all caps
+		*p = (char)toupper(*p);  // make string all caps
 
 	if( sValue == tstring("FALSE") || sValue == tstring("F") ||
 	    sValue == tstring("NO") || sValue == tstring("N") ||

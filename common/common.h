@@ -48,7 +48,10 @@ extern void DebugPrint(const char* pszText);
 
 #define TAssert(x) \
 { \
+	__pragma(warning(push)) \
+	__pragma(warning(disable:4127)) /* conditional expression is constant */ \
 	if (!(x)) \
+	__pragma(warning(pop)) \
 	{ \
 		TMsg("Assert failed: " #x "\n"); \
 		TDebugBreak(); \
@@ -57,7 +60,10 @@ extern void DebugPrint(const char* pszText);
 
 #define TAssertNoMsg(x) \
 { \
+	__pragma(warning(push)) \
+	__pragma(warning(disable:4127)) /* conditional expression is constant */ \
 	if (!(x)) \
+	__pragma(warning(pop)) \
 	{ \
 		DebugPrint("Assert failed: " #x "\n"); \
 		TDebugBreak(); \

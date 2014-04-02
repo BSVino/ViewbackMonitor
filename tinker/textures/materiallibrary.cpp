@@ -68,7 +68,7 @@ CMaterialHandle CMaterialLibrary::AddMaterial(const class CData* pData, const ts
 	return CMaterialHandle(pMaterial->m_sFile, pMaterial);
 }
 
-CMaterial* CMaterialLibrary::AddAsset(const tstring& sMaterial, int iClamp)
+CMaterial* CMaterialLibrary::AddAsset(const tstring& sMaterial, int)
 {
 	if (!sMaterial.length())
 		return nullptr;
@@ -302,7 +302,7 @@ size_t CMaterial::FindParameter(const tstring& sParameterName, bool bCreate)
 		return m_aParameters.size()-1;
 	}
 
-	return ~0;
+	return (size_t)~0;
 }
 
 void CMaterial::SetParameter(const tstring& sParameterName, const CTextureHandle& hTexture)

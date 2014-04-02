@@ -653,10 +653,10 @@ size_t CShader::FindTextureByUniform(const tstring& sUniform) const
 			return i;
 	}
 
-	return ~0;
+	return (size_t)~0;
 }
 
-void ReloadShaders(class CCommand* pCommand, tvector<tstring>& asTokens, const tstring& sCommand)
+void ReloadShaders(class CCommand*, tvector<tstring>&, const tstring&)
 {
 	CShaderLibrary::CompileShaders();
 	if (CShaderLibrary::Get()->IsCompiled())

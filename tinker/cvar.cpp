@@ -70,7 +70,7 @@ void CCommand::RegisterCommand(CCommand* pCommand)
 	GetCommands()[pCommand->m_sName] = pCommand;
 }
 
-void SetCVar(CCommand* pCommand, tvector<tstring>& asTokens, const tstring& sCommand)
+void SetCVar(CCommand* pCommand, tvector<tstring>& asTokens, const tstring& /*sCommand*/)
 {
 	CVar* pCVar = dynamic_cast<CVar*>(pCommand);
 	TAssert(pCVar);

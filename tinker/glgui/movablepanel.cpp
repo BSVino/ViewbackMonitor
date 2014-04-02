@@ -144,7 +144,7 @@ void CMovablePanel::Think()
 	CPanel::Think();
 }
 
-void CMovablePanel::PaintBackground(float x, float y, float w, float h)
+void CMovablePanel::PaintBackground(float x, float y, float w, float)
 {
 	float flMinimizedHeight = T_HEADER_HEIGHT;
 	float flMaximumHeight = m_flNonMinimizedHeight;
@@ -274,12 +274,12 @@ void CMovablePanel::SetClearBackground(bool bClearBackground)
 	}
 }
 
-void CMovablePanel::CloseWindowCallback(const tstring& sArgs)
+void CMovablePanel::CloseWindowCallback(const tstring&)
 {
 	SetVisible(false);
 }
 
-void CMovablePanel::MinimizeWindowCallback(const tstring& sArgs)
+void CMovablePanel::MinimizeWindowCallback(const tstring&)
 {
 	Minimize();
 }

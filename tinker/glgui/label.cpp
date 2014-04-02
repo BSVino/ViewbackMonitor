@@ -248,10 +248,9 @@ void CLabel::DrawSection(const CLine& l, const CLineSection& s, float x, float y
 	m_iCharsDrawn += s.m_sText.length()+1;
 }
 
-void CLabel::GetAlignmentOffset(float flLineWidth, float flLineHeight, const tstring& sFont, size_t iFontSize, float flAreaWidth, float flAreaHeight, float& x, float& y) const
+void CLabel::GetAlignmentOffset(float flLineWidth, float, const tstring&, size_t, float flAreaWidth, float flAreaHeight, float& x, float& y) const
 {
 	float lw = flLineWidth;
-	float lh = flLineHeight;
 	float w = flAreaWidth;
 	float h = flAreaHeight;
 
@@ -426,7 +425,7 @@ bool CLabel::MouseIsInside(const CLine& oLine, const CLineSection& oSection)
 	return false;
 }
 
-bool CLabel::MousePressed(int code, int mx, int my)
+bool CLabel::MousePressed(int, int, int)
 {
 	if (!m_pLinkClickListener)
 		return false;
@@ -452,7 +451,7 @@ bool CLabel::MousePressed(int code, int mx, int my)
 	return false;
 }
 
-bool CLabel::MouseReleased(int code, int mx, int my)
+bool CLabel::MouseReleased(int, int, int)
 {
 	return false;
 }
@@ -476,7 +475,7 @@ void CLabel::SetFont(const tstring& sFontName, int iSize)
 	m_sFontName = sFontName;
 	m_iFontFaceSize = iSize;
 
-	if (!(m_pFont = RootPanel()->GetFont(m_sFontName, m_iFontFaceSize)))
+	if (NULL == (m_pFont = RootPanel()->GetFont(m_sFontName, m_iFontFaceSize)))
 	{
 		RootPanel()->AddFontSize(m_sFontName, m_iFontFaceSize);
 		m_pFont = RootPanel()->GetFont(m_sFontName, m_iFontFaceSize);

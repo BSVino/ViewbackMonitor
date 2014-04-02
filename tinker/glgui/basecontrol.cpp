@@ -420,7 +420,7 @@ void CBaseControl::DirtyVisible()
 	m_bVisibleDirty = true;
 }
 
-bool CBaseControl::MousePressed(int iButton, int mx, int my)
+bool CBaseControl::MousePressed(int /*iButton*/, int /*mx*/, int /*my*/)
 {
 	return CRootPanel::Get()->SetFocus(m_hThis);
 }
@@ -456,7 +456,7 @@ void CBaseControl::Paint(float x, float y)
 		Paint(x, y, m_flW, m_flH);
 }
 
-void CBaseControl::Paint(float x, float y, float w, float h)
+void CBaseControl::Paint(float, float, float, float)
 {
 }
 

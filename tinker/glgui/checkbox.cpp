@@ -46,6 +46,6 @@ void CCheckBox::Paint(float x, float y, float w, float h)
 	BaseClass::Paint(x + h + 4, y, w, h);
 }
 
-void CCheckBox::PaintButton(float x, float y, float w, float h)
+void CCheckBox::PaintButton(float, float, float, float)
 {
 }

@@ -29,8 +29,8 @@ using namespace glgui;
 CTree::CTree(const CMaterialHandle& hArrowMaterial, const CMaterialHandle& hEditMaterial, const CMaterialHandle& hVisibilityMaterial)
 	: CPanel(0, 0, 10, 10)
 {
-	m_iHilighted = ~0;
-	m_iSelected = ~0;
+	m_iHilighted = (size_t)~0;
+	m_iSelected = (size_t)~0;
 
 	m_hArrowMaterial = hArrowMaterial;
 	m_hVisibilityMaterial = hVisibilityMaterial;
@@ -76,7 +76,7 @@ void CTree::Think()
 	int mx, my;
 	CRootPanel::GetFullscreenMousePos(mx, my);
 
-	m_iHilighted = ~0;
+	m_iHilighted = (size_t)~0;
 	for (size_t i = 0; i < m_ahAllNodes.size(); i++)
 	{
 		CBaseControl* pNode = m_ahAllNodes[i];
@@ -160,7 +160,7 @@ bool CTree::MousePressed(int code, int mx, int my)
 	if (CPanel::MousePressed(code, mx, my))
 		return true;
 
-	m_iSelected = ~0;
+	m_iSelected = (size_t)~0;
 	for (size_t i = 0; i < m_ahAllNodes.size(); i++)
 	{
 		CBaseControl* pNode = m_ahAllNodes[i];
@@ -201,7 +201,7 @@ bool CTree::MouseDoubleClicked(int code, int mx, int my)
 	if (CPanel::MouseDoubleClicked(code, mx, my))
 		return true;
 
-	m_iSelected = ~0;
+	m_iSelected = (size_t)~0;
 	for (size_t i = 0; i < m_ahAllNodes.size(); i++)
 	{
 		CBaseControl* pNode = m_ahAllNodes[i];
@@ -263,8 +263,8 @@ void CTree::RemoveControl(CBaseControl* pControl)
 
 void CTree::ClearTree()
 {
-	m_iHilighted = ~0;
-	m_iSelected = ~0;
+	m_iHilighted = (size_t)~0;
+	m_iSelected = (size_t)~0;
 
 	if (m_pSelectedListener)
 		m_pfnSelectedCallback(m_pSelectedListener, "-1");
@@ -307,8 +307,8 @@ void CTree::RemoveNode(CTreeNode* pNode)
 	if (m_iSelected != ~0)
 		pSelected = m_ahAllNodes[m_iSelected];
 
-	m_iHilighted = ~0;
-	m_iSelected = ~0;
+	m_iHilighted = (size_t)~0;
+	m_iSelected = (size_t)~0;
 
 	for (size_t i = 0; i < m_ahNodes.size(); i++)
 	{
@@ -377,7 +377,7 @@ void CTree::SetDroppedListener(IEventListener* pListener, IEventListener::Callba
 	m_pfnDroppedCallback = pfnCallback;
 }
 
-void CTree::SetDraggable(IDraggable* pDraggable, bool bDelete)
+void CTree::SetDraggable(IDraggable* pDraggable, bool)
 {
 	if (m_pDroppedListener)
 		m_pfnDroppedCallback(m_pDroppedListener, "");
@@ -591,11 +591,11 @@ IDroppable* CTreeNode::GetDroppable()
 	return NULL;
 }
 
-void CTreeNode::SetDroppable(IDroppable* pDroppable)
+void CTreeNode::SetDroppable(IDroppable*)
 {
 }
 
-void CTreeNode::ExpandCallback(const tstring& sArgs)
+void CTreeNode::ExpandCallback(const tstring&)
 {
 	SetExpanded(!IsExpanded());
 	m_hTree->Layout();

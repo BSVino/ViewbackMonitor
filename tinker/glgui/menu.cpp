@@ -270,7 +270,7 @@ void CMenu::SetMenuListener(IEventListener* pListener, IEventListener::Callback 
 	m_pMenuListener = pListener;
 }
 
-void CMenu::OpenCallback(const tstring& sArgs)
+void CMenu::OpenCallback(const tstring&)
 {
 	CRootPanel::Get()->GetMenuBar()->SetActive(this);
 
@@ -281,7 +281,7 @@ void CMenu::OpenCallback(const tstring& sArgs)
 	}
 }
 
-void CMenu::CloseCallback(const tstring& sArgs)
+void CMenu::CloseCallback(const tstring&)
 {
 	if (m_hMenu->GetControls().size())
 		CloseMenu();
@@ -374,7 +374,7 @@ size_t CMenu::GetSelectedMenu()
 		}
 	}
 
-	return ~0;
+	return (size_t)~0;
 }
 
 void CMenu::DirtyVisible()
@@ -434,7 +434,7 @@ void CMenu::CSubmenuPanel::Think()
 	CPanel::Think();
 }
 
-void CMenu::CSubmenuPanel::Paint(float x, float y, float w, float h)
+void CMenu::CSubmenuPanel::Paint(float, float, float, float)
 {
 }
 

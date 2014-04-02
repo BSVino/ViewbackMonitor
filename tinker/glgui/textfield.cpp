@@ -93,8 +93,6 @@ void CTextField::Paint(float x, float y, float w, float h)
 
 	CRootPanel::GetContext()->SetUniform("vecColor", clrFG);
 
-	FTFont* pFont = RootPanel()->GetFont("sans-serif", m_iFontFaceSize);
-
 	DrawLine(m_sText.c_str(), (unsigned int)m_sText.length(), x+4, y, w-8, h, clrFG);
 
 	if (m_sText.length() && m_iAutoComplete >= 0 && m_asAutoCompleteCommands.size() && HasFocus())
@@ -149,7 +147,7 @@ void CTextField::PostPaint()
 				iCommandsToSkip = iAutoComplete - 4;
 			}
 
-			if (iAutoComplete == m_asAutoCompleteCommands.size()-1)
+			if ((size_t)iAutoComplete == m_asAutoCompleteCommands.size()-1)
 				bAbbreviated = false;
 		}
 
@@ -165,7 +163,7 @@ void CTextField::PostPaint()
 	}
 }
 
-void CTextField::DrawLine(const tchar* pszText, unsigned iLength, float x, float y, float w, float h, const Color& clrLine)
+void CTextField::DrawLine(const tchar* pszText, unsigned iLength, float x, float y, float, float h, const Color&)
 {
 	if (!iLength)
 		return;
@@ -266,7 +264,7 @@ bool CTextField::SetFocus(bool bFocus)
 	return HasFocus();
 }
 
-bool CTextField::MousePressed(int iButton, int mx, int my)
+bool CTextField::MousePressed(int, int mx, int)
 {
 	if (!TakesFocus())
 		return false;
@@ -302,7 +300,7 @@ bool CTextField::MousePressed(int iButton, int mx, int my)
 	return true;
 }
 
-void CTextField::CursorMoved(int x, int y, int dx, int dy)
+void CTextField::CursorMoved(int x, int, int, int)
 {
 	if (!Application()->IsMouseLeftDown())
 		return;
@@ -345,7 +343,7 @@ bool CTextField::CharPressed(int iKey)
 
 		if (iKey <= TINKER_KEY_FIRST)
 		{
-			m_sText.insert(m_iCursor++, 1, iKey);
+			m_sText.insert(m_iCursor++, 1, (char)iKey);
 			UpdateContentsChangedListener();
 		}
 
@@ -384,7 +382,7 @@ bool CTextField::KeyPressed(int iKey, bool bCtrlDown)
 			if (sInput.length())
 			{
 				SetText(m_asAutoCompleteCommands[m_iAutoComplete % m_asAutoCompleteCommands.size()]);
-				SetCursorPosition(-1);
+				SetCursorPosition((size_t)-1);
 				UpdateContentsChangedListener();
 			}
 
@@ -537,7 +535,6 @@ void CTextField::FindRenderOffset()
 	float flCursorOffset = RootPanel()->GetTextWidth(m_sText, m_iCursor, RootPanel()->GetFont("sans-serif", m_iFontFaceSize));
 
 	float flTextLeft = (cx + 4) + m_flRenderOffset;
-	float flTextRight = flTextLeft + flTextWidth + m_flRenderOffset;
 	float flCursorPosition = flTextLeft + flCursorOffset;
 
 	float flLeftOverrun = (cx + 4) - flCursorPosition;

@@ -45,7 +45,7 @@ void CColorPickerButton::Paint(float x, float y, float w, float h)
 	CBaseControl::PaintRect(x + 3, y + 3, w - 6, h - 6, GetColorPicker()->GetColorVector());
 }
 
-void CColorPickerButton::OpenCallback(const tstring& sArgs)
+void CColorPickerButton::OpenCallback(const tstring&)
 {
 	RootPanel()->AddControl(m_pColorPicker, true);
 
@@ -64,7 +64,7 @@ void CColorPickerButton::OpenCallback(const tstring& sArgs)
 	m_pColorPicker->SetVisible(true);
 }
 
-void CColorPickerButton::CloseCallback(const tstring& sArgs)
+void CColorPickerButton::CloseCallback(const tstring&)
 {
 	m_pColorPicker.DowncastStatic<CColorPicker>()->Close();
 
@@ -189,7 +189,7 @@ bool CColorPicker::MousePressed(int code, int mx, int my)
 	return BaseClass::MousePressed(code, mx, my);
 }
 
-void CColorPicker::CursorMoved(int mx, int my, int dx, int dy)
+void CColorPicker::CursorMoved(int mx, int my, int, int)
 {
 	if (Application()->IsMouseLeftDown())
 		Update(mx, my);
@@ -235,7 +235,7 @@ bool CColorPicker::Update(int x, int y)
 	return true;
 }
 
-void CColorPicker::ValueChangedCallback(const tstring& sArgs)
+void CColorPicker::ValueChangedCallback(const tstring&)
 {
 	tvector<tstring> asArgs;
 	strtok(m_hValue->GetText(), asArgs);

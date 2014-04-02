@@ -126,7 +126,6 @@ void CConsole::Think()
 
 		if (asTokens.size() > iLinesInSpace)
 		{
-			int iInitialLines = asTokens.size();
 			asTokens.erase(asTokens.begin(), asTokens.end() - iLinesInSpace);
 
 			tstring sNewOutput;
@@ -202,7 +201,7 @@ bool CConsole::KeyPressed(int code, bool bCtrlDown)
 				m_iHistory++;
 
 				m_hInput->SetText(m_asHistory[m_iHistory]);
-				m_hInput->SetCursorPosition(-1);
+				m_hInput->SetCursorPosition((size_t)-1);
 			}
 			else if (m_iHistory == (int)m_asHistory.size()-1)
 			{
@@ -218,7 +217,7 @@ bool CConsole::KeyPressed(int code, bool bCtrlDown)
 				m_iHistory--;
 
 			m_hInput->SetText(m_asHistory[m_iHistory]);
-			m_hInput->SetCursorPosition(-1);
+			m_hInput->SetCursorPosition((size_t)-1);
 		}
 		else
 			m_iHistory = -1;
@@ -262,7 +261,7 @@ bool CConsole::CharPressed(int iKey)
 	return BaseClass::CharPressed(iKey);
 }
 
-void CConsole::CommandChangedCallback(const tstring& sArgs)
+void CConsole::CommandChangedCallback(const tstring& /*sArgs*/)
 {
 	tstring sInput = m_hInput->GetText();
 	if (sInput.find(' ') != ~0)
@@ -300,7 +299,6 @@ void CApplication::ToggleConsole()
 	if (!Get())
 		return;
 
-	CConsole* pConsole = Get()->GetConsole();
 	if (IsConsoleOpen())
 		CloseConsole();
 	else
