@@ -100,8 +100,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 if (WIN32)
-	target_link_libraries(tinker debug D:/build/ftgl-vs2013/src/Debug/ftgl-gl3.lib)
-	target_link_libraries(tinker optimized D:/build/ftgl-vs2013/src/Release/ftgl-gl3.lib)
+	target_link_libraries(tinker debug /build/ftgl-vs2013/src/Debug/ftgl-gl3.lib)
+	target_link_libraries(tinker optimized /build/ftgl-vs2013/src/Release/ftgl-gl3.lib)
 	target_link_libraries(tinker debug ${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/objs/win32/vc2013/freetype2311_D.lib)
 	target_link_libraries(tinker optimized ${CMAKE_SOURCE_DIR}/../ext-deps/freetype-2.3.11/objs/win32/vc2013/freetype2311.lib)
 
