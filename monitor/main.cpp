@@ -1,6 +1,4 @@
 #ifdef _WIN32
-#include <Windows.h>
-
 #include <pthread.h>
 #endif
 
