@@ -404,33 +404,32 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			float ax, ay;
 			pLabel->GetPaintPos(ax, ay);
 
-			int iValue = aIntData[iStart].data;
-			double flValueTimeStart = aIntData[iStart].time;
-
 			Color clrBox(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f);
 
-			for (size_t j = iStart + 1; j <= iEnd; j++)
+			for (size_t j = iStart; j <= iEnd; j++)
 			{
+				int iValue = aIntData[j].data;
+				double flValueTimeStart = aIntData[j].time;
+
+				// Combine equal data into one box.
+				while (j < iEnd && aIntData[j + 1].data == iValue)
+					j++;
+
 				float flXStart = (float)RemapVal(flValueTimeStart, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w);
-				float flXEnd = (float)RemapVal(aIntData[j].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w) - 2;
+				float flXEnd;
+				if (j == iEnd)
+					// Draw it all the way to the screen edge to simulate predicted data
+					flXEnd = (float)x + w - 2;
+				else
+					flXEnd = (float)RemapVal(aIntData[j+1].time, flTimeNow - flSecondsToShow, flTimeNow, (double)x, (double)x + w) - 2;
 
 				if (flXStart < x)
 					flXStart = x;
 
-				if (j == iEnd)
-					// Draw it all the way to the screen edge to simulate predicted data
-					PaintRect(flXStart, ay, x + w - flXStart, pLabel->GetHeight(), clrBox, 2);
-				else
-					PaintRect(flXStart, ay, flXEnd - flXStart, pLabel->GetHeight(), clrBox, 2);
+				PaintRect(flXStart, ay, flXEnd - flXStart, pLabel->GetHeight(), clrBox, 2);
 
 				tstring sValue = MonitorWindow()->GetViewback()->GetLabelForValue(oReg.m_iHandle, iValue).c_str();
 				CLabel::PaintText(sValue, sValue.length(), "sans-serif", 12, flXStart + 5, ay + pLabel->GetHeight() - 14, Color(0, 0, 0, 255));
-
-				if (iValue != aIntData[j].data)
-				{
-					iValue = aIntData[j].data;
-					flValueTimeStart = aIntData[j].time;
-				}
 			}
 		}
 	}
