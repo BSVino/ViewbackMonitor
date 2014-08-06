@@ -215,15 +215,22 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		size_t iEnd = 0;
 		if (oReg.m_eDataType == VB_DATATYPE_INT)
 		{
-			if (oData[i].m_aIntData.size() < 2)
+			if (oData[i].m_aIntData.size() == 1)
+			{
+				iStart = 0;
+				iEnd = 0;
+			}
+			else if (oData[i].m_aIntData.size() > 1)
+			{
+				iStart = FindStartTime(oData[i].m_aIntData, flTimeNow - flSecondsToShow);
+				iEnd = FindStartTime(oData[i].m_aIntData, flTimeNow);
+
+				// Allow the data to go flush up to the screen edge.
+				if (iEnd < oData[i].m_aIntData.size() - 1)
+					iEnd++;
+			}
+			else
 				continue;
-
-			iStart = FindStartTime(oData[i].m_aIntData, flTimeNow - flSecondsToShow);
-			iEnd = FindStartTime(oData[i].m_aIntData, flTimeNow);
-
-			// Allow the data to go flush up to the screen edge.
-			if (iEnd < oData[i].m_aIntData.size() - 1)
-				iEnd++;
 		}
 		else if (oReg.m_eDataType == VB_DATATYPE_FLOAT)
 		{
