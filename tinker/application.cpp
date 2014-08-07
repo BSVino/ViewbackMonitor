@@ -172,7 +172,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 	m_iWindowWidth = iWidth;
 	m_iWindowHeight = iHeight;
 
-	TMsg(tsprintf("Opening %dx%d %s %s window.\n", iWidth, iHeight, bFullscreen?"fullscreen":"windowed", bResizeable?"resizeable":"fixed-size"));
+	TMsg(tsprintf("Requesting %dx%d %s %s window.\n", iWidth, iHeight, bFullscreen?"fullscreen":"windowed", bResizeable?"resizeable":"fixed-size"));
 
 	int iScreenWidth;
 	int iScreenHeight;
@@ -193,6 +193,18 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 		return;
 	}
 
+	{
+		int iWindowWidth, iWindowHeight;
+		SDL_GetWindowSize(m_pWindow, &iWindowWidth, &iWindowHeight);
+
+		if (iWindowWidth != m_iWindowWidth || iWindowHeight != m_iWindowHeight)
+		{
+			TMsg(tsprintf("Window size opened: %dx%d.\n", iWindowWidth, iWindowHeight));
+			m_iWindowWidth = iWindowWidth;
+			m_iWindowHeight = iWindowHeight;
+		}
+	}
+
 	if (!bResizeable)
 		SDL_SetWindowBordered(m_pWindow, SDL_FALSE);
 
@@ -200,7 +212,13 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
 
 	if (m_bMultisampling)
-		SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+	{
+		int iBuffersResult = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+		int iSamplesResult = SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+
+		if (iBuffersResult == -1 || iSamplesResult == -1)
+			TMsg("Tried but failed to initialize multisampling.\n");
+	}
 
 	SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 	SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -254,8 +272,7 @@ void CApplication::OpenWindow(size_t iWidth, size_t iHeight, bool bFullscreen, b
 	m_pRenderer = CreateRenderer();
 	m_pRenderer->Initialize();
 
-	glgui::RootPanel()->SetSize((float)m_pRenderer->GetDrawableWidth(), (float)m_pRenderer->GetDrawableHeight());
-	glgui::RootPanel()->Layout();
+	glgui::RootPanel()->SetDesignHeight(-1);
 }
 
 CApplication::~CApplication()
@@ -402,6 +419,8 @@ tstring CApplication::GetAppDataDirectory(const tstring& sFile)
 	return sPath;
 }
 
+CVar m_emulate_touch("m_emulate_touch", "0");
+
 tinker_keys_t MapMouseKey(Uint8 c);
 
 void CApplication::PollEvents()
@@ -440,19 +459,54 @@ void CApplication::PollEvents()
 				CharEvent((int)e.text.text[i]);
 			break;
 
+		case SDL_FINGERDOWN:
+			TouchInput((int)e.tfinger.fingerId, TINKER_MOUSE_PRESSED, Application()->GetWindowWidth() * e.tfinger.x, Application()->GetWindowHeight() * e.tfinger.y);
+			break;
+
+		case SDL_FINGERUP:
+			TouchInput((int)e.tfinger.fingerId, TINKER_MOUSE_RELEASED, Application()->GetWindowWidth() * e.tfinger.x, Application()->GetWindowHeight() * e.tfinger.y);
+			break;
+
+		case SDL_FINGERMOTION:
+			TouchMotion((int)e.tfinger.fingerId, Application()->GetWindowWidth() * e.tfinger.x, Application()->GetWindowHeight() * e.tfinger.y, Application()->GetWindowWidth() * e.tfinger.dx, Application()->GetWindowHeight() * e.tfinger.dy);
+			break;
+
 		case SDL_MOUSEMOTION:
-			MouseMotion(e.motion.x, e.motion.y);
+			if (e.motion.which != SDL_TOUCH_MOUSEID)
+			{
+				if (m_emulate_touch.GetBool())
+				{
+					if (IsMouseLeftDown())
+						TouchMotion(0, (float)e.motion.x, (float)e.motion.y, (float)e.motion.xrel, (float)e.motion.yrel);
+				}
+				else
+					MouseMotion(e.motion.x, e.motion.y);
+			}
 			break;
 
 		case SDL_MOUSEBUTTONUP:
-			MouseInput(MapMouseKey(e.button.button), TINKER_MOUSE_RELEASED);
+			if (e.motion.which != SDL_TOUCH_MOUSEID)
+			{
+				if (m_emulate_touch.GetBool())
+					TouchInput(0, TINKER_MOUSE_RELEASED, (float)e.button.x, (float)e.button.y);
+				else
+					MouseInput(MapMouseKey(e.button.button), TINKER_MOUSE_RELEASED);
+			}
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
-			if (e.button.clicks == 2)
-				MouseInput(MapMouseKey(e.button.button), TINKER_MOUSE_DOUBLECLICK);
-			else
-				MouseInput(MapMouseKey(e.button.button), TINKER_MOUSE_PRESSED);
+			if (e.motion.which != SDL_TOUCH_MOUSEID)
+			{
+				if (m_emulate_touch.GetBool())
+					TouchInput(0, TINKER_MOUSE_PRESSED, (float)e.button.x, (float)e.button.y);
+				else
+				{
+					if (e.button.clicks == 2)
+						MouseInput(MapMouseKey(e.button.button), TINKER_MOUSE_DOUBLECLICK);
+					else
+						MouseInput(MapMouseKey(e.button.button), TINKER_MOUSE_PRESSED);
+				}
+			}
 			break;
 
 		case SDL_MOUSEWHEEL:
@@ -466,6 +520,7 @@ void CApplication::PollEvents()
 
 void CApplication::SwapBuffers()
 {
+	TPROF("CApplication::SwapBuffers()");
 	SDL_GL_SwapWindow(m_pWindow);
 }
 
@@ -538,6 +593,45 @@ void CApplication::WindowResize(int w, int h)
 	Render();
 
 	SwapBuffers();
+}
+
+void CApplication::TouchMotion(int iFinger, float x, float y, float dx, float dy)
+{
+}
+
+bool CApplication::TouchInput(int iFinger, tinker_mouse_state_t iState, float x, float y)
+{
+	if (iFinger == 0)
+	{
+		if (iState == TINKER_MOUSE_PRESSED)
+		{
+			if (m_flLastMousePress > 0 && GetTime() - m_flLastMousePress < 0.25f)
+				TouchInput(iFinger, TINKER_MOUSE_DOUBLECLICK, x, y);
+
+			m_flLastMousePress = GetTime();
+
+			if (glgui::CRootPanel::Get()->MousePressed(TINKER_KEY_MOUSE_LEFT, (int)x, (int)y))
+			{
+				m_bMouseDownInGUI = true;
+				return true;
+			}
+			else
+				m_bMouseDownInGUI = false;
+		}
+		else if (iState == TINKER_MOUSE_RELEASED)
+		{
+			if (glgui::CRootPanel::Get()->MouseReleased(TINKER_KEY_MOUSE_LEFT, (int)x, (int)y))
+				return true;
+
+			if (m_bMouseDownInGUI)
+			{
+				m_bMouseDownInGUI = false;
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void CApplication::MouseMotion(int x, int y)
@@ -763,6 +857,9 @@ tinker_keys_t MapScancode(SDL_Scancode c)
 
 	if (c == SDL_SCANCODE_0)
 		return (tinker_keys_t)'0';
+
+	if (c == SDL_SCANCODE_SPACE)
+		return (tinker_keys_t)' ';
 
 	return TINKER_KEY_UNKNOWN;
 }

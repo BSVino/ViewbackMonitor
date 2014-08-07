@@ -44,6 +44,7 @@ CPerfBlock::CPerfBlock(const char* pszName, CPerfBlock* pParent)
 	m_pParent = pParent;
 	m_pszName = pszName;
 	m_flTime = 0;
+	m_flLastTextX = 0;
 }
 
 CPerfBlock* CPerfBlock::GetChild(const char* pszName)
@@ -84,16 +85,21 @@ void CPerfBlock::BlockEnded()
 }
 
 CPerfBlock* CProfiler::s_pTopBlock = NULL;
-CPerfBlock* CProfiler::s_pBottomBlock = NULL;
+tvector<CPerfBlock*> CProfiler::s_apBottomBlocks;
 bool CProfiler::s_bProfiling = false;
-double CProfiler::s_flProfilerTime;
+double CProfiler::s_flProfilerTime = 0;
+double CProfiler::s_flLastProfilerTime = 0;
+double CProfiler::s_flEndLastProfilerTime = 0;
 
 void CProfiler::BeginFrame()
 {
 	s_bProfiling = prof_enable.GetBool();
 
-	if (s_pBottomBlock)
-		s_pBottomBlock->BeginFrame();
+	for (auto& pBlock : s_apBottomBlocks)
+	{
+		if (pBlock)
+			pBlock->BeginFrame();
+	}
 
 	// Just in case.
 	s_pTopBlock = NULL;
@@ -108,10 +114,20 @@ void CProfiler::PushScope(CProfileScope* pScope)
 
 	if (!s_pTopBlock)
 	{
-		if (!s_pBottomBlock)
-			s_pBottomBlock = new CPerfBlock(pScope->GetName(), NULL);
+		for (auto& pBottomBlock : s_apBottomBlocks)
+		{
+			if (pBottomBlock && pBottomBlock->GetName() == pScope->GetName())
+			{
+				pBlock = pBottomBlock;
+				break;
+			}
+		}
 
-		pBlock = s_pBottomBlock;
+		if (!pBlock)
+		{
+			pBlock = new CPerfBlock(pScope->GetName(), NULL);
+			s_apBottomBlocks.push_back(pBlock);
+		}
 	}
 	else
 	{
@@ -162,18 +178,31 @@ void CProfiler::Render()
 	if (!IsProfiling())
 		return;
 
-	if (!s_pBottomBlock)
+	if (!s_apBottomBlocks.size())
 		return;
 
+	s_flLastProfilerTime = s_flProfilerTime;
 	s_flProfilerTime = CApplication::Get()->GetTime();
 
 	PopAllScopes();
 
+	if (prof_enable.GetInt() == 2)
+		RenderTimeline();
+	else
+		RenderTree();
+
+	CRenderingContext::DebugFinish();
+
+	s_flEndLastProfilerTime = Application()->GetTime();
+}
+
+void CProfiler::RenderTree()
+{
 	float flWidth = glgui::CRootPanel::Get()->GetWidth();
 	float flHeight = glgui::CRootPanel::Get()->GetHeight();
 
 	float flCurrLeft = flWidth - 400;
-	float flCurrTop = 200;
+	float flCurrTop = 10;
 
 	Matrix4x4 mProjection = Matrix4x4::ProjectOrthographic(0, flWidth, flHeight, 0, -1000, 1000);
 
@@ -186,7 +215,26 @@ void CProfiler::Render()
 
 	glgui::CBaseControl::PaintRect(flCurrLeft, flCurrTop, 400, 800, Color(0, 0, 0, 150), 5, true);
 
-	Render(s_pBottomBlock, flCurrLeft, flCurrTop);
+	{
+		flCurrTop += 15;
+
+		double flProfilerTime = s_flProfilerTime - s_flLastProfilerTime;
+
+		Color clrBlock(255, 255, 255);
+		if (flProfilerTime < 0.005)
+			clrBlock = Color(255, 255, 255, 150);
+
+		glgui::CBaseControl::PaintRect(flCurrLeft + 15, flCurrTop, (float)flProfilerTime * 5000, 1, clrBlock);
+
+		tstring sName = "Frame time:";
+		sName += tsprintf(": %d ms", (int)(flProfilerTime * 1000));
+		glgui::CLabel::PaintText(sName, sName.length(), "sans-serif", 10, (float)flCurrLeft + 15, (float)flCurrTop, clrBlock);
+
+		flCurrLeft += 15;
+	}
+
+	for (auto& pBlock : s_apBottomBlocks)
+		RenderTree(pBlock, flCurrLeft, flCurrTop);
 
 	flCurrTop += 15;
 	flCurrLeft += 15;
@@ -204,7 +252,7 @@ void CProfiler::Render()
 	glgui::CLabel::PaintText(sName, sName.length(), "sans-serif", 10, (float)flCurrLeft, (float)flCurrTop, clrBlock);
 }
 
-void CProfiler::Render(CPerfBlock* pBlock, float& flLeft, float& flTop)
+void CProfiler::RenderTree(CPerfBlock* pBlock, float& flLeft, float& flTop)
 {
 	flLeft += 15;
 	flTop += 15;
@@ -220,7 +268,85 @@ void CProfiler::Render(CPerfBlock* pBlock, float& flLeft, float& flTop)
 	glgui::CLabel::PaintText(sName, sName.length(), "sans-serif", 10, (float)flLeft, (float)flTop, clrBlock);
 
 	for (tmap<const char*, CPerfBlock*>::iterator it = pBlock->m_apPerfBlocks.begin(); it != pBlock->m_apPerfBlocks.end(); it++)
-		Render(it->second, flLeft, flTop);
+		RenderTree(it->second, flLeft, flTop);
 
 	flLeft -= 15;
+}
+
+void RenderTimeline(CPerfBlock* pBlock, double flFrameStart, double flFrameEnd, int iDepth)
+{
+	Color clrBlock(255, 255, 255);
+	if (pBlock->GetTime() < 0.005)
+		clrBlock = Color(255, 255, 255, 150);
+
+	float flStart = (float)RemapVal(pBlock->m_flTimeBlockStarted, flFrameStart, flFrameEnd, 0, (double)glgui::RootPanel()->GetWidth());
+	float flEnd = (float)RemapVal(pBlock->m_flTimeBlockStarted + pBlock->m_flTime, flFrameStart, flFrameEnd, 0, (double)glgui::RootPanel()->GetWidth());
+
+	if (flEnd - flStart > 1)
+	{
+		glgui::CBaseControl::PaintRect(flStart, (float)iDepth * 15, flEnd - flStart - 1, 1, clrBlock);
+
+		tstring sName = tsprintf(tstring(pBlock->GetName()) + ": %d ms", (int)(pBlock->GetTime() * 1000));
+
+		float flLength = (float)sName.length() * 7.5f; // A quick approximation.
+		if (pBlock->m_flLastTextX > flEnd - flLength)
+			pBlock->m_flLastTextX = flEnd - flLength;
+		if (pBlock->m_flLastTextX < flStart)
+			pBlock->m_flLastTextX = flStart;
+
+		glgui::CLabel::PaintText(sName, sName.length(), "sans-serif", 10, pBlock->m_flLastTextX, (float)iDepth * 15, clrBlock,
+			FRect(flStart, (float)iDepth * 15, flEnd - flStart, 15));
+	}
+
+	for (tmap<const char*, CPerfBlock*>::iterator it = pBlock->m_apPerfBlocks.begin(); it != pBlock->m_apPerfBlocks.end(); it++)
+		RenderTimeline(it->second, flFrameStart, flFrameEnd, iDepth + 1);
+}
+
+void CProfiler::RenderTimeline()
+{
+	float flWidth = glgui::CRootPanel::Get()->GetWidth();
+	float flHeight = glgui::CRootPanel::Get()->GetHeight();
+
+	Matrix4x4 mProjection = Matrix4x4::ProjectOrthographic(0, flWidth, flHeight, 0, -1000, 1000);
+
+	CRenderingContext c;
+
+	c.SetProjection(mProjection);
+	c.UseProgram("gui");
+	c.SetDepthTest(false);
+	c.UseFrameBuffer(NULL);
+
+	glgui::CBaseControl::PaintRect(0, 0, flWidth, 150, Color(0, 0, 0, 150), 5, true);
+
+	{
+		double flProfilerTime = s_flProfilerTime - s_flLastProfilerTime;
+
+		Color clrBlock(255, 255, 255);
+		if (flProfilerTime < 0.005)
+			clrBlock = Color(255, 255, 255, 150);
+
+		glgui::CBaseControl::PaintRect(0, 0, glgui::RootPanel()->GetWidth(), 1, clrBlock);
+
+		tstring sName = "Frame time:";
+		sName += tsprintf(": %d ms", (int)(flProfilerTime * 1000));
+		glgui::CLabel::PaintText(sName, sName.length(), "sans-serif", 10, 0, 0, clrBlock);
+	}
+
+	for (auto& pBlock : s_apBottomBlocks)
+		::RenderTimeline(pBlock, s_flLastProfilerTime, s_flProfilerTime, 1);
+
+	float flTime = (float)(s_flEndLastProfilerTime - s_flLastProfilerTime);
+	float flStart = 0;
+	float flEnd = (float)RemapVal(s_flEndLastProfilerTime, s_flLastProfilerTime, s_flProfilerTime, 0, (double)glgui::RootPanel()->GetWidth());
+
+	Color clrBlock(255, 255, 255);
+	if (flTime < 0.005)
+		clrBlock = Color(255, 255, 255, 150);
+
+	glgui::CBaseControl::PaintRect(flStart, 15, flEnd - flStart - 1, 1, clrBlock);
+
+	tstring sName = tsprintf("Profiler: %d ms", (int)(flTime * 1000));
+
+	glgui::CLabel::PaintText(sName, sName.length(), "sans-serif", 10, flStart, 15, clrBlock,
+		FRect(flStart, (float)15, flEnd - flStart, 15));
 }

@@ -9,5 +9,6 @@ IF ERRORLEVEL 1 (
 
 xcopy /s /y ..\install assets
 del "assets\*.dll" 
+del "assets\*.exe" 
 call \adt-bundle-windows-x86_64-20131030\apache-ant-1.9.3\bin\ant debug install
 pause

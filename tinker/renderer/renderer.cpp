@@ -160,7 +160,7 @@ void CRenderer::LoadShaders()
 {
 	CShaderLibrary::Initialize();
 
-	tvector<tstring> asShaders = ListDirectory(T_ASSETS_PREFIX "shaders", false);
+	tvector<tstring> asShaders = ListDirectory(T_ASSETS_PREFIX "shaders");
 
 	int iShadersLoaded = 0;
 	for (size_t i = 0; i < asShaders.size(); i++)
@@ -187,6 +187,17 @@ void CRenderer::ViewportResize(size_t w, size_t h)
 
 	size_t iWidth = m_oSceneBuffer.m_iWidth;
 	size_t iHeight = m_oSceneBuffer.m_iHeight;
+
+	// If we have a high DPI screen then we downscale the bloom buffers to save perf and get more consistent results.
+	iWidth = (size_t)(iWidth * Application()->GetGUIScale());
+	iHeight = (size_t)(iHeight * Application()->GetGUIScale());
+
+#ifdef T_PLATFORM_MOBILE
+	// There are fewer filters so start at a lower res.
+	iWidth /= 2;
+	iHeight /= 2;
+#endif
+
 	for (size_t i = 0; i < BLOOM_FILTERS; i++)
 	{
 		m_oBloom1Buffers[i].Destroy();
@@ -289,11 +300,6 @@ CFrameBuffer CRenderer::CreateFrameBuffer(const tstring& sName, size_t iWidth, s
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, (GLsizei)iWidth, (GLsizei)iHeight, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	else if (eOptions&FB_SCENE_DEPTH)
-	{
-		glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)oBuffer.m_iFB);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, (GLuint)m_oSceneBuffer.m_iDepth);
-	}
 
 	glGenFramebuffers(1, &oBuffer.m_iFB);
 	glBindFramebuffer(GL_FRAMEBUFFER, (GLuint)oBuffer.m_iFB);
@@ -305,6 +311,21 @@ CFrameBuffer CRenderer::CreateFrameBuffer(const tstring& sName, size_t iWidth, s
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, (GLuint)oBuffer.m_iDepth);
 	else if (eOptions&FB_DEPTH_TEXTURE)
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, (GLuint)oBuffer.m_iDepthTexture, 0);
+	else if (eOptions&FB_SCENE_DEPTH)
+	{
+		if (m_oSceneBuffer.m_iDepth)
+		{
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, (GLuint)m_oSceneBuffer.m_iDepth);
+			oBuffer.m_iDepth = m_oSceneBuffer.m_iDepth;
+		}
+		else if (m_oSceneBuffer.m_iDepthTexture)
+		{
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, (GLuint)m_oSceneBuffer.m_iDepthTexture, 0);
+			oBuffer.m_iDepthTexture = m_oSceneBuffer.m_iDepthTexture;
+		}
+		else
+			TUnimplemented();
+	}
 
 	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	if (status != GL_FRAMEBUFFER_COMPLETE)
@@ -422,8 +443,8 @@ void CRenderer::StartRendering(class CRenderingContext* pContext)
 
 	pContext->SetView(Matrix4x4::ConstructCameraView(m_vecCameraPosition, m_vecCameraDirection, m_vecCameraUp));
 
-	m_aflModelView = pContext->GetView();
-	m_aflProjection = pContext->GetProjection();
+	m_mModelView = pContext->GetView();
+	m_mProjection = pContext->GetProjection();
 
 	if (m_bFrustumOverride)
 	{
@@ -527,25 +548,35 @@ void CRenderer::RenderOffscreenBuffers(class CRenderingContext*)
 
 		RenderBloomPass(m_oBloom1Buffers, m_oBloom2Buffers, true);
 		RenderBloomPass(m_oBloom2Buffers, m_oBloom1Buffers, false);
+
+		CRenderingContext::DebugFinish();
 	}
 }
 
 CVar r_bloom_buffer("r_bloom_buffer", "-1");
+CVar r_show_depth("r_show_depth", "0");
+CVar r_show_depth_scale("r_show_depth_scale", "0.99");
 
 void CRenderer::RenderFullscreenBuffers(class CRenderingContext*)
 {
 	TPROF("CRenderer::RenderFullscreenBuffers");
 
-	if (m_iScreenSamples)
 	{
-		RenderBufferToBuffer(&m_oSceneBuffer, &m_oResolvedSceneBuffer);
-		RenderFrameBufferFullscreen(&m_oResolvedSceneBuffer);
+		TPROF("Resolve scene buffer");
+		if (m_iScreenSamples)
+		{
+			RenderBufferToBuffer(&m_oSceneBuffer, &m_oResolvedSceneBuffer);
+			RenderFrameBufferFullscreen(&m_oResolvedSceneBuffer);
+		}
+		else
+			RenderFrameBufferFullscreen(&m_oSceneBuffer);
+
+		CRenderingContext::DebugFinish();
 	}
-	else
-		RenderFrameBufferFullscreen(&m_oSceneBuffer);
 
 	if (r_bloom.GetBool())
 	{
+		TPROF("Bloom");
 		if (r_bloom_buffer.GetInt() >= 0 && r_bloom_buffer.GetInt() < BLOOM_FILTERS)
 		{
 			CRenderingContext c(this);
@@ -564,12 +595,22 @@ void CRenderer::RenderFullscreenBuffers(class CRenderingContext*)
 			for (size_t i = 0; i < BLOOM_FILTERS; i++)
 				RenderFrameBufferFullscreen(&m_oBloom1Buffers[i]);
 		}
-	}
-}
 
-#define KERNEL_SIZE   3
-//float aflKernel[KERNEL_SIZE] = { 5, 6, 5 };
-float aflKernel[KERNEL_SIZE] = { 0.3125f, 0.375f, 0.3125f };
+		CRenderingContext::DebugFinish();
+	}
+
+	if (r_show_depth.GetBool())
+	{
+		CRenderingContext c(this);
+
+		c.UseProgram("depth");
+		c.SetUniform("flScale", r_show_depth_scale.GetFloat());
+
+		RenderMapFullscreen(m_oSceneBuffer.m_iDepthTexture);
+	}
+
+	CRenderingContext::DebugFinish();
+}
 
 void CRenderer::RenderBloomPass(CFrameBuffer* apSources, CFrameBuffer* apTargets, bool bHorizontal)
 {
@@ -578,20 +619,19 @@ void CRenderer::RenderBloomPass(CFrameBuffer* apSources, CFrameBuffer* apTargets
 	c.UseProgram("blur");
 
 	c.SetUniform("iSource", 0);
-	c.SetUniform("aflCoefficients", KERNEL_SIZE, &aflKernel[0]);
 	c.SetUniform("flOffsetX", 0.0f);
 	c.SetUniform("flOffsetY", 0.0f);
 
-    // Perform the blurring.
-    for (size_t i = 0; i < BLOOM_FILTERS; i++)
-    {
+	// Perform the blurring.
+	for (size_t i = 0; i < BLOOM_FILTERS; i++)
+	{
 		if (bHorizontal)
 			c.SetUniform("flOffsetX", 1.2f / apSources[i].m_iWidth);
 		else
 			c.SetUniform("flOffsetY", 1.2f / apSources[i].m_iWidth);
 
 		RenderMapToBuffer(apSources[i].m_iMap, &apTargets[i]);
-    }
+	}
 }
 
 void CRenderer::RenderFrameBufferFullscreen(CFrameBuffer* pBuffer)
@@ -678,12 +718,12 @@ void CRenderer::RenderMapToBuffer(size_t iMap, CFrameBuffer* pBuffer, bool bMapI
 
 const Matrix4x4& CRenderer::GetModelView() const
 {
-	return m_aflModelView;
+	return m_mModelView;
 }
 
 const Matrix4x4& CRenderer::GetProjection() const
 {
-	return m_aflProjection;
+	return m_mProjection;
 }
 
 const int* CRenderer::GetViewport() const
@@ -764,8 +804,14 @@ void CRenderer::SetSize(int w, int h)
 	m_vecFullscreenVertices[5] = Vector(1, 1, 0);
 }
 
-Vector CRenderer::ScreenPosition(Vector vecWorld)
+const Vector CRenderer::ScreenPosition(const Vector& vecWorld)
 {
+	// P - Projection matrix
+	// M - Modelview matrix
+	// R - Range remapping
+	// V - Viewport remapping
+	// Ignoring the homogeneous coordinate conversion, the result is: p = VRPMv
+
 	Vector4D v;
 
 	v.x = vecWorld.x;
@@ -773,7 +819,7 @@ Vector CRenderer::ScreenPosition(Vector vecWorld)
 	v.z = vecWorld.z;
 	v.w = 1.0;
 
-	v = m_aflProjection * m_aflModelView * v;
+	v = m_mProjection * m_mModelView * v;
 
 	if (v.w == 0.0)
 		return Vector(0, 0, 0);
@@ -791,14 +837,19 @@ Vector CRenderer::ScreenPosition(Vector vecWorld)
 	v.x = v.x * m_aiViewport[2] + m_aiViewport[0];
 	v.y = v.y * m_aiViewport[3] + m_aiViewport[1];
 
-	return Vector(v.x, m_iViewportHeight - v.y, v.z);
+	return Vector(v.x * Application()->GetGUIScale(), (m_iViewportHeight - v.y) * Application()->GetGUIScale(), v.z);
 }
 
-Vector CRenderer::WorldPosition(Vector vecScreen)
+const Vector CRenderer::WorldPosition(const Vector& vecScreen)
 {
-	Matrix4x4 mFinal = m_aflModelView * m_aflProjection;
+	// P - Projection matrix
+	// M - Modelview matrix
+	// R - Range remapping
+	// V - Viewport remapping
+	// Ignoring the homogeneous coordinate conversion, the result is the inverse of the above: v = (PM)^-1 R^-1 V^-1 p
+	// I think it's slightly faster to do (PM)^-1 than P^-1 M^-1 since we cut out one inverse matrix calculation.
 
-	Vector4D v(vecScreen.x, m_iViewportHeight - vecScreen.y, vecScreen.z, 1.0);
+	Vector4D v(vecScreen.x / Application()->GetGUIScale(), m_iViewportHeight - vecScreen.y / Application()->GetGUIScale(), vecScreen.z, 1.0);
 
 	v.x = (v.x - m_aiViewport[0]) / m_aiViewport[2];
 	v.y = (v.y - m_aiViewport[1]) / m_aiViewport[3];
@@ -808,7 +859,7 @@ Vector CRenderer::WorldPosition(Vector vecScreen)
 	v.y = v.y * 2 - 1;
 	v.z = v.z * 2 - 1;
 
-	v = mFinal * v;
+	v = (m_mProjection * m_mModelView).Inverted() * v;
 
 	if (v.w == 0.0)
 		return Vector();
@@ -1161,16 +1212,9 @@ Color* CRenderer::LoadTextureData(tstring sFilename, int& x, int& y)
 	if (!fp)
 		return nullptr;
 
-	fseek(fp, 0, SEEK_END);
-	int iSize = ftell(fp);
-	rewind(fp);
+	tstring sFile = tfread_file(fp);
 
-	tstring sFile;
-	sFile.resize(iSize);
-	int iRead = fread((void*)sFile.data(), iSize, 1, fp);
-	TAssertNoMsg(iRead == 1);
-
-	SDL_RWops* pRWOps = SDL_RWFromMem((void*)sFile.data(), iSize);
+	SDL_RWops* pRWOps = SDL_RWFromMem((void*)sFile.data(), sFile.length());
 	if (!pRWOps)
 		return nullptr;
 
@@ -1339,8 +1383,21 @@ void CRenderer::WriteTextureToFile(Color* pclrData, int w, int h, tstring sFilen
 void R_DumpFBO(class CCommand*, tvector<tstring>& asTokens, const tstring&)
 {
 	size_t iFBO = 0;
+
 	if (asTokens.size() > 1)
-		iFBO = stoi(asTokens[1]);
+	{
+		for (auto& oBuffer : CFrameBuffer::GetFrameBuffers())
+		{
+			if (oBuffer.m_sName == asTokens[1])
+			{
+				iFBO = oBuffer.m_iFB;
+				break;
+			}
+		}
+
+		if (!iFBO)
+			iFBO = stoi(asTokens[1]);
+	}
 
 	int aiViewport[4];
 	glGetIntegerv( GL_VIEWPORT, aiViewport );
@@ -1375,7 +1432,7 @@ void R_DumpFBO(class CCommand*, tvector<tstring>& asTokens, const tstring&)
 			std::swap(aclrPixels[j*iWidth + i], aclrPixels[iWidth*(iHeight-j-1) + i]);
 	}
 
-	CRenderer::WriteTextureToFile(aclrPixels.data(), iWidth, iHeight, tsprintf("fbo-%d.png", iFBO));
+	CRenderer::WriteTextureToFile(aclrPixels.data(), iWidth, iHeight, Application()->GetAppDataDirectory(tsprintf("fbo-%d.png", iFBO)));
 }
 
 CCommand r_dumpfbo(tstring("r_dumpfbo"), ::R_DumpFBO);
@@ -1392,3 +1449,10 @@ void R_ListFBOs(class CCommand*, tvector<tstring>&, const tstring&)
 }
 
 CCommand r_listfbos(tstring("r_listfbos"), ::R_ListFBOs);
+
+void R_DumpDepth(class CCommand*, tvector<tstring>& asTokens, const tstring&)
+{
+	CRenderer::WriteTextureToFile(Application()->GetRenderer()->GetSceneBuffer()->m_iDepthTexture, Application()->GetAppDataDirectory("fbo-depth.png"));
+}
+
+CCommand r_dumpdepth(tstring("r_dumpdepth"), ::R_DumpDepth);

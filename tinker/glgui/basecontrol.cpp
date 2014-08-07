@@ -470,7 +470,7 @@ void CBaseControl::PaintBackground(float x, float y, float w, float h)
 
 void CBaseControl::PostPaint()
 {
-#ifndef T_TOUCH_PLATFORM
+#ifndef T_PLATFORM_TOUCH
 	if (m_sTip.length() > 0 && m_flMouseInTime > 0 && CRootPanel::Get()->GetTime() > m_flMouseInTime + 0.5f)
 	{
 		int iFontSize = 12;
@@ -497,6 +497,9 @@ void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c,
 {
 	::CRenderingContext r(nullptr, true);
 
+	if (!r.GetActiveShader())
+		r.UseProgram("gui");
+
 	r.SetBlend(BLEND_ALPHA);
 	r.SetUniform("flBorder", flBorder);
 	r.SetUniform("bHighlight", bHighlight);
@@ -515,6 +518,9 @@ void CBaseControl::PaintRect(float x, float y, float w, float h, const Color& c,
 void CBaseControl::PaintTexture(const CMaterialHandle& hMaterial, float x, float y, float w, float h, const Color& c)
 {
 	::CRenderingContext r(nullptr, true);
+
+	if (!r.GetActiveShader())
+		r.UseProgram("gui");
 
 	if ((w < 0) ^ (h < 0))
 		r.SetBackCulling(false);
@@ -541,6 +547,9 @@ void CBaseControl::PaintTexture(const CMaterialHandle& hMaterial, float x, float
 void CBaseControl::PaintSheet(const CMaterialHandle& hMaterial, float x, float y, float w, float h, int sx, int sy, int sw, int sh, int tw, int th, const Color& c)
 {
 	::CRenderingContext r(nullptr, true);
+
+	if (!r.GetActiveShader())
+		r.UseProgram("gui");
 
 	if ((w < 0) ^ (h < 0))
 		r.SetBackCulling(false);

@@ -35,6 +35,8 @@ namespace glgui
 		virtual						~CRootPanel( );
 
 	public:
+		virtual void SetDesignHeight(float flHeight); // Set to < 0 to disable.
+
 		virtual void				Think(double flTime);
 		virtual void				UpdateScene();
 		virtual void				Paint(float x, float y, float w, float h);
@@ -99,6 +101,8 @@ namespace glgui
 		static CControlResource	s_pRootPanel;
 		static bool					s_bRootPanelValid;
 
+		float m_flDesignHeight;
+
 		tvector<IDroppable*>		m_apDroppables;
 		IDroppable*					m_pDragging;
 
@@ -122,8 +126,16 @@ namespace glgui
 
 		::CRenderingContext*		m_pRenderingContext;
 
-		tmap<tstring, tmap<size_t, ::FTFont*> > m_apFonts;
-		tmap<tstring, tstring>                  m_apFontNames;
+		class CFont
+		{
+		public:
+			tstring m_sFileName;
+			tstring m_sFileContents;
+
+			tmap<size_t, ::FTFont*> m_apFonts;
+		};
+
+		tmap<tstring, CFont> m_aFonts;
 
 		// A quad for drawing GUI elements
 		size_t m_iQuad;

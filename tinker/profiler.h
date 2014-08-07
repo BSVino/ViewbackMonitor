@@ -64,6 +64,8 @@ public:
 
 	double						m_flTimeBlockStarted;
 
+	float m_flLastTextX;
+
 	tmap<const char*, CPerfBlock*> m_apPerfBlocks;
 };
 
@@ -82,15 +84,20 @@ public:
 protected:
 	static void					PopAllScopes();
 
-	static void					Render(CPerfBlock* pBlock, float& flLeft, float& flTop);
+	static void					RenderTimeline();
+
+	static void					RenderTree();
+	static void					RenderTree(CPerfBlock* pBlock, float& flLeft, float& flTop);
 
 protected:
-	static CPerfBlock*			s_pBottomBlock;
+	static tvector<CPerfBlock*> s_apBottomBlocks;
 	static CPerfBlock*			s_pTopBlock;
 
 	static bool					s_bProfiling;
 
+	static double               s_flLastProfilerTime;
 	static double               s_flProfilerTime;
+	static double               s_flEndLastProfilerTime;
 };
 
 #endif

@@ -67,6 +67,10 @@ public:
 	virtual bool				KeyPress(int c);
 	virtual void				KeyRelease(int c);
 	void						CharEvent(int c);
+	void                        IgnoreMouseRelease() { m_bMouseDownInGUI = true; }
+
+	virtual void TouchMotion(int iFinger, float x, float y, float dx, float dy);
+	virtual bool TouchInput(int iFinger, tinker_mouse_state_t iState, float x, float y);
 
 	virtual bool				DoKeyPress(int /*c*/) { return false; };
 	virtual void				DoKeyRelease(int /*c*/) {};
@@ -98,6 +102,7 @@ public:
 	int							GetWindowWidth() { return (int)m_iWindowWidth; };
 	int							GetWindowHeight() { return (int)m_iWindowHeight; };
 	float                       GetGUIScale() const { return m_flGUIScale; }
+	void                        SetGUIScale(float flScale) { m_flGUIScale = flScale; }
 
 	void                        GetViewportSize(size_t& w, size_t& h);
 
