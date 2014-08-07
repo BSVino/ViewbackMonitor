@@ -103,6 +103,8 @@ void CMonitorWindow::SetupGUI()
 	m_pMenu->Layout_AlignBottom(nullptr, 0);
 	m_pMenu->Layout_CenterHorizontal();
 	m_pMenu->SetVisible(false);
+
+	CServerListPanel::Create();
 }
 
 void CMonitorWindow::RegistrationUpdate()

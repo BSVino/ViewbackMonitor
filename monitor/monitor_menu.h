@@ -15,6 +15,7 @@ public:
 	void Think();
 
 	EVENT_CALLBACK(CMonitorMenu, Console);
+	EVENT_CALLBACK(CMonitorMenu, ViewServers);
 	EVENT_CALLBACK(CMonitorMenu, ManualConnect);
 	EVENT_CALLBACK(CMonitorMenu, FindServer);
 	EVENT_CALLBACK(CMonitorMenu, Disconnect);
@@ -46,6 +47,26 @@ private:
 	glgui::CControl<glgui::CLabel>     m_pPortLabel;
 	glgui::CControl<glgui::CTextField> m_pPort;
 	glgui::CControl<glgui::CButton>    m_pConnect;
+};
+
+class CServerListPanel : public glgui::CMovablePanel
+{
+	DECLARE_CLASS(CServerListPanel, glgui::CMovablePanel);
+
+private:
+	CServerListPanel();
+
+public:
+	static void Create();
+
+	void Layout();
+	void Think();
+
+	EVENT_CALLBACK(CServerListPanel, Refresh);
+	EVENT_CALLBACK(CServerListPanel, Connect);
+
+private:
+	double m_refresh_time;
 };
 
 class CChannelPanel : public glgui::CMovablePanel

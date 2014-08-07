@@ -8,6 +8,14 @@ Area: Maximize
 	h: 70
 }
 
+Area: Refresh
+{
+	x: 6
+	y: 68
+	w: 54
+	h: 54
+}
+
 Area: Viewback
 {
 	x: 70

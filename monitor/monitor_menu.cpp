@@ -9,7 +9,9 @@
 #include "monitor_window.h"
 #include "panel_container.h"
 
+using namespace std;
 using namespace glgui;
+using namespace vb;
 
 CMonitorMenu::CMonitorMenu(bool bHideOnClose)
 	: CMenu("Options")
@@ -34,16 +36,13 @@ void CMonitorMenu::OnOpenMenu()
 	AddSubmenu("Open Console", this, Console);
 #endif
 
+	AddSubmenu("View Servers", this, ViewServers);
 	AddSubmenu("Manual Connect", this, ManualConnect);
 
 	if (MonitorWindow()->GetViewback()->HasConnection())
-	{
 		AddSubmenu("Disconnect", this, Disconnect);
-	}
 	else
-	{
 		AddSubmenu("Connect To Best Server", this, FindServer);
-	}
 
 	AddSubmenu("Quit", this, Quit);
 }
@@ -61,6 +60,13 @@ void CMonitorMenu::Think()
 void CMonitorMenu::ConsoleCallback(const tstring& sArgs)
 {
 	Application()->ToggleConsole();
+	CloseMenu();
+}
+
+void CMonitorMenu::ViewServersCallback(const tstring& sArgs)
+{
+	CServerListPanel::Create();
+
 	CloseMenu();
 }
 
@@ -89,6 +95,90 @@ void CMonitorMenu::QuitCallback(const tstring& sArgs)
 	CloseMenu();
 }
 
+CServerListPanel::CServerListPanel()
+	: CMovablePanel("Available Servers")
+{
+}
+
+void CServerListPanel::Create()
+{
+	static CServerListPanel* pPanel = NULL;
+
+	if (!pPanel)
+		pPanel = new CServerListPanel();
+
+	pPanel->SetSize(350, 550);
+	pPanel->Layout();
+	pPanel->MoveToCenter();
+	pPanel->SetVisible(true);
+
+	pPanel->m_refresh_time = Application()->GetTime() + 1.5f;
+}
+
+void CServerListPanel::Layout()
+{
+	BaseClass::Layout();
+
+	ClearControls();
+
+	CTextureSheet oSheet("materials/buttons.txt");
+	CControl<CPictureButton> refresh_button = AddControl(new CPictureButton("Refresh"));
+	refresh_button->SetSheetTexture(oSheet.GetSheet("Refresh"), oSheet.GetArea("Refresh"), oSheet.GetSheetWidth("Refresh"), oSheet.GetSheetHeight("Refresh"));
+	refresh_button->SetSize(30, 30);
+	refresh_button->Layout_AlignRight();
+	refresh_button->SetTop(T_HEADER_HEIGHT + GetDefaultMargin());
+	refresh_button->SetClickedListener(this, Refresh);
+
+	vector<CServerListing> server_list = MonitorWindow()->GetViewback()->GetServers();
+
+	if (server_list.size())
+	{
+		for (size_t i = 0; i < server_list.size(); i++)
+		{
+			in_addr in;
+			in.S_un.S_addr = htonl(server_list[i].address);
+			const char* string_address = inet_ntoa(in);
+
+			CControl<CButton> server_listing = AddControl(new CButton(server_list[i].name + " " + string(tsprintf(" (%s:%d)", string_address, server_list[i].tcp_port).c_str())));
+			server_listing->Layout_FullWidth();
+			server_listing->SetTop(i * (server_listing->GetHeight() + 10) + refresh_button->GetBottom() + GetDefaultMargin());
+			server_listing->SetClickedListener(this, Connect, tsprintf("%s:%d", string_address, server_list[i].tcp_port));
+		}
+	}
+	else
+	{
+		CControl<CLabel> searching_label = AddControl(new CLabel("Searching for servers..."));
+		searching_label->Layout_FullWidth();
+		searching_label->SetTop(refresh_button->GetBottom() + GetDefaultMargin());
+	}
+}
+
+void CServerListPanel::Think()
+{
+	BaseClass::Think();
+
+	if (m_refresh_time > 0 && Application()->GetTime() > m_refresh_time)
+	{
+		m_refresh_time = 0;
+		Layout();
+	}
+}
+
+void CServerListPanel::RefreshCallback(const tstring& sArgs)
+{
+	Layout();
+}
+
+void CServerListPanel::ConnectCallback(const tstring& sArgs)
+{
+	tvector<tstring> tokens;
+	tstrtok(sArgs, tokens, ":");
+
+	MonitorWindow()->GetViewback()->Connect(tokens[0].c_str(), stoi(tokens[1]));
+
+	if (MonitorWindow()->GetViewback()->HasConnection())
+		SetVisible(false);
+}
 
 CManualConnectPanel::CManualConnectPanel()
 	: CMovablePanel("Manual Connect")

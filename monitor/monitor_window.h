@@ -34,7 +34,7 @@ public:
 
 	bool KeyPress(int c);
 
-	CViewbackClient* GetViewback() { return &vb; }
+	vb::CViewbackClient* GetViewback() { return &vb; }
 
 	glgui::CControl<class CPanelContainer> GetPanelContainer();
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
@@ -50,7 +50,7 @@ public:
 	bool  ButtonPanelSide() const; // If return true, the button panel goes on the side. False, it goes on the top.
 
 private:
-	CViewbackClient vb;
+	vb::CViewbackClient vb;
 
 	glgui::CControl<CPanelContainer> m_pPanelContainer;
 	glgui::CControl<CMonitorMenu>    m_pMenu;
@@ -64,7 +64,7 @@ inline CMonitorWindow* MonitorWindow()
 	return static_cast<CMonitorWindow*>(Application());
 }
 
-inline CViewbackClient* Viewback()
+inline vb::CViewbackClient* Viewback()
 {
 	return MonitorWindow()->GetViewback();
 }
