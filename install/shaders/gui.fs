@@ -83,6 +83,12 @@ vec4 fragment_program()
 			vecFragColor.g += flAdd;
 			vecFragColor.b += flAdd;
 		}
+
+		// Reduce banding.
+		float rand = Rand(vecFragmentTexCoord0)/200.0;
+		vecFragColor.r += rand;
+		vecFragColor.g += rand;
+		vecFragColor.b += rand;
 	}
 
 	return vecFragColor;

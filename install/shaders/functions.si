@@ -80,3 +80,7 @@ float AngleDifference(float a, float b)
 			flYawDifference += 360.0;
 	return flYawDifference;
 }
+
+float Rand(vec2 co) {
+	return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+}
