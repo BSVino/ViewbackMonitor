@@ -344,4 +344,58 @@ void CChannelPanel::ChannelOffCallback(const tstring& sArgs)
 	MonitorWindow()->GetPanelContainer()->Layout();
 }
 
+CGroupPanel::CGroupPanel()
+	: CMovablePanel("Activate a group")
+{
+	SetVisible(false);
+	SetScissoring(true);
+	SetVerticalScrollBarEnabled(true);
+}
 
+void CGroupPanel::Create()
+{
+	static CGroupPanel* pPanel = NULL;
+
+	if (!pPanel)
+		pPanel = new CGroupPanel();
+
+	pPanel->SetSize(350, 350);
+	pPanel->Layout();
+	pPanel->MoveToCenter();
+	pPanel->SetVisible(true);
+}
+
+void CGroupPanel::Layout()
+{
+	ClearControls();
+
+	const auto& aGroups = Viewback()->GetGroups();
+
+	for (size_t i = 0; i < aGroups.size(); i++)
+	{
+		CControl<CButton> group_button = AddControl(new CButton(aGroups[i].m_sName));
+		group_button->SetPos(20, T_HEADER_HEIGHT + 10 + (float)i * (group_button->GetHeight() + 10));
+		group_button->SetWidth(GetWidth() - 40);
+		group_button->SetClickedListener(this, ActivateGroup, tsprintf("%d", i));
+	}
+
+	BaseClass::Layout();
+}
+
+void CGroupPanel::ActivateGroupCallback(const tstring& sArgs)
+{
+	auto& aGroups = Viewback()->GetGroups();
+
+	size_t group_index = stoi(sArgs);
+	if (group_index < 0)
+		return;
+
+	if (group_index >= aGroups.size())
+		return;
+
+	Viewback()->ActivateGroup(group_index);
+
+	MonitorWindow()->GetPanelContainer()->Layout();
+
+	SetVisible(false);
+}

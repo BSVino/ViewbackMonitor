@@ -110,6 +110,8 @@ void CMonitorWindow::SetupGUI()
 void CMonitorWindow::RegistrationUpdate()
 {
 	m_pPanelContainer->RegistrationUpdate();
+
+	CGroupPanel::Create();
 }
 
 void CMonitorWindow::WindowResize(int x, int y)

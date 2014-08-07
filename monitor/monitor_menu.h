@@ -90,5 +90,20 @@ private:
 	tvector<glgui::CControl<glgui::CCheckBox>> m_ahChannels;
 };
 
+class CGroupPanel : public glgui::CMovablePanel
+{
+	DECLARE_CLASS(CGroupPanel, glgui::CMovablePanel);
+
+private:
+	CGroupPanel();
+
+public:
+	static void Create();
+
+	void RegistrationUpdate();
+	void Layout();
+
+	EVENT_CALLBACK(CGroupPanel, ActivateGroup);
+};
 
 
