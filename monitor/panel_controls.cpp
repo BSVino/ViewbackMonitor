@@ -26,7 +26,7 @@ tstring ValuePrint(float value)
 
 void CPanel_Controls::Layout()
 {
-	m_float_selectors.clear();
+	m_selectors.clear();
 
 	ClearControls();
 
@@ -71,9 +71,25 @@ void CPanel_Controls::Layout()
 			slider->Layout_FullWidth();
 			slider->SetTop(GetDefaultMargin() + (float)i * (control_height + GetDefaultMargin()));
 			slider->SetHeight(control_height);
-			slider->SetSelectedListener(this, FloatSliderMoved, tsprintf("%d %d", i, m_float_selectors.size()));
+			slider->SetSelectedListener(this, FloatSliderMoved, tsprintf("%d %d", i, m_selectors.size()));
 
-			m_float_selectors.push_back(slider);
+			m_selectors.push_back(slider);
+			break;
+		}
+
+		case VB_CONTROL_SLIDER_INT:
+		{
+			CControl<CScrollSelector<int>> slider = AddControl(new CScrollSelector<int>(control.m_name));
+
+			for (int n = control.slider_int.range_min; n <= control.slider_int.range_max; n += control.slider_int.step_size)
+				slider->AddSelection(CScrollSelection<int>(n, tsprintf("%d", n)));
+
+			slider->Layout_FullWidth();
+			slider->SetTop(GetDefaultMargin() + (float)i * (control_height + GetDefaultMargin()));
+			slider->SetHeight(control_height);
+			slider->SetSelectedListener(this, IntSliderMoved, tsprintf("%d %d", i, m_selectors.size()));
+
+			m_selectors.push_back(slider);
 			break;
 		}
 
@@ -115,5 +131,19 @@ void CPanel_Controls::FloatSliderMovedCallback(const tstring& sArgs)
 	unsigned int control = stoi(tokens[0]);
 	unsigned int selector = stoi(tokens[1]);
 
-	MonitorWindow()->GetViewback()->ControlCallback(control, m_float_selectors[selector].DowncastStatic<CScrollSelector<float>>()->GetSelectionValue());
+	MonitorWindow()->GetViewback()->ControlCallback(control, m_selectors[selector].DowncastStatic<CScrollSelector<float>>()->GetSelectionValue());
+}
+
+void CPanel_Controls::IntSliderMovedCallback(const tstring& sArgs)
+{
+	tvector<tstring> tokens;
+	tstrtok(sArgs, tokens);
+
+	if (tokens.size() < 2)
+		return;
+
+	unsigned int control = stoi(tokens[0]);
+	unsigned int selector = stoi(tokens[1]);
+
+	MonitorWindow()->GetViewback()->ControlCallback(control, m_selectors[selector].DowncastStatic<CScrollSelector<int>>()->GetSelectionValue());
 }

@@ -21,7 +21,8 @@ public:
 
 	EVENT_CALLBACK(CPanel_Controls, ButtonPressed);
 	EVENT_CALLBACK(CPanel_Controls, FloatSliderMoved);
+	EVENT_CALLBACK(CPanel_Controls, IntSliderMoved);
 
 private:
-	tvector<glgui::CControlHandle> m_float_selectors;
+	tvector<glgui::CControlHandle> m_selectors;
 };

@@ -117,7 +117,7 @@ namespace glgui
 
 			if (m_bContinuousRange)
 			{
-				T value = RemapVal<T>(m_flHandlePositionGoal, 0, 1, m_aSelections.front().m_oParam, m_aSelections.back().m_oParam);
+				T value = RemapVal<T>((T)m_flHandlePositionGoal, (T)0, (T)1, (T)m_aSelections.front().m_oParam, (T)m_aSelections.back().m_oParam);
 
 				m_hOption->SetText(m_pfnValuePrint(value));
 			}
@@ -278,7 +278,7 @@ namespace glgui
 		virtual T GetSelectionValue()
 		{
 			if (m_bContinuousRange)
-				return RemapVal<T>(m_flHandlePositionGoal, 0, 1, m_aSelections.front().m_oParam, m_aSelections.back().m_oParam);
+				return RemapVal<T>((T)m_flHandlePositionGoal, (T)0, (T)1, (T)m_aSelections.front().m_oParam, (T)m_aSelections.back().m_oParam);
 			else
 				return m_aSelections[m_iSelection].m_oParam;
 		}
