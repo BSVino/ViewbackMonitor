@@ -111,7 +111,10 @@ void CMonitorWindow::RegistrationUpdate()
 {
 	m_pPanelContainer->RegistrationUpdate();
 
-	CGroupPanel::Create();
+	if (GetViewback()->HasConnection())
+		CGroupPanel::Create();
+	else
+		CServerListPanel::Create();
 }
 
 void CMonitorWindow::WindowResize(int x, int y)

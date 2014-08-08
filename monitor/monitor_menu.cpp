@@ -150,6 +150,9 @@ void CServerListPanel::Layout()
 		CControl<CLabel> searching_label = AddControl(new CLabel("Searching for servers..."));
 		searching_label->Layout_FullWidth();
 		searching_label->SetTop(refresh_button->GetBottom() + GetDefaultMargin());
+
+		if (!MonitorWindow()->GetViewback()->GetServers().size())
+			m_refresh_time = Application()->GetTime() + 0.1f;
 	}
 }
 
@@ -161,9 +164,6 @@ void CServerListPanel::Think()
 	{
 		m_refresh_time = 0;
 		Layout();
-
-		if (!MonitorWindow()->GetViewback()->GetServers().size())
-			m_refresh_time = Application()->GetTime() + 0.1f;
 	}
 }
 
@@ -181,6 +181,8 @@ void CServerListPanel::ConnectCallback(const tstring& sArgs)
 
 	if (MonitorWindow()->GetViewback()->HasConnection())
 		SetVisible(false);
+
+	Layout();
 }
 
 CManualConnectPanel::CManualConnectPanel()
