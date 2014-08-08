@@ -23,6 +23,8 @@ void CPanel_Base::Layout()
 
 	m_pMaximize->Layout_AlignTop(nullptr, 0);
 	m_pMaximize->Layout_AlignRight(0);
+
+	BaseClass::Layout();
 }
 
 void CPanel_Base::MaximizeCallback(const tstring& sArgs)
@@ -43,3 +45,10 @@ void CPanel_Base::SetIsMaximized(bool bMaximized)
 		m_pMaximize->SetClickedListener(this, Maximize);
 }
 
+bool CPanel_Base::ShouldClearControl(CBaseControl* pControl)
+{
+	if (pControl == m_pMaximize)
+		return false;
+
+	return BaseClass::ShouldClearControl(pControl);
+}

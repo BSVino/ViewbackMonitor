@@ -20,6 +20,8 @@ public:
 	EVENT_CALLBACK(CPanel_Base, Minimize); // Not really minimize so much as un-maximize.
 	void SetIsMaximized(bool bMaximized);
 
+	bool ShouldClearControl(CBaseControl* pControl);
+
 	template <typename T>
 	size_t FindStartTime(const std::deque<T>& aData, double flTime)
 	{

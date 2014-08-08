@@ -7,6 +7,7 @@
 #include "panel_console.h"
 #include "panel_2D.h"
 #include "panel_time.h"
+#include "panel_controls.h"
 #include "monitor_window.h"
 #include "monitor_menu.h"
 
@@ -28,6 +29,11 @@ void CPanelContainer::Setup()
 	m_pPanelTime->SetBorder(CBaseControl::BT_SOME);
 	m_pPanelTime->SetBackgroundColor(Color(0, 0, 0, 255));
 	m_pPanelTime->SetHighlighted(true);
+
+	m_pPanelControls = AddControl(new CPanel_Controls());
+	m_pPanelControls->SetBorder(CBaseControl::BT_SOME);
+	m_pPanelControls->SetBackgroundColor(Color(0, 0, 0, 255));
+	m_pPanelControls->SetHighlighted(true);
 
 	m_pViewbackButton = AddControl(new CMonitorMenu(false));
 	m_pViewbackButton->SetTooltip("Options");
@@ -86,10 +92,9 @@ void CPanelContainer::Layout()
 	if (m_pMaximizedPanel)
 	{
 		m_pPanelConsole->SetIsMaximized(false);
-
 		m_pPanel2D->SetIsMaximized(false);
-
 		m_pPanelTime->SetIsMaximized(false);
+		m_pPanelControls->SetIsMaximized(false);
 
 		m_pMaximizedPanel->SetIsMaximized(true);
 
@@ -101,22 +106,23 @@ void CPanelContainer::Layout()
 	else
 	{
 		m_pPanelConsole->SetIsMaximized(false);
-
 		m_pPanel2D->SetIsMaximized(false);
-
 		m_pPanelTime->SetIsMaximized(false);
+		m_pPanelControls->SetIsMaximized(false);
 
 		if (MonitorWindow()->ButtonPanelSide())
 		{
 			m_pPanelConsole->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelSize(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
 			m_pPanel2D->SetDimensionsAnimate(FRect(m_pPanelConsole->GetRight(), 0, flWindowWidth / 2, flWindowHeight / 2), 0.3);
-			m_pPanelTime->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelSize(), flWindowHeight / 2, flWindowWidth, flWindowHeight / 2), 0.3);
+			m_pPanelControls->SetDimensionsAnimate(FRect(MonitorWindow()->ButtonPanelSize(), flWindowHeight / 2, flWindowWidth / 2, flWindowHeight / 2), 0.3);
+			m_pPanelTime->SetDimensionsAnimate(FRect(m_pPanelControls->GetRight(), flWindowHeight / 2, flWindowWidth / 2, flWindowHeight / 2), 0.3);
 		}
 		else
 		{
 			m_pPanelConsole->SetDimensionsAnimate(FRect(0, MonitorWindow()->ButtonPanelSize(), flWindowWidth / 2, flWindowHeight / 2), 0.3);
 			m_pPanel2D->SetDimensionsAnimate(FRect(m_pPanelConsole->GetRight(), MonitorWindow()->ButtonPanelSize(), flWindowWidth / 2, flWindowHeight / 2), 0.3);
-			m_pPanelTime->SetDimensionsAnimate(FRect(0, m_pPanelConsole->GetBottom(), flWindowWidth, flWindowHeight / 2), 0.3);
+			m_pPanelControls->SetDimensionsAnimate(FRect(0, m_pPanelConsole->GetBottom(), flWindowWidth / 2, flWindowHeight / 2), 0.3);
+			m_pPanelTime->SetDimensionsAnimate(FRect(m_pPanelControls->GetRight(), m_pPanelConsole->GetBottom(), flWindowWidth / 2, flWindowHeight / 2), 0.3);
 		}
 	}
 

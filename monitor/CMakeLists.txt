@@ -33,6 +33,7 @@ set (MONITOR_SOURCES
 	panel_2d.cpp
 	panel_console.cpp
 	panel_time.cpp
+	panel_controls.cpp
 )
 
 set (VIEWBACK_CLIENT_SOURCES

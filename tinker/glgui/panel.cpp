@@ -433,7 +433,7 @@ void CPanel::Layout( void )
 		rAllBounds = m_apControls[0]->GetAbsDimensions();
 
 	size_t iCount = m_apControls.size();
-	for (size_t i = 1; i < iCount; i++)
+	for (size_t i = 0; i < iCount; i++)
 	{
 		CBaseControl* pControl = m_apControls[i];
 		if (pControl == m_hHorizontalScrollBar)

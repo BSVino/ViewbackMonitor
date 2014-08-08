@@ -43,7 +43,7 @@ namespace glgui
 		DECLARE_CLASS(CScrollSelector, CPanel);
 
 	public:
-		CScrollSelector(const tstring& sFont="sans-serif", size_t iSize=13)
+		CScrollSelector(const tstring& sLabel="", const tstring& sFont="sans-serif", size_t iSize=13)
 			: CPanel(0, 0, 100, 16)
 		{
 			m_flHandlePositionGoal = 0;
@@ -58,6 +58,10 @@ namespace glgui
 			m_sFont = sFont;
 			m_iFontSize = iSize;
 
+			m_hLabel = AddControl(new CLabel(0, 0, 100, 100, sLabel));
+			m_hLabel->SetWrap(false);
+			m_hLabel->SetFont(m_sFont, m_iFontSize);
+
 			m_hOption = AddControl(new CLabel(0, 0, 100, 100, ""));
 			m_hOption->SetWrap(false);
 			m_hOption->SetFont(m_sFont, m_iFontSize);
@@ -65,6 +69,12 @@ namespace glgui
 
 		virtual void Layout()
 		{
+			m_hLabel->SetSize(1, 1);
+			m_hLabel->EnsureTextFits();
+			m_hLabel->SetPos(0, GetHeight() / 2 - m_hLabel->GetHeight() / 2);
+
+			float flRemainingWidth = GetWidth() - m_hLabel->GetWidth();
+
 			m_hOption->SetSize(1, 1);
 
 			// Make sure there's some text to be fit to.
@@ -72,7 +82,7 @@ namespace glgui
 				m_hOption->SetText("-");
 
 			m_hOption->EnsureTextFits();
-			m_hOption->SetPos(GetWidth()/2 - m_hOption->GetWidth()/2, GetHeight()-15);
+			m_hOption->SetPos(m_hLabel->GetWidth() + flRemainingWidth / 2 - m_hOption->GetWidth() / 2, GetHeight() - 15);
 
 			CPanel::Layout();
 		}
@@ -86,6 +96,9 @@ namespace glgui
 
 				float x, y, w, h;
 				GetAbsDimensions(x, y, w, h);
+
+				x += m_hLabel->GetWidth();
+				w -= m_hLabel->GetWidth();
 
 				m_flHandlePositionGoal = RemapValClamped((float)mx, (float)x, (float)(x + w), 0.0f, 1.0f);
 			}
@@ -106,7 +119,7 @@ namespace glgui
 			{
 				m_iSelection = iSelection;
 				if (m_pSelectedListener)
-					m_pfnSelectedCallback(m_pSelectedListener, "");
+					m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
 			}
 		}
 
@@ -118,6 +131,9 @@ namespace glgui
 
 			float flLeft = x+HANDLE_SIZE/2;
 			float flWidth = w-HANDLE_SIZE;
+
+			flLeft += m_hLabel->GetWidth();
+			flWidth -= m_hLabel->GetWidth();
 
 			CRootPanel::PaintRect(flLeft, y+h/2, flWidth, 1, Color(200, 200, 200, 255));
 
@@ -142,6 +158,9 @@ namespace glgui
 			float x, y, w, h;
 			GetAbsDimensions(x, y, w, h);
 
+			x += m_hLabel->GetWidth();
+			w -= m_hLabel->GetWidth();
+
 			float hx, hy;
 			hx = HandleX();
 			hy = HandleY();
@@ -154,7 +173,7 @@ namespace glgui
 				m_iSelection = SelectionByHandle();
 
 				if (m_pSelectedListener)
-					m_pfnSelectedCallback(m_pSelectedListener, "");
+					m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
 			}
 
 			return true;
@@ -162,9 +181,6 @@ namespace glgui
 
 		virtual bool MouseReleased(int code, int mx, int my)
 		{
-			float x, y, w, h;
-			GetAbsDimensions(x, y, w, h);
-
 			if (m_bMovingHandle)
 			{
 				DoneMovingHandle();
@@ -184,6 +200,9 @@ namespace glgui
 				float x, y, w, h;
 				GetAbsDimensions(x, y, w, h);
 
+				x += m_hLabel->GetWidth();
+				w -= m_hLabel->GetWidth();
+
 				// If the mouse went out of the left or right side, make sure we're all the way to that side.
 				m_flHandlePositionGoal = RemapValClamped((float)mx, (float)x, (float)(x + w), 0.0f, 1.0f);
 
@@ -198,7 +217,7 @@ namespace glgui
 			m_iSelection = SelectionByHandle();
 
 			if (m_pSelectedListener)
-				m_pfnSelectedCallback(m_pSelectedListener, "");
+				m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
 		}
 
 		virtual void AddSelection(const CScrollSelection<T>& oSelection)
@@ -228,7 +247,7 @@ namespace glgui
 			m_flHandlePositionGoal = m_flHandlePosition = ((float)GetWidth()/((float)m_aSelections.size()-1)*(float)m_iSelection)/GetWidth();
 
 			if (m_pSelectedListener)
-				m_pfnSelectedCallback(m_pSelectedListener, "");
+				m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
 		}
 
 		virtual T GetSelectionValue()
@@ -277,7 +296,10 @@ namespace glgui
 			float x, y, w, h;
 			GetAbsDimensions(x, y, w, h);
 
-			float flLeft = x+HANDLE_SIZE/2;
+			x += m_hLabel->GetWidth();
+			w -= m_hLabel->GetWidth();
+
+			float flLeft = x + HANDLE_SIZE / 2;
 			float flWidth = w-HANDLE_SIZE;
 			return flLeft + flWidth*m_flHandlePosition - HANDLE_SIZE/2;
 		}
@@ -290,10 +312,11 @@ namespace glgui
 			return y+h/2-HANDLE_SIZE/2;
 		}
 
-		void SetSelectedListener(IEventListener* pListener, IEventListener::Callback pfnCallback)
+		void SetSelectedListener(IEventListener* pListener, IEventListener::Callback pfnCallback, const tstring& args)
 		{
 			m_pfnSelectedCallback = pfnCallback;
 			m_pSelectedListener = pListener;
+			m_sSelectedArgs = args;
 		}
 
 	protected:
@@ -302,6 +325,7 @@ namespace glgui
 
 		tvector<CScrollSelection<T> >		m_aSelections;
 
+		CControl<CLabel>					m_hLabel;
 		CControl<CLabel>					m_hOption;
 
 		size_t								m_iSelection;
@@ -313,6 +337,7 @@ namespace glgui
 
 		IEventListener::Callback			m_pfnSelectedCallback;
 		IEventListener*						m_pSelectedListener;
+		tstring                             m_sSelectedArgs;
 	};
 };
 
