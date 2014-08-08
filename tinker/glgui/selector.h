@@ -42,6 +42,8 @@ namespace glgui
 	{
 		DECLARE_CLASS(CScrollSelector, CPanel);
 
+		typedef tstring(*ValuePrint)(T value);
+
 	public:
 		CScrollSelector(const tstring& sLabel="", const tstring& sFont="sans-serif", size_t iSize=13)
 			: CPanel(0, 0, 100, 16)
@@ -49,6 +51,7 @@ namespace glgui
 			m_flHandlePositionGoal = 0;
 			m_flHandlePosition = 0;
 			m_bMovingHandle = false;
+			m_bContinuousRange = true;
 
 			m_iSelection = 0;
 
@@ -102,7 +105,7 @@ namespace glgui
 
 				m_flHandlePositionGoal = RemapValClamped((float)mx, (float)x, (float)(x + w), 0.0f, 1.0f);
 			}
-			else
+			else if (!m_bContinuousRange)
 			{
 				if (m_aSelections.size() < 2)
 					m_flHandlePositionGoal = ((float)GetWidth()*(float)m_iSelection)/GetWidth();
@@ -112,14 +115,23 @@ namespace glgui
 
 			m_flHandlePosition = Approach(m_flHandlePositionGoal, m_flHandlePosition, (float)CRootPanel::Get()->GetFrameTime()*10);
 
-			int iSelection = SelectionByHandle();
-			m_hOption->SetText(m_aSelections[iSelection].m_sLabel.c_str());
-
-			if (iSelection != m_iSelection)
+			if (m_bContinuousRange)
 			{
-				m_iSelection = iSelection;
-				if (m_pSelectedListener)
-					m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
+				T value = RemapVal<T>(m_flHandlePositionGoal, 0, 1, m_aSelections.front().m_oParam, m_aSelections.back().m_oParam);
+
+				m_hOption->SetText(m_pfnValuePrint(value));
+			}
+			else
+			{
+				int iSelection = SelectionByHandle();
+				m_hOption->SetText(m_aSelections[iSelection].m_sLabel.c_str());
+
+				if (iSelection != m_iSelection)
+				{
+					m_iSelection = iSelection;
+					if (m_pSelectedListener)
+						m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
+				}
 			}
 		}
 
@@ -223,7 +235,20 @@ namespace glgui
 		virtual void AddSelection(const CScrollSelection<T>& oSelection)
 		{
 			m_aSelections.push_back(oSelection);
+			m_bContinuousRange = false;
 		}
+
+		virtual void SetContinuousRange(const CScrollSelection<T>& min, const CScrollSelection<T>& max, ValuePrint pfnValuePrint)
+		{
+			m_aSelections.clear();
+			m_aSelections.push_back(min);
+			m_aSelections.push_back(max);
+
+			m_bContinuousRange = true;
+			m_pfnValuePrint = pfnValuePrint;
+		}
+
+		virtual bool HasContinuousRange() { return m_bContinuousRange; }
 
 		virtual size_t GetNumSelections()
 		{
@@ -252,7 +277,10 @@ namespace glgui
 
 		virtual T GetSelectionValue()
 		{
-			return m_aSelections[m_iSelection].m_oParam;
+			if (m_bContinuousRange)
+				return RemapVal<T>(m_flHandlePositionGoal, 0, 1, m_aSelections.front().m_oParam, m_aSelections.back().m_oParam);
+			else
+				return m_aSelections[m_iSelection].m_oParam;
 		}
 
 		virtual size_t FindClosestSelectionValue(float flValue)
@@ -320,6 +348,9 @@ namespace glgui
 		}
 
 	protected:
+		// Super hack!
+		ValuePrint m_pfnValuePrint;
+
 		tstring								m_sFont;
 		size_t								m_iFontSize;
 
@@ -334,6 +365,7 @@ namespace glgui
 		float								m_flHandlePositionGoal;
 
 		bool								m_bMovingHandle;
+		bool                                m_bContinuousRange;
 
 		IEventListener::Callback			m_pfnSelectedCallback;
 		IEventListener*						m_pSelectedListener;

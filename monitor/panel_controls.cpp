@@ -19,6 +19,11 @@ void CPanel_Controls::RegistrationUpdate()
 	Layout();
 }
 
+tstring ValuePrint(float value)
+{
+	return pretty_float(value, 2);
+}
+
 void CPanel_Controls::Layout()
 {
 	m_float_selectors.clear();
@@ -48,10 +53,19 @@ void CPanel_Controls::Layout()
 		{
 			CControl<CScrollSelector<float>> slider = AddControl(new CScrollSelector<float>(control.m_name));
 
-			for (int n = 0; n < control.slider_float.steps; n++)
+			if (control.slider_float.steps >= 2)
 			{
-				float f = RemapVal((float)n, 0.0f, (float)control.slider_float.steps-1, control.slider_float.range_min, control.slider_float.range_max);
-				slider->AddSelection(CScrollSelection<float>(f, pretty_float(f, 2)));
+				for (int n = 0; n < control.slider_float.steps; n++)
+				{
+					float f = RemapVal((float)n, 0.0f, (float)control.slider_float.steps - 1, control.slider_float.range_min, control.slider_float.range_max);
+					slider->AddSelection(CScrollSelection<float>(f, pretty_float(f, 2)));
+				}
+			}
+			else
+			{
+				float min = control.slider_float.range_min;
+				float max = control.slider_float.range_max;
+				slider->SetContinuousRange(CScrollSelection<float>(min, pretty_float(min, 2)), CScrollSelection<float>(max, pretty_float(max, 2)), &ValuePrint);
 			}
 
 			slider->Layout_FullWidth();
