@@ -161,6 +161,9 @@ void CServerListPanel::Think()
 	{
 		m_refresh_time = 0;
 		Layout();
+
+		if (!MonitorWindow()->GetViewback()->GetServers().size())
+			m_refresh_time = Application()->GetTime() + 0.1f;
 	}
 }
 
