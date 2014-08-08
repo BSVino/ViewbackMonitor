@@ -100,7 +100,7 @@ void Alert(const tstring& sMessage)
 	fputs(sMessage.c_str(), stderr);
 }
 
-void CreateMinidump(void* pInfo, tchar* pszDirectory)
+void CreateMinidump(void* pInfo)
 {
 }
 

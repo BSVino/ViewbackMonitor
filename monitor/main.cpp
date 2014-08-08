@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
 #if defined(_WIN32) && !defined(_DEBUG)
 	}
-	__except (CreateMinidump(GetExceptionInformation(), "ViewbackMonitor"), EXCEPTION_EXECUTE_HANDLER)
+	__except (CreateMinidump(GetExceptionInformation()), EXCEPTION_EXECUTE_HANDLER)
 	{
 	}
 #endif

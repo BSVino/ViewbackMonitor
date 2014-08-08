@@ -94,11 +94,11 @@ void Alert(const tstring& sMessage)
 static int g_iMinidumpsWritten = 0;
 
 #ifdef _DEBUG
-void CreateMinidump(void* /*pInfo*/, tchar* /*pszDirectory*/)
+void CreateMinidump(void* /*pInfo*/)
 {
 }
 #else
-void CreateMinidump(void* pInfo, tchar* pszDirectory)
+void CreateMinidump(void* pInfo)
 {
 	time_t currTime = ::time( NULL );
 	struct tm * pTime = ::localtime( &currTime );
@@ -129,7 +129,7 @@ void CreateMinidump(void* pInfo, tchar* pszDirectory)
 			g_iMinidumpsWritten++
 			);
 
-	HANDLE hFile = CreateFile( convert_to_wstring(GetAppDataDirectory(pszDirectory, convert_from_wstring(szFileName))).c_str(), GENERIC_READ | GENERIC_WRITE,
+	HANDLE hFile = CreateFile((std::wstring(L"dumps/") + szFileName).c_str(), GENERIC_READ | GENERIC_WRITE,
 		0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 
 	if( ( hFile != NULL ) && ( hFile != INVALID_HANDLE_VALUE ) )

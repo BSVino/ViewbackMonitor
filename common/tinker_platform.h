@@ -27,7 +27,7 @@ void SleepMS(size_t iMS);
 void OpenBrowser(const tstring& sURL);
 void OpenExplorer(const tstring& sDirectory);
 void Alert(const tstring& sMessage);
-void CreateMinidump(void* pInfo, tchar* pszDirectory);
+void CreateMinidump(void* pInfo);
 tstring GetClipboard();
 void SetClipboard(const tstring& sBuf);
 tvector<tstring> ListDirectory(const tstring& sDirectory, bool bDirectories = true);

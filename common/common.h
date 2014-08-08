@@ -103,8 +103,18 @@ PRAGMA_WARNING_POP \
 
 #else
 
-#define TAssert(x) {}
-#define TAssertNoMsg(x) {}
+#define TAssert(x) do { \
+	PRAGMA_WARNING_PUSH \
+	PRAGMA_WARNING_DISABLE(4127) /* conditional expression is constant */ \
+} while (0) \
+PRAGMA_WARNING_POP \
+
+#define TAssertNoMsg(x) do { \
+	PRAGMA_WARNING_PUSH \
+	PRAGMA_WARNING_DISABLE(4127) /* conditional expression is constant */ \
+} while (0) \
+PRAGMA_WARNING_POP \
+
 
 #endif
 
