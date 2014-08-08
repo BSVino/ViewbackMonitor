@@ -2,25 +2,22 @@
 
 float RemapVal(float flInput, float flInLo, float flInHi, float flOutLo, float flOutHi)
 {
-	return (((flInput-flInLo) / (flInHi-flInLo)) * (flOutHi-flOutLo)) + flOutLo;
+	return mix(flOutLo, flOutHi, (flInput - flInLo)/(flInHi - flInLo));
 }
 
 float RemapValClamped(float flInput, float flInLo, float flInHi, float flOutLo, float flOutHi)
 {
-	if (flInput < flInLo)
-		return flOutLo;
-	if (flInput > flInHi)
-		return flOutHi;
-	return (((flInput-flInLo) / (flInHi-flInLo)) * (flOutHi-flOutLo)) + flOutLo;
+	return mix(flOutLo, flOutHi, clamp((flInput - flInLo)/(flInHi - flInLo), 0.0, 1.0));
+}
+
+float RemapValSmooth(float flInput, float flInLo, float flInHi, float flOutLo, float flOutHi)
+{
+	return mix(flOutLo, flOutHi, smoothstep(flInLo, flInHi, flInput));
 }
 
 float Clamped(float flInput, float flLo, float flHi)
 {
-	if (flInput < flLo)
-		return flLo;
-	if (flInput > flHi)
-		return flHi;
-	return flInput;
+	return clamp(flInput, flLo, flHi);
 }
 
 float LengthSqr(vec3 v)

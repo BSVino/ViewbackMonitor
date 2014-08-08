@@ -1,7 +1,5 @@
 uniform vec4 vecDimensions;
 
-uniform bool bDiffuse;
-uniform sampler2D iDiffuse;
 uniform vec4 vecColor;
 
 uniform bool bScissor;
@@ -12,15 +10,19 @@ uniform bool bHighlight;
 
 in vec3 vecFragmentPosition;
 in vec2 vecFragmentTexCoord0;
-in vec3 vecFragmentNormal;
 in vec3 vecFragmentColor;
 
 vec4 fragment_program()
 {
 	vec4 vecDiffuse = vecColor;
 
-	if (bDiffuse)
-		vecDiffuse *= texture(iDiffuse, vecFragmentTexCoord0);
+	//float flLerp = clamp(vecFragmentPosition.x - vecDimensions.x, 0.0, 200.0)/200;
+	float flLerp = smoothstep(0.0, 200.0, vecFragmentPosition.x - vecDimensions.x);
+	float flMixed = mix(1.0, 0.1, flLerp);
+
+	vecDiffuse.r *= flMixed;
+	vecDiffuse.g *= flMixed;
+	vecDiffuse.b *= flMixed;
 
 	if (bScissor)
 	{
@@ -65,32 +67,5 @@ vec4 fragment_program()
 		}
 	}
 
-	vec4 vecFragColor = vecDiffuse;
-
-	if (vecColor.a > 0.0 && bHighlight)
-	{
-		float y = vecDimensions.y;
-		float m = vecDimensions.x + vecDimensions.z/2.0;	// Midpoint
-
-		float flDistance = abs(y - vecFragmentPosition.y);
-		float flGlowCutoff = RemapValSmooth(flDistance, 250.0, 260.0, 1.0, 0.0);
-
-		float flAdd = RemapValSmooth(flDistance, 0.0, 250.0, 0.1, 0.01);
-		float flGlow = RemapValSmooth(LengthSqr(vecFragmentPosition.xy - vec2(m, y)), 0.0, 300.0*300.0, 0.08, 0.0);
-		if (flGlow > 0.0)
-			flAdd += flGlow;
-
-		flAdd *= flGlowCutoff;
-		vecFragColor.r += flAdd;
-		vecFragColor.g += flAdd;
-		vecFragColor.b += flAdd;
-
-		// Reduce banding.
-		float rand = Rand(vecFragmentTexCoord0)/200.0;
-		vecFragColor.r += rand;
-		vecFragColor.g += rand;
-		vecFragColor.b += rand;
-	}
-
-	return vecFragColor;
+	return vecDiffuse;
 }

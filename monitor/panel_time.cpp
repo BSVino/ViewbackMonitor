@@ -413,6 +413,10 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 
 			Color clrBox(oMeta[i].m_clrColor.x, oMeta[i].m_clrColor.y, oMeta[i].m_clrColor.z, 1.0f);
 
+			::CRenderingContext r(nullptr, true);
+
+			r.UseProgram("intvalue");
+
 			for (size_t j = iStart; j <= iEnd; j++)
 			{
 				int iValue = aIntData[j].data;

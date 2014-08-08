@@ -1,0 +1,12 @@
+Name: intvalue
+Vertex: gui
+Fragment: intvalue
+
+Parameter: Blend
+{
+	Blend: [value]
+}
+
+Defaults
+{
+}
