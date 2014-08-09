@@ -136,7 +136,7 @@ void CServerListPanel::Layout()
 		for (size_t i = 0; i < server_list.size(); i++)
 		{
 			in_addr in;
-			in.S_un.S_addr = htonl(server_list[i].address);
+			in.s_addr = htonl(server_list[i].address);
 			const char* string_address = inet_ntoa(in);
 
 			CControl<CButton> server_listing = AddControl(new CButton(server_list[i].name + " " + string(tsprintf(" (%s:%d)", string_address, server_list[i].tcp_port).c_str())));

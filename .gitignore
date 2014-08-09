@@ -25,6 +25,6 @@
 /android/libs
 /android/obj
 /android/jni/SDL
-/android/jni/SDL2_image
+/android/jni/SDL2_image-2.0.0
 /android/bin
 /android/gen

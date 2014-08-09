@@ -32,6 +32,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 	$(TINKER_PATH)/monitor/panel_2d.cpp \
 	$(TINKER_PATH)/monitor/panel_console.cpp \
 	$(TINKER_PATH)/monitor/panel_time.cpp \
+	$(TINKER_PATH)/monitor/panel_controls.cpp \
 	$(TINKER_PATH)/../viewback/client/viewback_client.cpp \
 	$(TINKER_PATH)/../viewback/client/viewback_data.cpp \
 	$(TINKER_PATH)/../viewback/client/viewback_servers.cpp \
