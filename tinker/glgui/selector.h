@@ -135,7 +135,11 @@ namespace glgui
 			}
 		}
 
+#ifdef T_PLATFORM_TOUCH
+#define HANDLE_SIZE 30
+#else
 #define HANDLE_SIZE 12
+#endif
 
 		virtual void Paint(float x, float y, float w, float h)
 		{

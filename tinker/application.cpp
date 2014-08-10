@@ -597,6 +597,7 @@ void CApplication::WindowResize(int w, int h)
 
 void CApplication::TouchMotion(int iFinger, float x, float y, float dx, float dy)
 {
+	glgui::CRootPanel::Get()->CursorMoved((int)x, (int)y);
 }
 
 bool CApplication::TouchInput(int iFinger, tinker_mouse_state_t iState, float x, float y)

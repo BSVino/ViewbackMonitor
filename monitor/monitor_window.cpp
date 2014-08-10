@@ -48,6 +48,8 @@ void DebugOutput(const char* pszText)
 
 void CMonitorWindow::Run()
 {
+	RootPanel()->SetDesignHeight(720);
+
 	FILE* fp = tfopen(MonitorWindow()->GetAppDataDirectory("viewback.txt"), "r");
 
 	if (fp)

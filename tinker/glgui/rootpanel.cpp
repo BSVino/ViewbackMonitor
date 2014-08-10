@@ -287,6 +287,9 @@ bool CRootPanel::MousePressed(int code, int mx, int my, bool bInsideControl)
 	mx = (int)(mx * Application()->GetGUIScale());
 	my = (int)(my * Application()->GetGUIScale());
 
+	m_iMX = mx;
+	m_iMY = my;
+
 	if (CPanel::MousePressed(code, mx, my))
 		return true;
 
@@ -321,6 +324,9 @@ bool CRootPanel::MouseReleased(int code, int mx, int my)
 	mx = (int)(mx * Application()->GetGUIScale());
 	my = (int)(my * Application()->GetGUIScale());
 
+	m_iMX = mx;
+	m_iMY = my;
+
 	if (m_pDragging)
 	{
 		if (DropDraggable())
@@ -343,6 +349,9 @@ bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)
 {
 	mx = (int)(mx * Application()->GetGUIScale());
 	my = (int)(my * Application()->GetGUIScale());
+
+	m_iMX = mx;
+	m_iMY = my;
 
 	TAssert(!m_pDragging);
 
