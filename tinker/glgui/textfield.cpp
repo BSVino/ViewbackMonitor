@@ -382,6 +382,10 @@ bool CTextField::KeyPressed(int iKey, bool bCtrlDown)
 			if (sInput.length())
 			{
 				SetText(m_asAutoCompleteCommands[m_iAutoComplete % m_asAutoCompleteCommands.size()]);
+
+				if (iKey != ' ')
+					AppendText(" ");
+
 				SetCursorPosition((size_t)-1);
 				UpdateContentsChangedListener();
 			}
