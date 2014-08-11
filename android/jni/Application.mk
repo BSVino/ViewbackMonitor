@@ -7,3 +7,9 @@ LOCAL_CFLAGS += -D__GXX_EXPERIMENTAL_CXX0X__
 APP_CPPFLAGS += -std=c++11 -frtti
 #APP_ABI := armeabi armeabi-v7a x86
 APP_ABI := armeabi
+
+ifeq ($(NDK_DEBUG),1)
+  APP_OPTIM := debug
+else
+  APP_OPTIM := release
+endif

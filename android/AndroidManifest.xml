@@ -13,7 +13,7 @@
   <!--<uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />-->
 
   <!-- Android 2.3.3 -->
-  <uses-sdk android:minSdkVersion="18" android:targetSdkVersion="18" />
+  <uses-sdk android:minSdkVersion="18" android:targetSdkVersion="20" />
 
   <!-- OpenGL ES 2.0 -->
   <uses-feature android:glEsVersion="0x00030000" android:required="true" />

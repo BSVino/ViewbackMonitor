@@ -1,3 +1,4 @@
+@echo off
 setlocal
 
 :: First make sure you have the Android NDK https://developer.android.com/tools/sdk/ndk/index.html installed in your root folder
@@ -14,16 +15,46 @@ setlocal
 
 set JAVA_HOME=\Program Files\Java\jdk1.8.0_11
 
-call \android-ndk-r10\ndk-build NDK_DEBUG=1
+set BUILD_DEBUG=no
 
+if "%1"=="" goto no_arg
+
+set BUILD_DEBUG=yes
+
+:no_arg
+
+if "%BUILD_DEBUG%"=="yes" goto ndk_build_debug
+
+call \android-ndk-r10\ndk-build
 IF ERRORLEVEL 1 (
 	pause
 	exit /b
 )
 
+goto end_ndk
+
+:ndk_build_debug
+call \android-ndk-r10\ndk-build NDK_DEBUG=1
+IF ERRORLEVEL 1 (
+	pause
+	exit /b
+)
+
+:end_ndk
+
 xcopy /s /y ..\install assets
 del "assets\*.dll" 
 del "assets\*.exe" 
 call \adt-bundle-windows-x86_64-20140702\sdk\platform-tools\adb.exe start-server
+
+if "%BUILD_DEBUG%"=="yes" goto ant_build_debug
+
+call \adt-bundle-windows-x86_64-20140702\apache-ant-1.9.4\bin\ant release install
+goto end_ant
+
+:ant_build_debug
 call \adt-bundle-windows-x86_64-20140702\apache-ant-1.9.4\bin\ant debug install
+
+:end_ant
+
 pause
