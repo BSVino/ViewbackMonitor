@@ -36,12 +36,15 @@ private:
 
 public:
 	static void Create();
+	virtual void SetParent(glgui::CControlHandle hParent);
 
 	void Layout();
 
 	EVENT_CALLBACK(CManualConnectPanel, Connect);
 
 private:
+	static glgui::CControlResource s_panel;
+
 	glgui::CControl<glgui::CLabel>     m_pIPLabel;
 	glgui::CControl<glgui::CTextField> m_pIP;
 	glgui::CControl<glgui::CLabel>     m_pPortLabel;
@@ -58,6 +61,7 @@ private:
 
 public:
 	static void Create();
+	virtual void SetParent(glgui::CControlHandle hParent);
 
 	void Layout();
 	void Think();
@@ -66,6 +70,8 @@ public:
 	EVENT_CALLBACK(CServerListPanel, Connect);
 
 private:
+	static glgui::CControlResource s_server_list;
+
 	double m_refresh_time;
 };
 
@@ -79,6 +85,7 @@ private:
 public:
 	static CChannelPanel* Get();
 	static void Create();
+	virtual void SetParent(glgui::CControlHandle hParent);
 
 	void RegistrationUpdate();
 	void Layout();
@@ -87,6 +94,8 @@ public:
 	EVENT_CALLBACK(CChannelPanel, ChannelOff);
 
 private:
+	static glgui::CControlResource s_panel;
+
 	tvector<glgui::CControl<glgui::CCheckBox>> m_ahChannels;
 };
 
@@ -99,11 +108,15 @@ private:
 
 public:
 	static void Create();
+	virtual void SetParent(glgui::CControlHandle hParent);
 
 	void RegistrationUpdate();
 	void Layout();
 
 	EVENT_CALLBACK(CGroupPanel, ActivateGroup);
+
+private:
+	static glgui::CControlResource s_panel;
 };
 
 

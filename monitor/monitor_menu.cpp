@@ -100,19 +100,29 @@ CServerListPanel::CServerListPanel()
 {
 }
 
+CControlResource CServerListPanel::s_server_list;
+
 void CServerListPanel::Create()
 {
-	static CServerListPanel* pPanel = NULL;
+	if (!s_server_list)
+		s_server_list = (new CServerListPanel())->shared_from_this();
 
-	if (!pPanel)
-		pPanel = new CServerListPanel();
+	CServerListPanel* pServerList = s_server_list.DowncastStatic<CServerListPanel>();
 
-	pPanel->SetSize(350, 550);
-	pPanel->Layout();
-	pPanel->MoveToCenter();
-	pPanel->SetVisible(true);
+	pServerList->SetSize(350, 550);
+	pServerList->Layout();
+	pServerList->MoveToCenter();
+	pServerList->SetVisible(true);
 
-	pPanel->m_refresh_time = Application()->GetTime() + 1.5f;
+	pServerList->m_refresh_time = Application()->GetTime() + 1.5f;
+}
+
+void CServerListPanel::SetParent(CControlHandle hParent)
+{
+	BaseClass::SetParent(hParent);
+
+	if (!hParent)
+		s_server_list.reset();
 }
 
 void CServerListPanel::Layout()
@@ -185,6 +195,8 @@ void CServerListPanel::ConnectCallback(const tstring& sArgs)
 	Layout();
 }
 
+CControlResource CManualConnectPanel::s_panel;
+
 CManualConnectPanel::CManualConnectPanel()
 	: CMovablePanel("Manual Connect")
 {
@@ -198,10 +210,10 @@ CManualConnectPanel::CManualConnectPanel()
 
 void CManualConnectPanel::Create()
 {
-	static CManualConnectPanel* pPanel = NULL;
+	if (!s_panel)
+		s_panel = (new CManualConnectPanel())->shared_from_this();
 
-	if (!pPanel)
-		pPanel = new CManualConnectPanel();
+	CManualConnectPanel* pPanel = s_panel.DowncastStatic<CManualConnectPanel>();
 
 	pPanel->SetSize(350, 150);
 	pPanel->Layout();
@@ -212,6 +224,14 @@ void CManualConnectPanel::Create()
 	pPanel->m_pPort->SetText(MonitorWindow()->GetLastSuccessfulPort());
 
 	CRootPanel::Get()->SetFocus(pPanel->m_pIP);
+}
+
+void CManualConnectPanel::SetParent(CControlHandle hParent)
+{
+	BaseClass::SetParent(hParent);
+
+	if (!hParent)
+		s_panel.reset();
 }
 
 void CManualConnectPanel::Layout()
@@ -258,6 +278,8 @@ void CManualConnectPanel::ConnectCallback(const tstring& sArgs)
 	}
 }
 
+CControlResource CChannelPanel::s_panel;
+
 CChannelPanel::CChannelPanel()
 : CMovablePanel("Channels")
 {
@@ -270,10 +292,10 @@ CChannelPanel::CChannelPanel()
 
 CChannelPanel* CChannelPanel::Get()
 {
-	static CChannelPanel* pPanel = NULL;
+	if (!s_panel)
+		s_panel = (new CChannelPanel())->shared_from_this();
 
-	if (!pPanel)
-		pPanel = new CChannelPanel();
+	CChannelPanel* pPanel = s_panel.DowncastStatic<CChannelPanel>();
 
 	return pPanel;
 }
@@ -282,6 +304,14 @@ void CChannelPanel::Create()
 {
 	Get()->Layout();
 	Get()->SetVisible(true);
+}
+
+void CChannelPanel::SetParent(CControlHandle hParent)
+{
+	BaseClass::SetParent(hParent);
+
+	if (!hParent)
+		s_panel.reset();
 }
 
 void CChannelPanel::RegistrationUpdate()
@@ -349,6 +379,8 @@ void CChannelPanel::ChannelOffCallback(const tstring& sArgs)
 	MonitorWindow()->GetPanelContainer()->Layout();
 }
 
+CControlResource CGroupPanel::s_panel;
+
 CGroupPanel::CGroupPanel()
 	: CMovablePanel("Activate a group")
 {
@@ -359,15 +391,23 @@ CGroupPanel::CGroupPanel()
 
 void CGroupPanel::Create()
 {
-	static CGroupPanel* pPanel = NULL;
+	if (!s_panel)
+		s_panel = (new CGroupPanel())->shared_from_this();
 
-	if (!pPanel)
-		pPanel = new CGroupPanel();
+	CGroupPanel* pPanel = s_panel.DowncastStatic<CGroupPanel>();
 
 	pPanel->SetSize(350, 350);
 	pPanel->Layout();
 	pPanel->MoveToCenter();
 	pPanel->SetVisible(true);
+}
+
+void CGroupPanel::SetParent(CControlHandle hParent)
+{
+	BaseClass::SetParent(hParent);
+
+	if (!hParent)
+		s_panel.reset();
 }
 
 void CGroupPanel::Layout()

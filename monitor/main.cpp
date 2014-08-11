@@ -9,6 +9,8 @@
 #include "monitor_window.h"
 #include "SDL.h"
 
+//#define ANDROID_GLOBAL_TEST
+
 int CreateApplication(int argc, char** argv)
 {
 #ifdef _WIN32
@@ -19,6 +21,11 @@ int CreateApplication(int argc, char** argv)
 #ifdef PTW32_STATIC_LIB
 	pthread_win32_process_attach_np();
 #endif
+#endif
+
+#ifdef ANDROID_GLOBAL_TEST
+	while (true)
+	{
 #endif
 
 	CMonitorWindow oWindow(argc, argv);
@@ -36,6 +43,10 @@ int CreateApplication(int argc, char** argv)
 	oWindow.OpenWindow(iScreenWidth, iScreenHeight, false, true);
 
 	oWindow.Run();
+
+#ifdef ANDROID_GLOBAL_TEST
+	}
+#endif
 
 #ifdef _WIN32
 	WSACleanup();
