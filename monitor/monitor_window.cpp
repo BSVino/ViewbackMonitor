@@ -91,6 +91,8 @@ void CMonitorWindow::Run()
 
 		CProfiler::Render();
 		SwapBuffers();
+
+		ThreadYield();
 	}
 }
 

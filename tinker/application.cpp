@@ -524,6 +524,11 @@ void CApplication::SwapBuffers()
 	SDL_GL_SwapWindow(m_pWindow);
 }
 
+void CApplication::ThreadYield()
+{
+	SDL_Delay(1);
+}
+
 double CApplication::GetTime()
 {
 	return (double)(SDL_GetTicks())/1000;

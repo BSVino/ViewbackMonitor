@@ -47,6 +47,7 @@ public:
 
 	void                        PollEvents();
 	void						SwapBuffers();
+	void                        ThreadYield();
 	double						GetTime();
 
 	bool						IsOpen();
