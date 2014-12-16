@@ -35,6 +35,8 @@ CTextureSheet::CTextureSheet(tstring sFile)
 	CData* pFile = new CData();
 	CDataSerializer::Read(fp, pFile);
 
+	fclose(fp);
+
 	for (size_t i = 0; i < pFile->GetNumChildren(); i++)
 	{
 		CData* pChild = pFile->GetChild(i);
