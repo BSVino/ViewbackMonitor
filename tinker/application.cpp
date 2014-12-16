@@ -91,6 +91,8 @@ CApplication::CApplication(int argc, char** argv)
 		if (m_apszCommandLine[i][0] == '+')
 			CCommand::Run(&m_apszCommandLine[i][1]);
 	}
+
+	SetLowPeriodScheduler();
 }
 
 #if defined(NO_GL_DEBUG)
@@ -285,6 +287,8 @@ CApplication::~CApplication()
 
 	SDL_DestroyWindow(m_pWindow);
 	SDL_Quit();
+
+	ClearLowPeriodScheduler();
 }
 
 #define MAKE_PARAMETER(name) \

@@ -438,5 +438,13 @@ void GetScreenDPI(float& xdpi, float& ydpi)
 // Don't need to.
 void EnableMulticast() {}
 
+void SetLowPeriodScheduler()
+{
+	timeBeginPeriod(1);
+}
 
+void ClearLowPeriodScheduler()
+{
+	timeEndPeriod(1);
+}
 

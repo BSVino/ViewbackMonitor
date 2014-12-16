@@ -72,9 +72,25 @@ void CMonitorWindow::Run()
 
 	SetupGUI();
 
+	double frame_end_time = 0;
+	double frame_start_time = 0;
+
 	while (IsOpen())
 	{
 		CProfiler::BeginFrame();
+
+		frame_end_time = GetTime();
+
+		{
+			TPROF("Sleep");
+
+			double next_frame_time = frame_start_time + (1.0f / 30);
+			double time_to_sleep_seconds = next_frame_time - frame_end_time;
+			if (time_to_sleep_seconds > 0.001)
+				SleepMS((size_t)(time_to_sleep_seconds * 1000));
+		}
+
+		frame_start_time = GetTime();
 
 		{
 			TPROF("Frame");
@@ -91,8 +107,6 @@ void CMonitorWindow::Run()
 
 		CProfiler::Render();
 		SwapBuffers();
-
-		ThreadYield();
 	}
 }
 

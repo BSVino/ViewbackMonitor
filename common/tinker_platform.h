@@ -43,6 +43,8 @@ int TranslateKeyToQwerty(int iKey);
 int TranslateKeyFromQwerty(int iKey);
 void GetScreenDPI(float& xdpi, float& ydpi); // The number of physical pixels per inch.
 void EnableMulticast();
+void SetLowPeriodScheduler();
+void ClearLowPeriodScheduler();
 
 #ifdef _WIN32
 #define T_DIR_SEP "\\"

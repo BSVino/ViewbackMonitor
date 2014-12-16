@@ -70,7 +70,7 @@ if (WIN32)
 	target_link_libraries(ViewbackMonitor optimized ${PROJECT_SOURCE_DIR}/../ext-deps/protobuf-2.5.0-vs2013/vsprojects/Release/libprotobuf.lib)
 	target_link_libraries(ViewbackMonitor optimized dbghelp.lib)
 
-	target_link_libraries(ViewbackMonitor opengl32 glu32 iphlpapi ws2_32)
+	target_link_libraries(ViewbackMonitor opengl32 glu32 iphlpapi ws2_32 winmm)
 endif (WIN32)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
