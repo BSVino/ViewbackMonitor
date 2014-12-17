@@ -88,6 +88,12 @@ void CPanel_Console::Paint(float x, float y, float w, float h)
 
 void CPanel_Console::PrintConsole(const tstring& sText)
 {
+	if (!m_hOutput->GetText().length() || m_hOutput->GetText().back() == '\n')
+	{
+		float the_time = (float)Viewback()->PredictCurrentTime();
+		m_hOutput->AppendText("[color=aaaaaa]" + pretty_float(the_time, 3)  + "[/color] ");
+	}
+
 	m_hOutput->AppendText(sText);
 
 	if (m_hOutput->GetText().length() > 2500)
