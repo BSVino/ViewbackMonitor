@@ -194,3 +194,8 @@ glgui::CControl<class CPanel_Console> CPanelContainer::GetConsolePanel()
 	return m_pPanelConsole;
 }
 
+glgui::CControl<class CPanel_Controls> CPanelContainer::GetControlsPanel()
+{
+	return m_pPanelControls;
+}
+

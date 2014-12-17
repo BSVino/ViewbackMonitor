@@ -23,6 +23,8 @@ public:
 	EVENT_CALLBACK(CPanel_Controls, FloatSliderMoved);
 	EVENT_CALLBACK(CPanel_Controls, IntSliderMoved);
 
+	void ControlUpdated(size_t control_id, float f_value, int i_value);
+
 private:
 	tvector<glgui::CControlHandle> m_selectors;
 };

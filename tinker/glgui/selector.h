@@ -236,6 +236,11 @@ namespace glgui
 				m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
 		}
 
+		bool IsMovingHandle()
+		{
+			return m_bMovingHandle;
+		}
+
 		virtual void AddSelection(const CScrollSelection<T>& oSelection)
 		{
 			m_aSelections.push_back(oSelection);
@@ -277,6 +282,14 @@ namespace glgui
 
 			if (m_pSelectedListener)
 				m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
+		}
+
+		void SetValue(T value)
+		{
+			if (m_bContinuousRange)
+				m_flHandlePositionGoal = RemapValClamped((float)value, (float)m_aSelections.front().m_oParam, (float)m_aSelections.back().m_oParam, (float)0, (float)1);
+			else
+				m_iSelection = FindClosestSelectionValue((float)value);
 		}
 
 		virtual T GetSelectionValue()

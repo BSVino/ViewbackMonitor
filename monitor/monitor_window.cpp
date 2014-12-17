@@ -9,6 +9,7 @@
 
 #include "panel_container.h"
 #include "panel_console.h"
+#include "panel_controls.h"
 #include "monitor_menu.h"
 
 using namespace glgui;
@@ -46,6 +47,11 @@ void DebugOutput(const char* pszText)
 	TMsg(tsprintf("VB: %s", pszText));
 }
 
+void ControlUpdated(size_t control_id, float f_value, int i_value)
+{
+	MonitorWindow()->GetPanelContainer()->GetControlsPanel()->ControlUpdated(control_id, f_value, i_value);
+}
+
 void CMonitorWindow::Run()
 {
 	RootPanel()->SetDesignHeight(720);
@@ -67,6 +73,8 @@ void CMonitorWindow::Run()
 
 	if (!Viewback()->Initialize(&::RegistrationUpdate, &ConsoleOutput, &DebugOutput))
 		TError("Could not initialize Viewback.\n");
+
+	Viewback()->SetControlUpdatedCallback(ControlUpdated);
 
 	CVar::SetCVar("r_bloom", 0);
 

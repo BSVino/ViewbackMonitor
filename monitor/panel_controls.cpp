@@ -68,6 +68,8 @@ void CPanel_Controls::Layout()
 				slider->SetContinuousRange(CScrollSelection<float>(min, pretty_float(min, 2)), CScrollSelection<float>(max, pretty_float(max, 2)), &ValuePrint);
 			}
 
+			slider->SetValue(control.slider_float.initial_value);
+
 			slider->Layout_FullWidth();
 			slider->SetTop(GetDefaultMargin() + (float)i * (control_height + GetDefaultMargin()));
 			slider->SetHeight(control_height);
@@ -83,6 +85,8 @@ void CPanel_Controls::Layout()
 
 			for (int n = control.slider_int.range_min; n <= control.slider_int.range_max; n += control.slider_int.step_size)
 				slider->AddSelection(CScrollSelection<int>(n, tsprintf("%d", n)));
+
+			slider->SetValue(control.slider_int.initial_value);
 
 			slider->Layout_FullWidth();
 			slider->SetTop(GetDefaultMargin() + (float)i * (control_height + GetDefaultMargin()));
@@ -146,4 +150,31 @@ void CPanel_Controls::IntSliderMovedCallback(const tstring& sArgs)
 	unsigned int selector = stoi(tokens[1]);
 
 	MonitorWindow()->GetViewback()->ControlCallback(control, m_selectors[selector].DowncastStatic<CScrollSelector<int>>()->GetSelectionValue());
+}
+
+void CPanel_Controls::ControlUpdated(size_t control_id, float f_value, int i_value)
+{
+	auto& controls = MonitorWindow()->GetViewback()->GetControls();
+
+	TAssert(control_id < controls.size());
+
+	auto the_real_control = m_selectors[control_id];
+
+	switch (controls[control_id].m_type)
+	{
+	case VB_CONTROL_SLIDER_FLOAT:
+	{
+		CScrollSelector<float>* slider = the_real_control.DowncastStatic<CScrollSelector<float>>();
+		if (!slider->IsMovingHandle())
+			slider->SetValue(f_value);
+		break;
+	}
+	case VB_CONTROL_SLIDER_INT:
+	{
+		CScrollSelector<int>* slider = the_real_control.DowncastStatic<CScrollSelector<int>>();
+		if (!slider->IsMovingHandle())
+			slider->SetValue(i_value);
+		break;
+	}
+	}
 }

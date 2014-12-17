@@ -17,6 +17,7 @@ public:
 	EVENT_CALLBACK(CPanelContainer, Channels);
 
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
+	glgui::CControl<class CPanel_Controls> GetControlsPanel();
 
 private:
 	glgui::CControl<class CPanel_Console> m_pPanelConsole;
