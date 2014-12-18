@@ -46,6 +46,8 @@ void CPanel_Controls::Layout()
 			button->Layout_FullWidth();
 			button->SetTop(GetDefaultMargin() + (float)i * (control_height + GetDefaultMargin()));
 			button->SetClickedListener(this, ButtonPressed, tsprintf("%d", i));
+
+			m_selectors.push_back(button);
 			break;
 		}
 
@@ -157,6 +159,7 @@ void CPanel_Controls::ControlUpdated(size_t control_id, float f_value, int i_val
 	auto& controls = MonitorWindow()->GetViewback()->GetControls();
 
 	TAssert(control_id < controls.size());
+	TAssert(control_id < m_selectors.size());
 
 	auto the_real_control = m_selectors[control_id];
 
