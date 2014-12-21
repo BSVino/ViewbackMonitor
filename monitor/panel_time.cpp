@@ -181,8 +181,8 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 			int iMinutes = iSeconds / 60;
 			iSeconds = iSeconds - iMinutes * 60;
 
-			int iHours = iMinutes / 24;
-			iMinutes = iMinutes - iHours * 24;
+			int iHours = iMinutes / 60;
+			iMinutes = iMinutes - iHours * 60;
 			sTime = tsprintf("%dh %dm %ds", iHours, iMinutes, iSeconds);
 		}
 
