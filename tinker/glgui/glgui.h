@@ -25,10 +25,10 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 
 // Not my favorite hack.
 #define EVENT_CALLBACK(type, pfn) \
-	void pfn##Callback(const tstring& sArgs); \
-	static void pfn(glgui::IEventListener* obj, const tstring& sArgs) \
+	void pfn##Callback(glgui::CBaseControl* activator, const tstring& sArgs); \
+	static void pfn(glgui::IEventListener* obj, glgui::CBaseControl* activator, const tstring& sArgs) \
 	{ \
-		((type*)obj)->pfn##Callback(sArgs); \
+		((type*)obj)->pfn##Callback(activator, sArgs); \
 	}
 
 namespace glgui
@@ -121,7 +121,7 @@ namespace glgui
 	class IEventListener
 	{
 	public:
-		typedef void (*Callback)(IEventListener*, const tstring& sArgs);
+		typedef void (*Callback)(IEventListener*, CBaseControl* activator, const tstring& sArgs);
 	};
 };
 

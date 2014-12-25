@@ -176,7 +176,7 @@ void CPanel_2D::Paint(float x, float y, float w, float h)
 	}
 }
 
-void CPanel_2D::ToggleVisibleCallback(const tstring& sArgs)
+void CPanel_2D::ToggleVisibleCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	unsigned int i = stoi(sArgs);
 

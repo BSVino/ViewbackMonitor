@@ -129,7 +129,7 @@ void CLabel::Paint(float x, float y, float w, float h)
 				if (MouseIsInside(oLine, oSection))
 				{
 					if (m_pSectionHoverListener)
-						m_pfnSectionHoverCallback(m_pSectionHoverListener, tsprintf("%d %d", i, j));
+						m_pfnSectionHoverCallback(m_pSectionHoverListener, this, tsprintf("%d %d", i, j));
 
 					if (glgui_showsections.GetBool())
 					{
@@ -285,7 +285,6 @@ void CLabel::GetAlignmentOffset(float flLineWidth, float, const tstring&, size_t
 		break;
 
 	case TA_BOTTOMCENTER:
-		TUnimplemented();
 		x = w/2 - lw/2;
 		y = h - m_flTotalHeight;
 		break;
@@ -449,7 +448,7 @@ bool CLabel::MousePressed(int, int, int)
 
 			if (MouseIsInside(oLine, oSection))
 			{
-				m_pfnLinkClickCallback(m_pLinkClickListener, oSection.m_sLink);
+				m_pfnLinkClickCallback(m_pLinkClickListener, this, oSection.m_sLink);
 				return true;
 			}
 		}

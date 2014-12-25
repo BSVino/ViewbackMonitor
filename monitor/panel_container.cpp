@@ -171,7 +171,7 @@ void CPanelContainer::SetMaximizedPanel(const glgui::CControl<CPanel_Base>& pPan
 	Layout();
 }
 
-void CPanelContainer::ShowGroupCallback(const tstring& sArgs)
+void CPanelContainer::ShowGroupCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	m_pGroupsButton->CloseMenu();
 
@@ -184,7 +184,7 @@ void CPanelContainer::ShowGroupCallback(const tstring& sArgs)
 	CChannelPanel::Get()->Layout();
 }
 
-void CPanelContainer::ChannelsCallback(const tstring& sArgs)
+void CPanelContainer::ChannelsCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	CChannelPanel::Create();
 }

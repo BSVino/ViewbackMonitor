@@ -275,7 +275,7 @@ namespace glgui
 	};
 
 	template <typename T>
-	inline void CTreeNodeObject<T>::VisibilityCallback(const tstring& sArgs)
+	inline void CTreeNodeObject<T>::VisibilityCallback(CBaseControl*, const tstring& sArgs)
 	{
 		m_pObject->SetVisible(!m_pObject->IsVisible());
 
@@ -283,7 +283,7 @@ namespace glgui
 	}
 
 	template <typename T>
-	inline void CTreeNodeObject<T>::EditCallback(const tstring& sArgs)
+	inline void CTreeNodeObject<T>::EditCallback(CBaseControl*, const tstring& sArgs)
 	{
 		m_pfnCallback(m_pObject, sArgs);
 	}

@@ -86,7 +86,7 @@ void CTextField::Paint(float x, float y, float w, float h)
 		}
 
 		if (fmod(CRootPanel::Get()->GetTime() - m_flBlinkTime, 1) < 0.5f)
-			glgui::CRootPanel::PaintRect(x + 4 + flCursor + m_flRenderOffset, y+3, 1, h-6, Color(200, 200, 200, 255), 1);
+			glgui::CRootPanel::PaintRect(x + 4 + flCursor + m_flRenderOffset, y+3, Application()->GetGUIScale(), h-6, Color(200, 200, 200, 255), 1);
 	}
 
 	Color clrFG = GetFGColor();
@@ -527,7 +527,7 @@ void CTextField::SetContentsChangedListener(IEventListener* pListener, IEventLis
 void CTextField::UpdateContentsChangedListener()
 {
 	if (m_pfnContentsChangedCallback)
-		m_pfnContentsChangedCallback(m_pContentsChangedListener, m_sContentsChangedArgs);
+		m_pfnContentsChangedCallback(m_pContentsChangedListener, this, m_sContentsChangedArgs);
 }
 
 void CTextField::FindRenderOffset()

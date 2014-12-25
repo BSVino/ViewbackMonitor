@@ -132,7 +132,7 @@ namespace glgui
 				{
 					m_iSelection = iSelection;
 					if (m_pSelectedListener)
-						m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
+						m_pfnSelectedCallback(m_pSelectedListener, this, m_sSelectedArgs);
 				}
 			}
 		}
@@ -191,7 +191,7 @@ namespace glgui
 				m_iSelection = SelectionByHandle();
 
 				if (m_pSelectedListener)
-					m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
+					m_pfnSelectedCallback(m_pSelectedListener, this, m_sSelectedArgs);
 			}
 
 			return true;
@@ -235,7 +235,7 @@ namespace glgui
 			m_iSelection = SelectionByHandle();
 
 			if (m_pSelectedListener)
-				m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
+				m_pfnSelectedCallback(m_pSelectedListener, this, m_sSelectedArgs);
 		}
 
 		bool IsMovingHandle()
@@ -283,7 +283,7 @@ namespace glgui
 			m_flHandlePositionGoal = m_flHandlePosition = ((float)GetWidth()/((float)m_aSelections.size()-1)*(float)m_iSelection)/GetWidth();
 
 			if (m_pSelectedListener)
-				m_pfnSelectedCallback(m_pSelectedListener, m_sSelectedArgs);
+				m_pfnSelectedCallback(m_pSelectedListener, this, m_sSelectedArgs);
 		}
 
 		void SetValue(T value)

@@ -27,12 +27,12 @@ void CPanel_Base::Layout()
 	BaseClass::Layout();
 }
 
-void CPanel_Base::MaximizeCallback(const tstring& sArgs)
+void CPanel_Base::MaximizeCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	MonitorWindow()->SetMaximizedPanel(this);
 }
 
-void CPanel_Base::MinimizeCallback(const tstring& sArgs)
+void CPanel_Base::MinimizeCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	MonitorWindow()->SetMaximizedPanel(nullptr);
 }

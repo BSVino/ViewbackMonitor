@@ -247,22 +247,22 @@ TRS CManipulatorTool::GetNewTRS()
 	return m_trsTransform;
 }
 
-void CManipulatorTool::TranslateModeCallback(const tstring&)
+void CManipulatorTool::TranslateModeCallback(glgui::CBaseControl*, const tstring&)
 {
 	SetTransfromType(MT_TRANSLATE);
 }
 
-void CManipulatorTool::RotateModeCallback(const tstring&)
+void CManipulatorTool::RotateModeCallback(glgui::CBaseControl*, const tstring&)
 {
 	SetTransfromType(MT_ROTATE);
 }
 
-void CManipulatorTool::ScaleModeCallback(const tstring&)
+void CManipulatorTool::ScaleModeCallback(glgui::CBaseControl*, const tstring&)
 {
 	SetTransfromType(MT_SCALE);
 }
 
-void CManipulatorTool::TransformLocalCallback(const tstring&)
+void CManipulatorTool::TransformLocalCallback(glgui::CBaseControl*, const tstring&)
 {
 	m_pTranslateGizmo->SetLocation(IGizmo::LOCATE_LOCAL);
 	m_pRotateGizmo->SetLocation(IGizmo::LOCATE_LOCAL);
@@ -272,7 +272,7 @@ void CManipulatorTool::TransformLocalCallback(const tstring&)
 	m_pTransformMenu->CloseMenu();
 }
 
-void CManipulatorTool::TransformWorldCallback(const tstring&)
+void CManipulatorTool::TransformWorldCallback(glgui::CBaseControl*, const tstring&)
 {
 	m_pTranslateGizmo->SetLocation(IGizmo::LOCATE_WORLD);
 	m_pRotateGizmo->SetLocation(IGizmo::LOCATE_WORLD);
@@ -282,7 +282,7 @@ void CManipulatorTool::TransformWorldCallback(const tstring&)
 	m_pTransformMenu->CloseMenu();
 }
 
-void CManipulatorTool::TransformViewCallback(const tstring&)
+void CManipulatorTool::TransformViewCallback(glgui::CBaseControl*, const tstring&)
 {
 	m_pTranslateGizmo->SetLocation(IGizmo::LOCATE_VIEW);
 	m_pRotateGizmo->SetLocation(IGizmo::LOCATE_VIEW);

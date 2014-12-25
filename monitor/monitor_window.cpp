@@ -188,6 +188,11 @@ CControl<CPanel_Console> CMonitorWindow::GetConsolePanel()
 	return m_pPanelContainer->GetConsolePanel();
 }
 
+CControl<CPanel_Controls> CMonitorWindow::GetControlsPanel()
+{
+	return m_pPanelContainer->GetControlsPanel();
+}
+
 void CMonitorWindow::SaveConfig()
 {
 	FILE* fp = tfopen(MonitorWindow()->GetAppDataDirectory("viewback.txt"), "w");

@@ -162,7 +162,7 @@ void CFileDialog::Layout()
 	BaseClass::Layout();
 }
 
-void CFileDialog::NewDirectoryCallback(const tstring&)
+void CFileDialog::NewDirectoryCallback(CBaseControl*, const tstring&)
 {
 	if (m_hDirectory->GetText() == m_sDirectory)
 		return;
@@ -188,26 +188,26 @@ void CFileDialog::NewDirectoryCallback(const tstring&)
 	}
 }
 
-void CFileDialog::ExploreCallback(const tstring&)
+void CFileDialog::ExploreCallback(CBaseControl*, const tstring&)
 {
 	OpenExplorer(m_sDirectory);
 }
 
-void CFileDialog::FileSelectedCallback(const tstring&)
+void CFileDialog::FileSelectedCallback(CBaseControl*, const tstring&)
 {
 	m_hNewFile->SetText("");
 
 	m_hSelect->SetEnabled(!!m_hFileList->GetSelectedNode());
 }
 
-void CFileDialog::NewFileChangedCallback(const tstring&)
+void CFileDialog::NewFileChangedCallback(CBaseControl*, const tstring&)
 {
 	m_hFileList->Unselect();
 
 	m_hSelect->SetEnabled(m_hNewFile->GetText().length() > 0);
 }
 
-void CFileDialog::SelectCallback(const tstring&)
+void CFileDialog::SelectCallback(CBaseControl*, const tstring&)
 {
 	tstring sFile = GetFile();
 	if (sFile.find(T_DIR_SEP"..") == sFile.length() - 3)
@@ -227,18 +227,18 @@ void CFileDialog::SelectCallback(const tstring&)
 	FileConfirmed(sFile);
 }
 
-void CFileDialog::CloseCallback(const tstring&)
+void CFileDialog::CloseCallback(CBaseControl*, const tstring&)
 {
 	SetVisible(false);
 }
 
-void CFileDialog::FileConfirmedCallback(const tstring& sArgs)
+void CFileDialog::FileConfirmedCallback(CBaseControl*, const tstring& sArgs)
 {
-	FileSelectedCallback(sArgs);
-	SelectCallback(sArgs);
+	FileSelectedCallback(NULL, sArgs);
+	SelectCallback(NULL, sArgs);
 }
 
-void CFileDialog::FileTypeCallback(const tstring& sArgs)
+void CFileDialog::FileTypeCallback(CBaseControl*, const tstring& sArgs)
 {
 	tvector<tstring> asTokens;
 	strtok(sArgs, asTokens);
@@ -254,7 +254,7 @@ void CFileDialog::FileConfirmed(const tstring& sFile)
 	SetVisible(false);
 
 	if (m_pSelectListener && m_pfnSelectCallback)
-		m_pfnSelectCallback(m_pSelectListener, sFile);
+		m_pfnSelectCallback(m_pSelectListener, this, sFile);
 }
 
 void CFileDialog::ShowOpenDialog(const tstring& sDirectory, const tstring& sExtension, IEventListener* pListener, IEventListener::Callback pfnCallback)

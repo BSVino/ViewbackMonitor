@@ -24,6 +24,8 @@ namespace glgui
 {
 	class CButton : public CLabel
 	{
+		DECLARE_CLASS(CButton, CLabel);
+
 		friend class CRootPanel;
 		friend class CSlidingPanel;
 
@@ -53,6 +55,9 @@ namespace glgui
 		virtual bool	Pop(bool bRegister = true, bool bRevert = false);
 		virtual void	SetState(bool bDown, bool bRegister = true);
 		virtual bool	GetState() {return m_bDown;};
+
+		virtual void    OnClicked() {};
+		virtual void    OnUnclicked() {};
 
 		virtual void	SetClickedListener(IEventListener* pListener, IEventListener::Callback pfnCallback, const tstring& sArgs="");
 		// Toggle buttons only

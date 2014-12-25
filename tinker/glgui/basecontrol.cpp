@@ -586,7 +586,7 @@ bool CBaseControl::IsCursorListener()
 void CBaseControl::CursorIn()
 {
 	if (m_pfnCursorInCallback)
-		m_pfnCursorInCallback(m_pCursorInListener, "");
+		m_pfnCursorInCallback(m_pCursorInListener, this, "");
 
 	m_flMouseInTime = CRootPanel::Get()->GetTime();
 }
@@ -594,7 +594,7 @@ void CBaseControl::CursorIn()
 void CBaseControl::CursorOut()
 {
 	if (m_pfnCursorOutCallback)
-		m_pfnCursorOutCallback(m_pCursorOutListener, "");
+		m_pfnCursorOutCallback(m_pCursorOutListener, this, "");
 
 	m_flMouseInTime = 0;
 }

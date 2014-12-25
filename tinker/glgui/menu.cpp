@@ -270,7 +270,7 @@ void CMenu::SetMenuListener(IEventListener* pListener, IEventListener::Callback 
 	m_pMenuListener = pListener;
 }
 
-void CMenu::OpenCallback(const tstring&)
+void CMenu::OpenCallback(CBaseControl*, const tstring&)
 {
 	CRootPanel::Get()->GetMenuBar()->SetActive(this);
 
@@ -281,18 +281,18 @@ void CMenu::OpenCallback(const tstring&)
 	}
 }
 
-void CMenu::CloseCallback(const tstring&)
+void CMenu::CloseCallback(CBaseControl*, const tstring&)
 {
 	if (m_hMenu->GetControls().size())
 		CloseMenu();
 }
 
-void CMenu::ClickedCallback(const tstring& sArgs)
+void CMenu::ClickedCallback(CBaseControl*, const tstring& sArgs)
 {
 	CRootPanel::Get()->GetMenuBar()->SetActive(NULL);
 
 	if (m_pMenuListener)
-		m_pfnMenuCallback(m_pMenuListener, sArgs);
+		m_pfnMenuCallback(m_pMenuListener, this, sArgs);
 }
 
 void CMenu::OpenMenu()

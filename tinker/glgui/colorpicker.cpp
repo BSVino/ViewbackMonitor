@@ -45,7 +45,7 @@ void CColorPickerButton::Paint(float x, float y, float w, float h)
 	CBaseControl::PaintRect(x + 3, y + 3, w - 6, h - 6, GetColorPicker()->GetColorVector());
 }
 
-void CColorPickerButton::OpenCallback(const tstring&)
+void CColorPickerButton::OpenCallback(CBaseControl*, const tstring&)
 {
 	RootPanel()->AddControl(m_pColorPicker, true);
 
@@ -64,7 +64,7 @@ void CColorPickerButton::OpenCallback(const tstring&)
 	m_pColorPicker->SetVisible(true);
 }
 
-void CColorPickerButton::CloseCallback(const tstring&)
+void CColorPickerButton::CloseCallback(CBaseControl*, const tstring&)
 {
 	m_pColorPicker.DowncastStatic<CColorPicker>()->Close();
 
@@ -205,7 +205,7 @@ bool CColorPicker::Update(int x, int y)
 		m_hValue->SetText(tsprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
 
 		if (m_pfnChangedCallback)
-			m_pfnChangedCallback(m_pChangedListener, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
+			m_pfnChangedCallback(m_pChangedListener, this, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
 
 		return true;
 	}
@@ -230,12 +230,12 @@ bool CColorPicker::Update(int x, int y)
 	m_hValue->SetText(tsprintf("%i %i %i", m_clrRGB.r(), m_clrRGB.g(), m_clrRGB.b()));
 
 	if (m_pfnChangedCallback)
-		m_pfnChangedCallback(m_pChangedListener, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
+		m_pfnChangedCallback(m_pChangedListener, this, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
 
 	return true;
 }
 
-void CColorPicker::ValueChangedCallback(const tstring&)
+void CColorPicker::ValueChangedCallback(CBaseControl*, const tstring&)
 {
 	tvector<tstring> asArgs;
 	strtok(m_hValue->GetText(), asArgs);
@@ -250,7 +250,7 @@ void CColorPicker::ValueChangedCallback(const tstring&)
 	m_clrRGB.GetHSL(m_flHue, m_flSaturation, m_flLightness);
 
 	if (m_pfnChangedCallback)
-		m_pfnChangedCallback(m_pChangedListener, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
+		m_pfnChangedCallback(m_pChangedListener, this, tsprintf("%f %f %f", GetColorVector().x, GetColorVector().y, GetColorVector().z));
 }
 
 void CColorPicker::Close()

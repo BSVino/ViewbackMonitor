@@ -274,12 +274,12 @@ void CMovablePanel::SetClearBackground(bool bClearBackground)
 	}
 }
 
-void CMovablePanel::CloseWindowCallback(const tstring&)
+void CMovablePanel::CloseWindowCallback(CBaseControl*, const tstring&)
 {
 	SetVisible(false);
 }
 
-void CMovablePanel::MinimizeWindowCallback(const tstring&)
+void CMovablePanel::MinimizeWindowCallback(CBaseControl*, const tstring&)
 {
 	Minimize();
 }

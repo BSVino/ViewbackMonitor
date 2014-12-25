@@ -261,7 +261,7 @@ bool CConsole::CharPressed(int iKey)
 	return BaseClass::CharPressed(iKey);
 }
 
-void CConsole::CommandChangedCallback(const tstring& /*sArgs*/)
+void CConsole::CommandChangedCallback(CBaseControl*, const tstring& /*sArgs*/)
 {
 	tstring sInput = m_hInput->GetText();
 	if (sInput.find(' ') != ~0)

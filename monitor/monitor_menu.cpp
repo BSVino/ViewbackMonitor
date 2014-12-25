@@ -57,39 +57,39 @@ void CMonitorMenu::Think()
 		SetVisible(false);
 }
 
-void CMonitorMenu::ConsoleCallback(const tstring& sArgs)
+void CMonitorMenu::ConsoleCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	Application()->ToggleConsole();
 	CloseMenu();
 }
 
-void CMonitorMenu::ViewServersCallback(const tstring& sArgs)
+void CMonitorMenu::ViewServersCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	CServerListPanel::Create();
 
 	CloseMenu();
 }
 
-void CMonitorMenu::ManualConnectCallback(const tstring& sArgs)
+void CMonitorMenu::ManualConnectCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	CManualConnectPanel::Create();
 
 	CloseMenu();
 }
 
-void CMonitorMenu::FindServerCallback(const tstring& sArgs)
+void CMonitorMenu::FindServerCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	MonitorWindow()->GetViewback()->FindServer();
 	CloseMenu();
 }
 
-void CMonitorMenu::DisconnectCallback(const tstring& sArgs)
+void CMonitorMenu::DisconnectCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	MonitorWindow()->GetViewback()->Disconnect();
 	CloseMenu();
 }
 
-void CMonitorMenu::QuitCallback(const tstring& sArgs)
+void CMonitorMenu::QuitCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	Application()->Close();
 	CloseMenu();
@@ -177,12 +177,12 @@ void CServerListPanel::Think()
 	}
 }
 
-void CServerListPanel::RefreshCallback(const tstring& sArgs)
+void CServerListPanel::RefreshCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	Layout();
 }
 
-void CServerListPanel::ConnectCallback(const tstring& sArgs)
+void CServerListPanel::ConnectCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	tvector<tstring> tokens;
 	tstrtok(sArgs, tokens, ":");
@@ -265,7 +265,7 @@ void CManualConnectPanel::Layout()
 	m_pConnect->Layout_CenterHorizontal();
 }
 
-void CManualConnectPanel::ConnectCallback(const tstring& sArgs)
+void CManualConnectPanel::ConnectCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	MonitorWindow()->GetViewback()->Connect(m_pIP->GetText().c_str(), stoi(m_pPort->GetText()));
 
@@ -347,7 +347,7 @@ void CChannelPanel::Layout()
 	BaseClass::Layout();
 }
 
-void CChannelPanel::ChannelOnCallback(const tstring& sArgs)
+void CChannelPanel::ChannelOnCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	auto& aChannels = Viewback()->GetChannels();
 
@@ -363,7 +363,7 @@ void CChannelPanel::ChannelOnCallback(const tstring& sArgs)
 	MonitorWindow()->GetPanelContainer()->Layout();
 }
 
-void CChannelPanel::ChannelOffCallback(const tstring& sArgs)
+void CChannelPanel::ChannelOffCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	auto& aChannels = Viewback()->GetChannels();
 
@@ -427,7 +427,7 @@ void CGroupPanel::Layout()
 	BaseClass::Layout();
 }
 
-void CGroupPanel::ActivateGroupCallback(const tstring& sArgs)
+void CGroupPanel::ActivateGroupCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	auto& aGroups = Viewback()->GetGroups();
 

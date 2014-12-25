@@ -512,7 +512,7 @@ void CPanel_Time::CursorMoved(int mx, int my, int dx, int dy)
 	}
 }
 
-void CPanel_Time::ToggleVisibleCallback(const tstring& sArgs)
+void CPanel_Time::ToggleVisibleCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
 	unsigned int i = stoi(sArgs);
 
