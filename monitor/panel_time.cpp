@@ -191,7 +191,7 @@ void CPanel_Time::Paint(float x, float y, float w, float h)
 		if (flX < x)
 			continue;
 
-		CBaseControl::PaintRect(flX, y, 1, h, Color(128, 128, 128, 255));
+		CBaseControl::PaintRect(flX, y, Application()->GetGUIScale(), h, Color(128, 128, 128, 255));
 	}
 
 	auto& oChannels = MonitorWindow()->GetViewback()->GetChannels();

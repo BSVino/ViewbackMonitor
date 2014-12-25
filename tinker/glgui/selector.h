@@ -21,6 +21,8 @@ LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON A
 #include "rootpanel.h"
 #include "panel.h"
 
+#include <tinker/application.h>
+
 namespace glgui
 {
 	template <typename T>
@@ -151,17 +153,17 @@ namespace glgui
 			flLeft += m_hLabel->GetWidth();
 			flWidth -= m_hLabel->GetWidth();
 
-			CRootPanel::PaintRect(flLeft, y+h/2, flWidth, 1, Color(200, 200, 200, 255));
+			CRootPanel::PaintRect(flLeft, y+h/2, flWidth, Application()->GetGUIScale(), Color(200, 200, 200, 255));
 
 			if (m_aSelections.size() < 2)
 			{
-				CRootPanel::PaintRect(flLeft, y+h/2-5, 1, 10, Color(200, 200, 200, 255));
-				CRootPanel::PaintRect(flLeft + flWidth, y+h/2-5, 1, 10, Color(200, 200, 200, 255));
+				CRootPanel::PaintRect(flLeft, y + h / 2 - 5, Application()->GetGUIScale(), 10, Color(200, 200, 200, 255));
+				CRootPanel::PaintRect(flLeft + flWidth, y + h / 2 - 5, Application()->GetGUIScale(), 10, Color(200, 200, 200, 255));
 			}
 			else
 			{
 				for (size_t i = 0; i < m_aSelections.size(); i++)
-					CRootPanel::PaintRect(flLeft + flWidth*(int)i/((int)m_aSelections.size()-1), y+h/2-5, 1, 10, Color(200, 200, 200, 255));
+					CRootPanel::PaintRect(flLeft + flWidth*(int)i / ((int)m_aSelections.size() - 1), y + h / 2 - 5, Application()->GetGUIScale(), 10, Color(200, 200, 200, 255));
 			}
 
 			CRootPanel::PaintRect(HandleX()+2, HandleY()+2, HANDLE_SIZE-4, HANDLE_SIZE-4, g_clrBoxHi, 2);
