@@ -46,6 +46,8 @@ namespace glgui
 		virtual bool				MouseReleased(int code, int mx, int my);
 		virtual bool				MouseDoubleClicked(int code, int mx, int my);
 		virtual void				CursorMoved(int mx, int my);
+		void          SetPressedControl(CBaseControl* pPressed);
+		CBaseControl* GetPressedControl();
 
 		// Dragon Drop stuff is in this class, because this is always the
 		// top-level panel so all the messages go through it first.
@@ -108,6 +110,7 @@ namespace glgui
 
 		// If the mouse is released over nothing, then try popping this button.
 		CControl<CButton>			m_hButtonDown;
+		CControl<CBaseControl>      m_hPressedControl;
 
 		CControlHandle				m_hFocus;
 

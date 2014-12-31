@@ -29,6 +29,7 @@ set (TINKER_GLGUI_SOURCES
 	glgui/slidingpanel.cpp
 	glgui/tree.cpp
 	glgui/textfield.cpp
+	glgui/unboundselector.cpp
 )
 
 set (TINKER_RENDERER_SOURCES

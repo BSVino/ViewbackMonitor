@@ -135,7 +135,11 @@ bool CPanel::MousePressed(int code, int mx, int my)
 			my < y + h)
 		{
 			if (pControl->MousePressed(code, mx, my))
+			{
+				if (!RootPanel()->GetPressedControl())
+					RootPanel()->SetPressedControl(pControl);
 				return true;
+			}
 		}
 	}
 	return false;
@@ -150,6 +154,10 @@ bool CPanel::MouseReleased(int code, int mx, int my)
 		CBaseControl* pControl = m_apControls[i];
 
 		if (!pControl->IsVisible())
+			continue;
+
+		// the previously pressed control has already been sent this message, skip it.
+		if (pControl == RootPanel()->GetPressedControl())
 			continue;
 
 		float x, y, w, h;

@@ -6,6 +6,7 @@
 #include <glgui/textfield.h>
 #include <tinker/profiler.h>
 #include <renderer/renderingcontext.h>
+#include <glgui/unboundselector.h>
 
 #include "monitor_window.h"
 
@@ -54,6 +55,24 @@ public:
 				command->SetText(controls[m_control].m_override_command);
 			else
 				command->SetText(controls[m_control].m_command);
+
+			break;
+		}
+
+		case VB_CONTROL_SLIDER_FLOAT:
+		{
+			SetSize(100, 200);
+
+			CControl<CLabel> min_label = AddControl(new CLabel("Minimum"));
+			min_label->SetTop(GetDefaultMargin() + (float)0 * (label_height + control_height + GetDefaultMargin()));
+			min_label->Layout_FullWidth();
+			min_label->SetAlign(CLabel::TA_BOTTOMCENTER);
+
+			CControl<CTextField> min = AddControl(new CTextField());
+
+			min->SetTop(GetDefaultMargin() + (float)0 * (label_height + control_height + GetDefaultMargin()) + label_height);
+			min->Layout_FullWidth();
+			min->SetContentsChangedListener(this, CommandChanged);
 
 			break;
 		}
@@ -176,22 +195,11 @@ void CPanel_Controls::Layout()
 
 		case VB_CONTROL_SLIDER_FLOAT:
 		{
-			CControl<CScrollSelector<float>> slider = AddControl(new CScrollSelector<float>(control.m_name));
+			CControl<CUnboundSelector> slider = AddControl(new CUnboundSelector(control.m_name));
 
-			if (control.slider_float.steps >= 2)
-			{
-				for (int n = 0; n < control.slider_float.steps; n++)
-				{
-					float f = RemapVal((float)n, 0.0f, (float)control.slider_float.steps - 1, control.slider_float.range_min, control.slider_float.range_max);
-					slider->AddSelection(CScrollSelection<float>(f, pretty_float(f, 2)));
-				}
-			}
-			else
-			{
-				float min = control.slider_float.range_min;
-				float max = control.slider_float.range_max;
-				slider->SetContinuousRange(CScrollSelection<float>(min, pretty_float(min, 2)), CScrollSelection<float>(max, pretty_float(max, 2)), &ValuePrint);
-			}
+			float min = control.slider_float.range_min;
+			float max = control.slider_float.range_max;
+			slider->SetRange(min, max, &ValuePrint);
 
 			slider->SetValue(control.slider_float.initial_value);
 
@@ -263,7 +271,13 @@ void CPanel_Controls::FloatSliderMovedCallback(glgui::CBaseControl*, const tstri
 	unsigned int control = stoi(tokens[0]);
 	unsigned int selector = stoi(tokens[1]);
 
-	MonitorWindow()->GetViewback()->ControlCallback(control, m_selectors[selector].DowncastStatic<CScrollSelector<float>>()->GetSelectionValue());
+	float value;
+	if (dynamic_cast<CScrollSelector<float>*>(m_selectors[selector].Get()))
+		value = m_selectors[selector].DowncastStatic<CScrollSelector<float>>()->GetSelectionValue();
+	else
+		value = m_selectors[selector].DowncastStatic<CUnboundSelector>()->GetValue();
+
+	MonitorWindow()->GetViewback()->ControlCallback(control, value);
 }
 
 void CPanel_Controls::IntSliderMovedCallback(glgui::CBaseControl*, const tstring& sArgs)

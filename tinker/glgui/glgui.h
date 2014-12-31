@@ -125,4 +125,10 @@ namespace glgui
 	};
 };
 
+#ifdef T_PLATFORM_TOUCH
+#define HANDLE_SIZE 30
+#else
+#define HANDLE_SIZE 12
+#endif
+
 #endif

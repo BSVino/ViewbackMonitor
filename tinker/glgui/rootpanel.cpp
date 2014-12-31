@@ -290,6 +290,8 @@ bool CRootPanel::MousePressed(int code, int mx, int my, bool bInsideControl)
 	m_iMX = mx;
 	m_iMY = my;
 
+	RootPanel()->SetPressedControl(NULL);
+
 	if (CPanel::MousePressed(code, mx, my))
 		return true;
 
@@ -333,6 +335,11 @@ bool CRootPanel::MouseReleased(int code, int mx, int my)
 			return true;
 	}
 
+	if (GetPressedControl())
+	{
+		GetPressedControl()->MouseReleased(code, mx, my);
+	}
+
 	bool bUsed = CPanel::MouseReleased(code, mx, my);
 
 	if (!bUsed)
@@ -342,7 +349,19 @@ bool CRootPanel::MouseReleased(int code, int mx, int my)
 //			return m_pButtonDown->Pop(false, true);
 	}
 
+	SetPressedControl(NULL);
+
 	return bUsed;
+}
+
+void CRootPanel::SetPressedControl(CBaseControl* pPressed)
+{
+	m_hPressedControl = pPressed;
+}
+
+CBaseControl* CRootPanel::GetPressedControl()
+{
+	return m_hPressedControl;
 }
 
 bool CRootPanel::MouseDoubleClicked(int code, int mx, int my)

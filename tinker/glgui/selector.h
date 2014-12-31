@@ -137,12 +137,6 @@ namespace glgui
 			}
 		}
 
-#ifdef T_PLATFORM_TOUCH
-#define HANDLE_SIZE 30
-#else
-#define HANDLE_SIZE 12
-#endif
-
 		virtual void Paint(float x, float y, float w, float h)
 		{
 			//CRootPanel::PaintRect(x, y, w, h, g_clrBoxHi);
@@ -206,26 +200,6 @@ namespace glgui
 			}
 
 			return CPanel::MouseReleased(code, mx, my);
-		}
-
-		virtual void CursorOut()
-		{
-			if (m_bMovingHandle)
-			{
-				int mx, my;
-				CRootPanel::GetFullscreenMousePos(mx, my);
-
-				float x, y, w, h;
-				GetAbsDimensions(x, y, w, h);
-
-				x += m_hLabel->GetWidth();
-				w -= m_hLabel->GetWidth();
-
-				// If the mouse went out of the left or right side, make sure we're all the way to that side.
-				m_flHandlePositionGoal = RemapValClamped((float)mx, (float)x, (float)(x + w), 0.0f, 1.0f);
-
-				DoneMovingHandle();
-			}
 		}
 
 		virtual void DoneMovingHandle()
