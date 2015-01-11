@@ -20,6 +20,9 @@ CPanel_Time::CPanel_Time()
 
 void CPanel_Time::RegistrationUpdate()
 {
+	for (size_t i = 0; i < m_apLabels.size(); i++)
+		RemoveControl(m_apLabels[i]);
+
 	m_apLabels.clear();
 	m_aiDataLabels.clear();
 
