@@ -82,6 +82,9 @@ void CUnboundSelector::Think()
 		w -= m_label->GetWidth();
 
 		m_handle.m_goal = RemapVal((float)mx, (float)x, (float)(x + w), 0.0f, 1.0f);
+
+		if (m_selected_listener)
+			m_selected_callback(m_selected_listener, this, m_selected_args);
 	}
 
 	m_handle.Think((float)CRootPanel::Get()->GetFrameTime());

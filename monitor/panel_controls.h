@@ -27,4 +27,6 @@ public:
 
 private:
 	tvector<glgui::CControlHandle> m_selectors;
+
+	double m_next_send;
 };

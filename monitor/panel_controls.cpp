@@ -149,6 +149,7 @@ public:
 
 CPanel_Controls::CPanel_Controls()
 {
+	m_next_send = 0;
 }
 
 void CPanel_Controls::RegistrationUpdate()
@@ -262,6 +263,11 @@ void CPanel_Controls::ButtonPressedCallback(glgui::CBaseControl*, const tstring&
 
 void CPanel_Controls::FloatSliderMovedCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
+	if (RootPanel()->GetTime() < m_next_send)
+		return;
+
+	m_next_send = RootPanel()->GetTime() + 0.2f; // Limit network activity.
+
 	tvector<tstring> tokens;
 	tstrtok(sArgs, tokens);
 
