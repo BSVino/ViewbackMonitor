@@ -37,16 +37,9 @@ void CPanelContainer::Setup()
 
 	m_pViewbackButton = AddControl(new CMonitorMenu(false));
 	m_pViewbackButton->SetTooltip("Options");
-	m_pChannelsButton = AddControl(new CPictureButton("Channels"));
-	m_pChannelsButton->SetTooltip("Channels");
-	m_pChannelsButton->SetClickedListener(this, Channels);
-	m_pGroupsButton = AddControl(new CMenu("Groups"));
-	m_pGroupsButton->SetTooltip("Groups");
 
-	CTextureSheet oSheet("materials/buttons.txt");
-
-	m_pChannelsButton->SetSheetTexture(oSheet.GetSheet("Channels"), oSheet.GetArea("Channels"), oSheet.GetSheetWidth("Channels"), oSheet.GetSheetHeight("Channels"));
-	m_pGroupsButton->SetSheetTexture(oSheet.GetSheet("Groups"), oSheet.GetArea("Groups"), oSheet.GetSheetWidth("Groups"), oSheet.GetSheetHeight("Groups"));
+	m_pProfilesButton = AddControl(new CMenu("Profiles"));
+	m_pProfilesButton->SetTooltip("Profiles");
 
 	Layout();
 }
@@ -62,14 +55,12 @@ void CPanelContainer::RegistrationUpdate()
 		pPanelBase->RegistrationUpdate();
 	}
 
-	m_pGroupsButton->ClearSubmenus();
+	m_pProfilesButton->ClearSubmenus();
 
-	const auto& aGroups = Viewback()->GetGroups();
+	const auto& aProfiles = Viewback()->GetProfiles();
 
-	for (auto& oGroup : aGroups)
-		m_pGroupsButton->AddSubmenu(oGroup.m_sName.c_str(), this, ShowGroup);
-
-	CChannelPanel::Get()->RegistrationUpdate();
+	for (auto& oProfile : aProfiles)
+		m_pProfilesButton->AddSubmenu(oProfile.m_name.c_str(), this, ShowProfile);
 
 	Layout();
 }
@@ -131,12 +122,10 @@ void CPanelContainer::Layout()
 		eOpen = MENUOPEN_SIDE;
 
 	m_pViewbackButton->SetMenuOpen(eOpen);
-	m_pGroupsButton->SetMenuOpen(eOpen);
+	m_pProfilesButton->SetMenuOpen(eOpen);
 
 	tvector<CButton*> apButtons;
 	apButtons.push_back(m_pViewbackButton);
-	apButtons.push_back(m_pChannelsButton);
-	apButtons.push_back(m_pGroupsButton);
 
 	if (MonitorWindow()->ButtonPanelSide())
 	{
@@ -145,6 +134,10 @@ void CPanelContainer::Layout()
 			apButtons[i]->SetSize(MonitorWindow()->ButtonPanelSize(), MonitorWindow()->ButtonPanelSize());
 			apButtons[i]->SetPos(0, MonitorWindow()->ButtonPanelSize() * i);
 		}
+
+		m_pProfilesButton->SetSize(MonitorWindow()->ButtonPanelSize(), 40);
+		m_pProfilesButton->SetLeft(0);
+		m_pProfilesButton->SetTop(GetHeight() / 2 - m_pProfilesButton->GetHeight() / 2);
 	}
 	else
 	{
@@ -153,7 +146,14 @@ void CPanelContainer::Layout()
 			apButtons[i]->SetSize(MonitorWindow()->ButtonPanelSize(), MonitorWindow()->ButtonPanelSize());
 			apButtons[i]->SetPos(MonitorWindow()->ButtonPanelSize() * i, 0);
 		}
+
+		m_pProfilesButton->SetSize(100, 40);
+		m_pProfilesButton->SetTop(0);
+		m_pProfilesButton->Layout_CenterHorizontal();
 	}
+
+	if (Viewback()->GetActiveProfile() < Viewback()->GetProfiles().size())
+		m_pProfilesButton->SetText(Viewback()->GetProfiles()[Viewback()->GetActiveProfile()].m_name);
 
 	BaseClass::Layout();
 }
@@ -171,22 +171,17 @@ void CPanelContainer::SetMaximizedPanel(const glgui::CControl<CPanel_Base>& pPan
 	Layout();
 }
 
-void CPanelContainer::ShowGroupCallback(glgui::CBaseControl*, const tstring& sArgs)
+void CPanelContainer::ShowProfileCallback(glgui::CBaseControl*, const tstring& sArgs)
 {
-	m_pGroupsButton->CloseMenu();
+	m_pProfilesButton->CloseMenu();
 
-	int iGroup = stoi(sArgs);
+	int iProfile = stoi(sArgs);
 
-	Viewback()->ActivateGroup(iGroup);
+	Viewback()->ActivateProfile(iProfile);
+	if ((size_t)iProfile < Viewback()->GetProfiles().size())
+		m_pProfilesButton->SetText(Viewback()->GetProfiles()[iProfile].m_name);
 
 	Layout();
-
-	CChannelPanel::Get()->Layout();
-}
-
-void CPanelContainer::ChannelsCallback(glgui::CBaseControl*, const tstring& sArgs)
-{
-	CChannelPanel::Create();
 }
 
 glgui::CControl<class CPanel_Console> CPanelContainer::GetConsolePanel()

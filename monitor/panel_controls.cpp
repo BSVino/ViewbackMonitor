@@ -176,6 +176,9 @@ void CPanel_Controls::Layout()
 	{
 		auto& control = controls[i];
 
+		if (!control.m_visible)
+			continue;
+
 		CControl<CEditButton> editbutton = AddControl(new CEditButton(m_selectors.size()));
 		editbutton->Layout();
 		editbutton->SetTop(GetDefaultMargin()*1.5f + (float)i * (control_height + GetDefaultMargin()));

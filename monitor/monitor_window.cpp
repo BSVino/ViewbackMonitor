@@ -138,7 +138,12 @@ void CMonitorWindow::RegistrationUpdate()
 	m_pPanelContainer->RegistrationUpdate();
 
 	if (GetViewback()->HasConnection())
-		CGroupPanel::Create();
+	{
+		Viewback()->ActivateProfile(0);
+
+		if (m_pPanelContainer)
+			m_pPanelContainer->Layout();
+	}
 	else
 		CServerListPanel::Create();
 }

@@ -13,8 +13,7 @@ public:
 
 	void SetMaximizedPanel(const glgui::CControl<class CPanel_Base>& pPanel);
 
-	EVENT_CALLBACK(CPanelContainer, ShowGroup);
-	EVENT_CALLBACK(CPanelContainer, Channels);
+	EVENT_CALLBACK(CPanelContainer, ShowProfile);
 
 	glgui::CControl<class CPanel_Console> GetConsolePanel();
 	glgui::CControl<class CPanel_Controls> GetControlsPanel();
@@ -28,6 +27,6 @@ private:
 	glgui::CControl<class CPanel_Base>    m_pMaximizedPanel;
 
 	glgui::CControl<glgui::CMenu> m_pViewbackButton;
-	glgui::CControl<glgui::CPictureButton> m_pChannelsButton;
-	glgui::CControl<glgui::CMenu> m_pGroupsButton;
+
+	glgui::CControl<glgui::CMenu> m_pProfilesButton;
 };
