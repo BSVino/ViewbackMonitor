@@ -24,19 +24,10 @@ Area: Viewback
 	h: 120
 }
 
-Area: Channels
+Area: Plus
 {
 	x: 0
 	y: 120
-	w: 120
-	h: 120
+	w: 72
+	h: 72
 }
-
-Area: Groups
-{
-	x: 120
-	y: 120
-	w: 120
-	h: 120
-}
-

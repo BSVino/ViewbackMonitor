@@ -4,8 +4,11 @@
 #include <glgui/rootpanel.h>
 #include <tinker/profiler.h>
 #include <renderer/renderingcontext.h>
+#include <glgui/picturebutton.h>
+#include <textures/texturesheet.h>
 
 #include "monitor_window.h"
+#include "monitor_menu.h"
 
 using namespace glgui;
 
@@ -16,6 +19,12 @@ CPanel_Time::CPanel_Time()
 	m_flShowTime = 5;
 	m_flFastForwardStartTime = 0;
 	m_flFastForwardFromTime = 0;
+
+	m_add = AddControl(new CPictureButton("Add"));
+	CTextureSheet oSheet("materials/buttons.txt");
+	m_add->SetSheetTexture(oSheet.GetSheet("Plus"), oSheet.GetArea("Plus"), oSheet.GetSheetWidth("Plus"), oSheet.GetSheetHeight("Plus"));
+	m_add->SetClickedListener(this, AddChannel);
+	m_add->SetSize(20, 20);
 }
 
 void CPanel_Time::RegistrationUpdate()
@@ -113,6 +122,8 @@ void CPanel_Time::Layout()
 
 		flYPos += m_apLabels[iLabel]->GetHeight() + 10;
 	}
+
+	m_add->SetPos(20, flYPos);
 }
 
 double CPanel_Time::GetCurrentViewTime()
@@ -515,21 +526,56 @@ void CPanel_Time::CursorMoved(int mx, int my, int dx, int dy)
 	}
 }
 
-void CPanel_Time::ToggleVisibleCallback(glgui::CBaseControl*, const tstring& sArgs)
+void CPanel_Time::ToggleVisibleCallback(glgui::CBaseControl* clicked, const tstring& sArgs)
 {
-	unsigned int i = stoi(sArgs);
+	FRect dimensions = clicked->GetAbsDimensions();
+	float margin = GetParent()->GetDefaultMargin();
 
-	auto& aMeta = MonitorWindow()->GetViewback()->GetMeta();
-
-	if (i < 0)
+	if (m_modify_panel.Get() && m_modify_panel->GetWidth() > 0 && m_modify_panel->m_control == atoi(sArgs.c_str()))
+	{
+		m_modify_panel->SetDimensionsAnimate(FRect(dimensions.x + dimensions.w + margin, dimensions.y, 0, 0), 0.1f);
 		return;
+	}
 
-	if (i >= aMeta.size())
-		return;
+	if (!m_modify_panel)
+		m_modify_panel = RootPanel()->AddControl(new CModifyChannelPanel(atoi(sArgs.c_str())), true);
 
-	aMeta[i].m_bVisible = !aMeta[i].m_bVisible;
-
-	Layout();
+	m_modify_panel->SetPos(dimensions.x + dimensions.w + margin, dimensions.y);
+	m_modify_panel->SetSize(0, 0);
+	m_modify_panel->SetDimensionsAnimate(FRect(dimensions.x + dimensions.w + margin, dimensions.y, 100, 100), 0.1f);
+	m_modify_panel->Layout();
+	m_modify_panel->m_control = atoi(sArgs.c_str());
 }
 
+void CPanel_Time::AddChannelCallback(glgui::CBaseControl*, const tstring& sArgs)
+{
+	CAddSomethingPanel::Create();
+}
+
+void CModifyChannelPanel::Layout()
+{
+	ClearControls();
+
+	SetScissoring(true);
+
+	float margin = GetDefaultMargin();
+	float label_height = 20;
+	float control_height = 30;
+
+	CControl<CButton> remove_button = AddControl(new CButton("Remove"));
+	remove_button->SetClickedListener(this, RemoveChannel, tsprintf("%d", m_control));
+	remove_button->Layout_FullWidth();
+
+	BaseClass::Layout();
+}
+
+void CModifyChannelPanel::RemoveChannelCallback(glgui::CBaseControl*, const tstring& sArgs)
+{
+	Viewback()->Profile_RemoveChannel(atoi(sArgs.c_str()));
+
+	FRect dimensions = GetAbsDimensions();
+	float margin = GetParent()->GetDefaultMargin();
+
+	SetDimensionsAnimate(FRect(dimensions.x + dimensions.w + margin, dimensions.y, 0, 0), 0.1f);
+}
 

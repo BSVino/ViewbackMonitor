@@ -74,3 +74,30 @@ private:
 
 	double m_refresh_time;
 };
+
+class CAddSomethingPanel : public glgui::CMovablePanel
+{
+	DECLARE_CLASS(CAddSomethingPanel, glgui::CMovablePanel);
+
+private:
+	CAddSomethingPanel();
+
+public:
+	static void Create();
+	virtual void SetParent(glgui::CControlHandle hParent);
+
+	void Layout();
+
+	EVENT_CALLBACK(CAddSomethingPanel, ReSearch);
+	EVENT_CALLBACK(CAddSomethingPanel, Add);
+
+private:
+	static glgui::CControlResource s_panel;
+
+	glgui::CControl<glgui::CLabel>     m_search_label;
+	glgui::CControl<glgui::CTextField> m_search;
+
+	glgui::CControl<glgui::CPanel>           m_search_results_panel;
+	tvector<glgui::CControl<glgui::CButton>> m_search_results;
+};
+

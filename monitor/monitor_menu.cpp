@@ -277,3 +277,103 @@ void CManualConnectPanel::ConnectCallback(glgui::CBaseControl*, const tstring& s
 		MonitorWindow()->SaveConfig();
 	}
 }
+
+CControlResource CAddSomethingPanel::s_panel;
+
+CAddSomethingPanel::CAddSomethingPanel()
+	: CMovablePanel("Add Something")
+{
+	m_search_label = AddControl(new CLabel("Search:"));
+	m_search = AddControl(new CTextField());
+	m_search->SetContentsChangedListener(this, ReSearch);
+
+	m_search_results_panel = AddControl(new CPanel());
+}
+
+void CAddSomethingPanel::Create()
+{
+	if (!s_panel)
+		s_panel = (new CAddSomethingPanel())->shared_from_this();
+
+	CAddSomethingPanel* pPanel = s_panel.DowncastStatic<CAddSomethingPanel>();
+
+	pPanel->m_search->SetText("");
+
+	pPanel->SetSize(350, 550);
+	pPanel->Layout();
+	pPanel->MoveToCenter();
+	pPanel->SetVisible(true);
+
+	CRootPanel::Get()->SetFocus(pPanel->m_search);
+}
+
+void CAddSomethingPanel::SetParent(CControlHandle hParent)
+{
+	BaseClass::SetParent(hParent);
+
+	if (!hParent)
+		s_panel.reset();
+}
+
+void CAddSomethingPanel::Layout()
+{
+	float flOutsideMargin = 25;
+	float flInsideMargin = 10;
+
+	m_search_label->SetAlign(CLabel::TA_LEFTCENTER);
+	m_search_label->SetLeft(flOutsideMargin);
+	m_search_label->SetTop(40);
+	m_search_label->SetWidth(0);
+	m_search_label->EnsureTextFits();
+
+	m_search->SetLeft(m_search_label->GetRight() + flInsideMargin);
+	m_search->SetTop(40);
+	m_search->SetRight(GetWidth() - flOutsideMargin);
+
+	m_search_results_panel->SetTop(m_search_label->GetBottom() + flInsideMargin);
+	m_search_results_panel->SetBottom(GetHeight() - flOutsideMargin);
+	m_search_results_panel->Layout_FullWidth();
+	m_search_results_panel->SetBackgroundColor(Color(17, 17, 17, 255));
+	m_search_results_panel->SetVerticalScrollBarEnabled(true);
+	m_search_results_panel->SetScissoring(true);
+
+	for (size_t i = 0; i < m_search_results.size(); i++)
+		m_search_results_panel->RemoveControl(m_search_results[i]);
+	m_search_results.clear();
+
+	float y_pos = flOutsideMargin;
+
+	for (size_t i = 0; i < Viewback()->GetChannels().size(); i++)
+	{
+		auto channel = Viewback()->GetChannels()[i];
+
+		// Yes I know this is horrible code.
+		tstring name = tstring(channel.m_sName.c_str()).tolower();
+		if (!strstr(name.c_str(), m_search->GetText().c_str()))
+			continue;
+
+		if (channel.m_eDataType != VB_DATATYPE_INT && channel.m_eDataType != VB_DATATYPE_FLOAT)
+			continue;
+
+		m_search_results.push_back(m_search_results_panel->AddControl(new CButton(name), true));
+		m_search_results.back()->Layout_FullWidth();
+		m_search_results.back()->SetTop(y_pos);
+		m_search_results.back()->SetClickedListener(this, Add, tsprintf("%d", i));
+
+		y_pos += m_search_results.back()->GetHeight() + flInsideMargin;
+	}
+
+	BaseClass::Layout();
+}
+
+void CAddSomethingPanel::ReSearchCallback(glgui::CBaseControl*, const tstring& sArgs)
+{
+	Layout();
+}
+
+void CAddSomethingPanel::AddCallback(glgui::CBaseControl*, const tstring& sArgs)
+{
+	Close();
+
+	Viewback()->Profile_AddChannel(atoi(sArgs.c_str()));
+}

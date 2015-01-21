@@ -365,6 +365,9 @@ void CPanel::RemoveControl(CBaseControl* pControl)
 	if (!pControl)
 		return;
 
+	if (pControl->GetParent())
+		TAssertNoMsg(pControl->GetParent() == this);
+
 	pControl->SetParent(CControlHandle());
 
 	for (size_t i = 0; i < m_apControls.size(); i++)
@@ -434,11 +437,15 @@ void CPanel::DirtyVisible()
 
 void CPanel::Layout( void )
 {
-	FRect rPanelBounds = GetAbsDimensions();
+	FRect rPanelBounds;
+	rPanelBounds.x = 0;
+	rPanelBounds.y = 0;
+	rPanelBounds.w = GetWidth();
+	rPanelBounds.h = GetHeight();
+
 	FRect rAllBounds(0, 0, 0, 0);
 
-	if (m_apControls.size())
-		rAllBounds = m_apControls[0]->GetAbsDimensions();
+	rAllBounds.w = -1;
 
 	size_t iCount = m_apControls.size();
 	for (size_t i = 0; i < iCount; i++)
@@ -452,7 +459,17 @@ void CPanel::Layout( void )
 
 		pControl->Layout();
 
-		FRect rControlBounds = pControl->GetAbsDimensions();
+		FRect rControlBounds;
+		rControlBounds.x = pControl->GetLeft();
+		rControlBounds.y = pControl->GetTop();
+		rControlBounds.w = pControl->GetWidth();
+		rControlBounds.h = pControl->GetHeight();
+
+		if (rAllBounds.w < 0)
+		{
+			rAllBounds = rControlBounds;
+			continue;
+		}
 
 		if (rControlBounds.x < rAllBounds.x)
 		{
